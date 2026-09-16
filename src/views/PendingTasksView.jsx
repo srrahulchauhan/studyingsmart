@@ -381,13 +381,13 @@ export default function PendingTasksView({ onNavigate }) {
           </div>
           <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">
             {selectedTab === 'pending'
-              ? 'कोई Pending Task नहीं है!'
-              : 'अभी तक कोई Completed Task नहीं है।'}
+              ? 'No Pending Tasks in Backlog!'
+              : 'No completed tasks in archive yet.'}
           </h3>
           <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
             {selectedTab === 'pending'
-              ? 'अधूरे Tasks automatically carry-forward होते हैं। आप ऊपर दिये बटन से कोई भी task add कर सकते हैं।'
-              : 'Pending Tasks को complete करने पर वे यहाँ archive में दिखाई देंगे।'}
+              ? 'All caught up! Incomplete tasks roll over automatically, or you can add custom tasks using the button above.'
+              : 'When you complete tasks from your backlog, they will appear here in the archive.'}
           </p>
         </div>
       ) : (
