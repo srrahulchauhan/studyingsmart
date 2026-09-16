@@ -306,43 +306,51 @@ export default function PapaStudyCycleTimer() {
         </div>
       )}
 
-      {/* TOP HEADER & INFO CARD */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white/90 dark:bg-[#070c18]/90 border border-slate-200/80 dark:border-white/10 backdrop-blur-2xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400 mb-0.5">
+      {/* TOP HEADER & INFO CARD - Premium Glassmorphic Design */}
+      <div className="relative overflow-hidden p-4 sm:p-5 rounded-3xl bg-white/80 dark:bg-[#070c18]/90 border border-slate-200/80 dark:border-white/[0.10] backdrop-blur-2xl shadow-xl transition-all duration-300 hover:border-sky-400/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Subtle Ambient Background Glow Orbs */}
+        <div className="absolute top-0 right-10 w-48 h-48 bg-sky-400/10 rounded-full blur-2xl pointer-events-none -z-10" />
+        <div className="absolute bottom-0 left-10 w-48 h-48 bg-pink-500/10 rounded-full blur-2xl pointer-events-none -z-10" />
+
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/15 text-sky-500 dark:text-sky-400 border border-sky-400/30 text-[10px] font-black uppercase tracking-widest shadow-xs">
             <Sparkles className="w-3.5 h-3.5" />
             Special 30m Study → 15m Break Loop
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex flex-wrap items-center gap-2">
             Study Timer
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-pink-500/15 text-pink-500 border border-pink-400/30">
-              Papa Special Mode
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-pink-500/20 to-amber-500/20 text-pink-500 dark:text-pink-400 border border-pink-400/40 text-[11px] font-extrabold shadow-xs">
+              <span>👨‍👦</span>
+              <span>Papa Special Mode</span>
             </span>
           </h1>
-          <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-0.5">
-            30 Minutes Continuous Study ➔ 15 Minutes Rest ➔ Automatic Next Study Session.
+
+          <p className="text-xs text-slate-500 dark:text-slate-300 font-medium leading-relaxed">
+            30 Minutes Continuous Study <span className="text-sky-400 font-bold">➔</span> 15 Minutes Rest <span className="text-pink-400 font-bold">➔</span> Automatic Next Study Session.
           </p>
         </div>
 
         {/* Audio Toggle & Cycle Counter */}
-        <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 text-xs font-bold">
-            <Flame className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-            <span className="text-slate-400 uppercase text-[9px]">Cycle</span>
+        <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-amber-500 dark:text-amber-400 text-xs font-bold backdrop-blur-md shadow-xs">
+            <Flame className="w-4 h-4 fill-yellow-400 text-yellow-400 animate-pulse" />
+            <span className="text-slate-400 uppercase text-[9px] tracking-wider">Cycle</span>
             <span className="text-slate-900 dark:text-white font-mono font-black text-xs">#{cycleCount}</span>
           </div>
 
           <button
             type="button"
             onClick={() => setSoundEnabled((prev) => !prev)}
-            className={`p-2 rounded-xl border transition-all ${
+            className={`px-3 py-1.5 rounded-2xl border text-xs font-bold flex items-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-md ${
               soundEnabled
-                ? 'bg-sky-500/15 border-sky-400/30 text-sky-500 dark:text-sky-400'
-                : 'bg-slate-100 dark:bg-white/[0.04] border-slate-200 dark:border-white/10 text-slate-400'
+                ? 'bg-gradient-to-r from-sky-500 to-sky-400 text-white border-sky-400 shadow-sky-500/25'
+                : 'bg-slate-100 dark:bg-white/[0.05] border-slate-200 dark:border-white/10 text-slate-400'
             }`}
             title={soundEnabled ? 'Voice & Chimes Enabled' : 'Muted'}
           >
             {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            <span className="hidden sm:inline">{soundEnabled ? 'Audio On' : 'Muted'}</span>
           </button>
         </div>
       </div>
