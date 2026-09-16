@@ -67,6 +67,27 @@ export function StudyProvider({ children }) {
     return courses.find(c => c.id === activeCourseId) || null;
   }, [courses, activeCourseId]);
 
+  // --- NOTIFICATIONS ---
+  const addNotification = useCallback(({ title, message, type = 'info' }) => {
+    const newNotif = {
+      id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+      title,
+      message,
+      type,
+      time: new Date().toISOString(),
+      read: false,
+    };
+    setNotifications(prev => [newNotif, ...prev.slice(0, 49)]); // Keep last 50
+  }, []);
+
+  const markNotificationRead = useCallback((id) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  }, []);
+
+  const clearAllNotifications = useCallback(() => {
+    setNotifications([]);
+  }, []);
+
   // --- CRUD: COURSES ---
   const addCourse = useCallback((courseData) => {
     const newCourse = {
@@ -642,27 +663,6 @@ export function StudyProvider({ children }) {
 
   const deletePendingTask = useCallback((id) => {
     setPendingTasks((prev) => prev.filter((t) => t.id !== id));
-  }, []);
-
-  // --- NOTIFICATIONS ---
-  const addNotification = useCallback(({ title, message, type = 'info' }) => {
-    const newNotif = {
-      id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-      title,
-      message,
-      type,
-      time: new Date().toISOString(),
-      read: false,
-    };
-    setNotifications(prev => [newNotif, ...prev.slice(0, 49)]); // Keep last 50
-  }, []);
-
-  const markNotificationRead = useCallback((id) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
-  }, []);
-
-  const clearAllNotifications = useCallback(() => {
-    setNotifications([]);
   }, []);
 
   // --- SETTINGS ---
