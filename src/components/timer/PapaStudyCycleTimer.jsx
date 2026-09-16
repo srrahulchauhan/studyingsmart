@@ -73,7 +73,7 @@ export default function PapaStudyCycleTimer() {
     try {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'hi-IN';
+      utterance.lang = 'en-US';
       utterance.rate = 0.95;
       utterance.pitch = 1.0;
       window.speechSynthesis.speak(utterance);
@@ -97,7 +97,7 @@ export default function PapaStudyCycleTimer() {
           // 30 MIN STUDY COMPLETED!
           if (soundEnabled) {
             sounds.playBreakAlert();
-            speakText('बेटा, 15 मिनट आराम कर लो, फिर पढ़ाई Continue करना।');
+            speakText('Dear, take a 15-minute rest now, then continue studying.');
           }
 
           // Save completed 30-minute session to real history
@@ -116,7 +116,7 @@ export default function PapaStudyCycleTimer() {
 
           addNotification({
             title: 'Break Time – 15 Minutes ☕',
-            message: 'Papa Message: बेटा, 15 मिनट आराम कर लो, फिर पढ़ाई Continue करना।',
+            message: 'Papa Message: Dear, take a 15-minute rest now, then continue studying.',
             type: 'info',
           });
 
@@ -132,12 +132,12 @@ export default function PapaStudyCycleTimer() {
           // 15 MIN BREAK COMPLETED!
           if (soundEnabled) {
             sounds.playTimerCompletion();
-            speakText('Break खत्म हो गया, अब Study Continue करें।');
+            speakText('Break is finished. Time to continue studying now.');
           }
 
           addNotification({
             title: 'Break Finished! 🔔',
-            message: 'Break खत्म हो गया — अब Study Continue करें।',
+            message: 'Break is finished — Time to continue studying now.',
             type: 'success',
           });
 
