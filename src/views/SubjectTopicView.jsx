@@ -18,6 +18,10 @@ import {
   CheckSquare,
   Sparkles,
   Layers,
+  Search,
+  Eye,
+  EyeOff,
+  Filter,
 } from 'lucide-react';
 import SubjectModal from '../components/modals/SubjectModal';
 import TopicModal from '../components/modals/TopicModal';
@@ -57,9 +61,26 @@ export default function SubjectTopicView({ onNavigate }) {
 
   // Accordion open/close state for subjects
   const [expandedSubjects, setExpandedSubjects] = useState({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const toggleExpand = (id) => {
-    setExpandedSubjects(prev => ({ ...prev, [id]: !prev[id] }));
+    setExpandedSubjects(prev => ({
+      ...prev,
+      [id]: prev[id] !== undefined ? !prev[id] : false
+    }));
+  };
+
+  const handleExpandAll = () => {
+    const next = {};
+    subjects.forEach(s => { next[s.id] = true; });
+    setExpandedSubjects(next);
+  };
+
+  const handleCollapseAll = () => {
+    const next = {};
+    subjects.forEach(s => { next[s.id] = false; });
+    setExpandedSubjects(next);
   };
 
   const filteredSubjects = subjects.filter(s => !activeCourseId || s.courseId === activeCourseId);
@@ -92,7 +113,7 @@ export default function SubjectTopicView({ onNavigate }) {
   return (
     <div className="space-y-6 animate-fadeIn pb-12">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/80 dark:bg-white/[0.045] p-6 rounded-3xl border border-slate-200/80 dark:border-white/[0.09] shadow-sm backdrop-blur-2xl command-card">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white/80 dark:bg-white/[0.045] p-6 rounded-3xl border border-slate-200/80 dark:border-white/[0.09] shadow-sm backdrop-blur-2xl command-card">
         <div className="flex items-center gap-3">
           <GlassIcon icon={Layers} variant="sky" size="md" />
           <div>
@@ -103,23 +124,89 @@ export default function SubjectTopicView({ onNavigate }) {
               Subjects & Topics
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Organize individual subjects, set targets, break into granular topics, and track focus.
+              Organize subjects, view topics, set targets, and launch focus timer.
             </p>
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            setSubjectToEdit(null);
-            setIsSubjectModalOpen(true);
-          }}
-          className="py-2.5 px-5 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-xs shadow-lg shadow-sky-500/25 flex items-center gap-2 btn-premium transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          + New Subject
-        </button>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            onClick={handleExpandAll}
+            className="py-2.5 px-3.5 rounded-2xl bg-white/60 dark:bg-white/[0.06] hover:bg-sky-500/10 text-slate-700 dark:text-slate-200 hover:text-sky-400 font-bold text-xs border border-slate-200/80 dark:border-white/10 flex items-center gap-1.5 transition-all"
+            title="Expand all topic sections"
+          >
+            <Eye className="w-3.5 h-3.5 text-sky-400" />
+            Expand All
+          </button>
+
+          <button
+            type="button"
+            onClick={handleCollapseAll}
+            className="py-2.5 px-3.5 rounded-2xl bg-white/60 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 font-bold text-xs border border-slate-200/80 dark:border-white/10 flex items-center gap-1.5 transition-all"
+            title="Collapse all topic sections"
+          >
+            <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+            Collapse All
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setSubjectToEdit(null);
+              setIsSubjectModalOpen(true);
+            }}
+            className="py-2.5 px-5 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-xs shadow-lg shadow-sky-500/25 flex items-center gap-2 btn-premium transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            + New Subject
+          </button>
+        </div>
       </div>
+
+      {/* Search & Status Filter Bar */}
+      {filteredSubjects.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white/60 dark:bg-white/[0.03] p-3.5 rounded-2xl border border-slate-200/80 dark:border-white/[0.07]">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search topics by name..."
+              className="w-full pl-10 pr-4 py-2 bg-white/80 dark:bg-white/[0.05] border border-slate-200/80 dark:border-white/10 rounded-xl text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-200"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+            <span className="text-[11px] font-bold text-slate-400 mr-1 flex items-center gap-1">
+              <Filter className="w-3 h-3" /> Status:
+            </span>
+            {['all', 'Pending', 'In Progress', 'Completed'].map((st) => (
+              <button
+                key={st}
+                type="button"
+                onClick={() => setStatusFilter(st)}
+                className={`py-1.5 px-3 rounded-xl text-xs font-bold transition-all ${
+                  statusFilter === st
+                    ? 'bg-sky-500 text-white shadow-sm'
+                    : 'bg-white/40 dark:bg-white/[0.04] text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10'
+                }`}
+              >
+                {st === 'all' ? 'All Topics' : st}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Zero State */}
       {filteredSubjects.length === 0 ? (
@@ -129,7 +216,7 @@ export default function SubjectTopicView({ onNavigate }) {
             No subjects created yet.
           </h2>
           <p className="text-xs text-slate-400 mt-1.5 mb-6 leading-relaxed max-w-xs mx-auto">
-            Add subjects to your course (e.g. JavaScript, React, HTML, CSS) and populate them with topics to start tracking study time.
+            Add subjects to your course (e.g. Computer, Math, Science) and populate them with topics to start tracking study time.
           </p>
           <button
             type="button"
@@ -147,84 +234,114 @@ export default function SubjectTopicView({ onNavigate }) {
         <div className="space-y-4">
           {filteredSubjects.map((subject) => {
             const course = courses.find((c) => c.id === subject.courseId);
-            const subjectTopics = topics.filter((t) => t.subjectId === subject.id);
-            const completedCount = subjectTopics.filter((t) => t.status === 'Completed').length;
-            const pendingCount = subjectTopics.length - completedCount;
+            const rawSubjectTopics = topics.filter((t) => t.subjectId === subject.id);
+
+            const subjectTopics = rawSubjectTopics.filter((t) => {
+              const matchesSearch = !searchQuery || t.name.toLowerCase().includes(searchQuery.toLowerCase()) || (t.description && t.description.toLowerCase().includes(searchQuery.toLowerCase()));
+              const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
+              return matchesSearch && matchesStatus;
+            });
+
+            const completedCount = rawSubjectTopics.filter((t) => t.status === 'Completed').length;
+            const pendingCount = rawSubjectTopics.length - completedCount;
 
             const actualSubjectMins = getSubjectStudyTime(subject.id);
             const targetMins = (subject.targetHours || 0) * 60;
-            const progress = targetMins > 0 ? Math.min(100, Math.round((actualSubjectMins / targetMins) * 100)) : (subjectTopics.length > 0 ? Math.round((completedCount / subjectTopics.length) * 100) : 0);
+            const progress = targetMins > 0 ? Math.min(100, Math.round((actualSubjectMins / targetMins) * 100)) : (rawSubjectTopics.length > 0 ? Math.round((completedCount / rawSubjectTopics.length) * 100) : 0);
 
-            const isExpanded = expandedSubjects[subject.id] !== undefined ? expandedSubjects[subject.id] : true;
+            // Auto-expand if user is actively searching topics
+            const isExpanded = searchQuery.trim().length > 0 ? true : (expandedSubjects[subject.id] !== undefined ? expandedSubjects[subject.id] : true);
 
-            // Requirement 13: Subject Cards
             return (
               <div
                 key={subject.id}
-                className="rounded-3xl bg-white/80 dark:bg-white/[0.045] border border-slate-200/80 dark:border-white/[0.09] shadow-sm dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] backdrop-blur-2xl overflow-hidden command-card hover:border-sky-400/30"
+                className="rounded-2xl bg-white/80 dark:bg-white/[0.045] border border-slate-200/80 dark:border-white/[0.09] shadow-sm backdrop-blur-2xl overflow-hidden command-card hover:border-sky-400/30 transition-all"
               >
-                {/* Subject Header / Accordion Trigger */}
-                <div className="p-5 bg-white/40 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/[0.06]">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                {/* Subject Header / Clickable Accordion Trigger */}
+                <div
+                  onClick={() => toggleExpand(subject.id)}
+                  className="p-4 sm:p-4.5 bg-white/40 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/[0.06] cursor-pointer hover:bg-slate-50/70 dark:hover:bg-white/[0.04] transition-all select-none group"
+                >
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                     <div className="flex items-start gap-3">
                       <button
                         type="button"
-                        onClick={() => toggleExpand(subject.id)}
-                        className="p-2 rounded-xl bg-white/50 dark:bg-white/[0.06] text-slate-400 hover:text-white mt-0.5 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleExpand(subject.id);
+                        }}
+                        className="p-1.5 rounded-lg bg-white/60 dark:bg-white/[0.06] text-slate-400 group-hover:text-sky-400 group-hover:bg-sky-500/10 mt-0.5 transition-colors"
+                        title={isExpanded ? "Collapse Topics" : "View Topics"}
                       >
-                        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        {isExpanded ? <ChevronUp className="w-4 h-4 text-sky-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
                       </button>
 
                       <div className="flex items-start gap-2.5">
-                        <GlassIcon icon={Layers} variant="sky" size="md" />
+                        <GlassIcon icon={Layers} variant="sky" size="sm" />
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-400/20">
+                            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-sky-500/10 text-sky-400 border border-sky-400/20">
                               {course ? course.name : 'Course'}
                             </span>
                             <span className="text-[10px] font-semibold text-slate-400">
                               Priority: {subject.priority}
                             </span>
                           </div>
-                          <h2 className="text-base font-black text-slate-900 dark:text-white mt-0.5">
-                            {subject.name}
-                          </h2>
+
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <h2 className="text-base font-black text-slate-900 dark:text-white group-hover:text-sky-400 transition-colors">
+                              {subject.name}
+                            </h2>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300">
+                              {rawSubjectTopics.length} {rawSubjectTopics.length === 1 ? 'Topic' : 'Topics'}
+                            </span>
+                          </div>
+
                           {subject.purpose && (
-                            <p className="text-xs text-slate-400 italic mt-0.5">
+                            <p className="text-xs text-slate-400 italic mt-0.5 line-clamp-1">
                               "{subject.purpose}"
                             </p>
+                          )}
+
+                          {!isExpanded && (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-sky-400 hover:text-sky-300 mt-0.5">
+                              <ChevronDown className="w-3.5 h-3.5 animate-bounce" /> Click to view {rawSubjectTopics.length} topics
+                            </span>
                           )}
                         </div>
                       </div>
                     </div>
 
-                    {/* Quick Subject Metrics matching Requirement 13 */}
-                    <div className="flex flex-wrap items-center gap-3">
-                      <div className="flex items-center gap-3.5 text-xs bg-white/60 dark:bg-white/[0.035] px-4 py-2.5 rounded-2xl border border-slate-200/80 dark:border-white/[0.08]">
+                    {/* Quick Subject Metrics */}
+                    <div
+                      className="flex flex-wrap items-center gap-2.5"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex items-center gap-3 text-xs bg-white/60 dark:bg-white/[0.035] px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/[0.08]">
                         <div>
                           <span className="text-[10px] text-slate-400 block font-medium">Actual Hours</span>
-                          <span className="font-black text-sky-400 font-mono">
+                          <span className="font-bold text-sky-400 font-mono text-xs">
                             {formatDuration(actualSubjectMins)}
                           </span>
                         </div>
-                        <div className="h-6 w-px bg-slate-200 dark:bg-white/10"></div>
+                        <div className="h-5 w-px bg-slate-200 dark:bg-white/10"></div>
                         <div>
                           <span className="text-[10px] text-slate-400 block font-medium">Target</span>
-                          <span className="font-bold text-slate-800 dark:text-white font-mono">
+                          <span className="font-bold text-slate-800 dark:text-white font-mono text-xs">
                             {subject.targetHours || 0}h
                           </span>
                         </div>
-                        <div className="h-6 w-px bg-slate-200 dark:bg-white/10"></div>
+                        <div className="h-5 w-px bg-slate-200 dark:bg-white/10"></div>
                         <div>
                           <span className="text-[10px] text-slate-400 block font-medium">Progress</span>
-                          <span className="font-black text-yellow-400 font-mono">
+                          <span className="font-bold text-yellow-400 font-mono text-xs">
                             {progress}%
                           </span>
                         </div>
-                        <div className="h-6 w-px bg-slate-200 dark:bg-white/10"></div>
+                        <div className="h-5 w-px bg-slate-200 dark:bg-white/10"></div>
                         <div>
                           <span className="text-[10px] text-slate-400 block font-medium">Completed / Pending</span>
-                          <span className="font-bold text-slate-700 dark:text-slate-300 font-mono">
+                          <span className="font-bold text-slate-700 dark:text-slate-300 font-mono text-xs">
                             {completedCount} / {pendingCount}
                           </span>
                         </div>
@@ -232,12 +349,13 @@ export default function SubjectTopicView({ onNavigate }) {
 
                       <button
                         type="button"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setTargetSubjectForTopic(subject.id);
                           setTopicToEdit(null);
                           setIsTopicModalOpen(true);
                         }}
-                        className="py-2 px-3.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-black shadow-md shadow-sky-500/25 transition-all flex items-center gap-1.5 btn-premium"
+                        className="py-1.5 px-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold shadow-sm shadow-sky-500/25 transition-all flex items-center gap-1 btn-premium"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         Add Topic
@@ -245,11 +363,12 @@ export default function SubjectTopicView({ onNavigate }) {
 
                       <button
                         type="button"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setSubjectToEdit(subject);
                           setIsSubjectModalOpen(true);
                         }}
-                        className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors"
                         title="Edit Subject"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
@@ -257,8 +376,11 @@ export default function SubjectTopicView({ onNavigate }) {
 
                       <button
                         type="button"
-                        onClick={() => setSubjectToDelete(subject)}
-                        className="p-2 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSubjectToDelete(subject);
+                        }}
+                        className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
                         title="Delete Subject"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -266,8 +388,8 @@ export default function SubjectTopicView({ onNavigate }) {
                     </div>
                   </div>
 
-                  {/* Thin Colored Progress Bar (Requirement 13) */}
-                  <div className="mt-3.5">
+                  {/* Thin Colored Progress Bar */}
+                  <div className="mt-2.5">
                     <div className="w-full bg-slate-100 dark:bg-white/[0.06] h-1.5 rounded-full overflow-hidden">
                       <div
                         className="bg-gradient-to-r from-sky-500 to-sky-400 h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(14,165,233,0.5)]"
@@ -279,12 +401,12 @@ export default function SubjectTopicView({ onNavigate }) {
 
                 {/* Topics List Inside Subject */}
                 {isExpanded && (
-                  <div className="p-5">
+                  <div className="p-5 animate-fadeIn">
                     {subjectTopics.length === 0 ? (
                       <div className="py-8 text-center bg-slate-50/50 dark:bg-slate-800/20 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
                         <CheckSquare className="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
                         <p className="text-xs text-slate-400 mb-3">
-                          No topics added for this subject yet.
+                          {searchQuery || statusFilter !== 'all' ? 'No topics match your current filter/search.' : 'No topics added for this subject yet.'}
                         </p>
                         <button
                           type="button"
@@ -295,7 +417,7 @@ export default function SubjectTopicView({ onNavigate }) {
                           }}
                           className="py-1.5 px-3.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold"
                         >
-                          + Add First Topic
+                          + Add Topic
                         </button>
                       </div>
                     ) : (

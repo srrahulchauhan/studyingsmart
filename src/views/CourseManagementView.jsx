@@ -115,7 +115,7 @@ export default function CourseManagementView({ onSelectCourse, onNavigate }) {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredCourses.map((course) => {
             const actualMins = getCourseStudyTime(course.id);
             const targetMins = (course.totalTargetHours || 0) * 60;
@@ -126,25 +126,24 @@ export default function CourseManagementView({ onSelectCourse, onNavigate }) {
             const totalTopics = courseTopics.length;
             const isActive = activeCourseId === course.id;
 
-            // Requirement 12: Course Card Styling
             return (
               <div
                 key={course.id}
-                className={`rounded-3xl border transition-all duration-300 p-6 flex flex-col justify-between backdrop-blur-2xl command-card ${
+                className={`rounded-2xl border transition-all duration-300 p-4 sm:p-5 flex flex-col justify-between backdrop-blur-2xl command-card ${
                   isActive
-                    ? 'bg-sky-500/[0.08] border-sky-400/40 shadow-[0_0_30px_rgba(14,165,233,0.25)]'
-                    : 'bg-white/80 dark:bg-white/[0.045] border-slate-200/80 dark:border-white/[0.09] hover:border-pink-400/30'
+                    ? 'bg-sky-500/[0.07] border-sky-400/40 shadow-[0_0_20px_rgba(14,165,233,0.18)]'
+                    : 'bg-white/80 dark:bg-white/[0.045] border-slate-200/80 dark:border-white/[0.09] hover:border-sky-400/30'
                 }`}
               >
                 <div>
                   {/* Top Bar: Category badge & Management Actions */}
-                  <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-white/[0.07]">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] uppercase font-bold px-2.5 py-1 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-400/25">
+                  <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-lg bg-sky-500/15 text-sky-400 border border-sky-400/20">
                         {course.category || 'General'}
                       </span>
                       {isActive && (
-                        <span className="text-[10px] font-bold uppercase px-2.5 py-1 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-400/25">
+                        <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-400/20">
                           Active
                         </span>
                       )}
@@ -155,12 +154,12 @@ export default function CourseManagementView({ onSelectCourse, onNavigate }) {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-0.5">
                       {!isActive && !course.isArchived && (
                         <button
                           type="button"
                           onClick={() => setActiveCourseId(course.id)}
-                          className="text-[11px] font-bold text-sky-400 hover:text-sky-300 hover:underline px-2 py-1"
+                          className="text-[10px] font-bold text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 px-2 py-1 rounded-lg transition-colors mr-1"
                         >
                           Set Active
                         </button>
@@ -168,7 +167,7 @@ export default function CourseManagementView({ onSelectCourse, onNavigate }) {
                       <button
                         type="button"
                         onClick={() => setCourseToDuplicate(course)}
-                        className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/[0.06] transition-colors"
+                        className="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-white/[0.06] transition-colors"
                         title="Duplicate Course"
                       >
                         <Copy className="w-3.5 h-3.5" />
@@ -179,7 +178,7 @@ export default function CourseManagementView({ onSelectCourse, onNavigate }) {
                           setCourseToEdit(course);
                           setIsCreateModalOpen(true);
                         }}
-                        className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/[0.06] transition-colors"
+                        className="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-white/[0.06] transition-colors"
                         title="Edit Course"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
@@ -188,7 +187,7 @@ export default function CourseManagementView({ onSelectCourse, onNavigate }) {
                         <button
                           type="button"
                           onClick={() => restoreCourse(course.id)}
-                          className="p-2 text-emerald-400 hover:bg-emerald-500/10 rounded-xl transition-colors"
+                          className="p-1.5 text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
                           title="Restore Course"
                         >
                           <RotateCcw className="w-3.5 h-3.5" />
@@ -197,7 +196,7 @@ export default function CourseManagementView({ onSelectCourse, onNavigate }) {
                         <button
                           type="button"
                           onClick={() => archiveCourse(course.id)}
-                          className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/[0.06] transition-colors"
+                          className="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-white/[0.06] transition-colors"
                           title="Archive Course"
                         >
                           <Archive className="w-3.5 h-3.5" />
@@ -206,7 +205,7 @@ export default function CourseManagementView({ onSelectCourse, onNavigate }) {
                       <button
                         type="button"
                         onClick={() => setCourseToDelete(course)}
-                        className="p-2 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors"
+                        className="p-1.5 text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
                         title="Delete Course"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -214,62 +213,63 @@ export default function CourseManagementView({ onSelectCourse, onNavigate }) {
                     </div>
                   </div>
 
-                  {/* Course Title & Purpose (White Text) */}
-                  <div className="mt-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xl">📚</span>
-                      <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                  {/* Course Title & Purpose */}
+                  <div className="mt-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">📚</span>
+                      <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
                         {course.name}
                       </h3>
                     </div>
                     {course.purpose && (
-                      <p className="text-xs text-slate-400 mt-1 line-clamp-1 italic">
+                      <p className="text-xs text-slate-400 mt-0.5 line-clamp-1 italic">
                         "{course.purpose}"
                       </p>
                     )}
                   </div>
 
-                  {/* Progress Bar (Sky Blue Progress - Requirement 12) */}
-                  <div className="mt-4">
-                    <div className="flex justify-between text-xs font-bold mb-1.5">
+                  {/* Progress Bar & Stats */}
+                  <div className="mt-3">
+                    <div className="flex justify-between items-center text-xs font-bold mb-1">
                       <span className="text-slate-400">{progress}% Complete</span>
-                      <span className="text-yellow-400 font-mono">
-                        {formatDuration(actualMins)} Study Time
+                      <span className="text-sky-400 font-mono text-[11px]">
+                        {formatDuration(actualMins)} Studied
                       </span>
                     </div>
-                    <div className="w-full bg-slate-100 dark:bg-white/[0.08] h-2.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-slate-100 dark:bg-white/[0.08] h-2 rounded-full overflow-hidden">
                       <div
-                        className="bg-gradient-to-r from-sky-500 to-sky-400 h-full rounded-full transition-all duration-700 shadow-[0_0_10px_rgba(14,165,233,0.5)]"
+                        className="bg-gradient-to-r from-sky-500 to-sky-400 h-full rounded-full transition-all duration-700 shadow-[0_0_8px_rgba(14,165,233,0.5)]"
                         style={{ width: `${progress}%` }}
                       ></div>
                     </div>
                   </div>
 
-                  {/* Small Yellow Statistics (Requirement 12) */}
-                  <div className="grid grid-cols-2 gap-3 mt-4 text-xs bg-white/50 dark:bg-white/[0.03] p-3 rounded-2xl border border-slate-100 dark:border-white/[0.05]">
+                  {/* Compact Stats Box */}
+                  <div className="grid grid-cols-2 gap-2 mt-3 text-xs bg-white/50 dark:bg-white/[0.03] p-2.5 rounded-xl border border-slate-100 dark:border-white/[0.05]">
                     <div>
-                      <span className="text-slate-400 text-[10px] block">Topics Completed</span>
-                      <span className="font-black text-yellow-400 font-mono">
+                      <span className="text-slate-400 text-[10px] block font-medium">Topics Completed</span>
+                      <span className="font-bold text-sky-400 font-mono text-xs">
                         {completedTopics} / {totalTopics} Topics
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-400 text-[10px] block">Target Curriculum</span>
-                      <span className="font-black text-slate-800 dark:text-white font-mono">
+                      <span className="text-slate-400 text-[10px] block font-medium">Target Curriculum</span>
+                      <span className="font-bold text-slate-800 dark:text-white font-mono text-xs">
                         {course.totalTargetHours || 0}h Target
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Footer: [OPEN COURSE →] */}
-                <div className="mt-5 pt-3.5 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <span className="flex items-center gap-1 font-medium">
+                {/* Footer: Open Course Button */}
+                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2.5 text-slate-400 text-[11px]">
+                    <span className="flex items-center gap-1 font-semibold">
                       <Layers className="w-3.5 h-3.5 text-sky-400" />
                       {courseSubjects.length} Subjects
                     </span>
-                    <span className="flex items-center gap-1 font-medium">
+                    <span>•</span>
+                    <span className="flex items-center gap-1 font-semibold">
                       <FileText className="w-3.5 h-3.5 text-pink-400" />
                       {courseTopics.length} Topics
                     </span>
@@ -281,9 +281,9 @@ export default function CourseManagementView({ onSelectCourse, onNavigate }) {
                       setActiveCourseId(course.id);
                       onNavigate('subjects');
                     }}
-                    className="py-1.5 px-4 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 font-black text-xs border border-sky-400/25 transition-all hover:scale-105 active:scale-95"
+                    className="py-1.5 px-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-xs shadow-md shadow-sky-500/20 transition-all flex items-center gap-1 btn-premium"
                   >
-                    [OPEN COURSE →]
+                    Open Course →
                   </button>
                 </div>
               </div>
