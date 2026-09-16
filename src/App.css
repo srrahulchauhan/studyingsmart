@@ -1,0 +1,33 @@
+/* Custom StudyFlow Command Center Styles */
+
+@keyframes subtleWave {
+  0% { transform: scaleY(0.2); }
+  50% { transform: scaleY(1); }
+  100% { transform: scaleY(0.3); }
+}
+
+.wave-bar {
+  transform-origin: bottom;
+  animation: subtleWave 1.4s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(2) { animation-delay: 0.15s; }
+.wave-bar:nth-child(3) { animation-delay: 0.3s; }
+.wave-bar:nth-child(4) { animation-delay: 0.45s; }
+.wave-bar:nth-child(5) { animation-delay: 0.6s; }
+.wave-bar:nth-child(6) { animation-delay: 0.75s; }
+.wave-bar:nth-child(7) { animation-delay: 0.9s; }
+.wave-bar:nth-child(8) { animation-delay: 1.05s; }
+
+/* Subtle glow filters */
+.glow-filter-emerald {
+  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.4));
+}
+
+.glow-filter-indigo {
+  filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.4));
+}
+
+.glow-filter-amber {
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.4));
+}

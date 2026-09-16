@@ -1,0 +1,198 @@
+import React from 'react';
+import { useTimer } from '../../context/TimerContext';
+import { useStudy } from '../../context/StudyContext';
+import { formatSeconds } from '../../utils/dateUtils';
+import {
+  LayoutDashboard,
+  GraduationCap,
+  CalendarDays,
+  FolderKanban,
+  CheckSquare,
+  Link2,
+  Timer,
+  CalendarRange,
+  CalendarCheck,
+  UserCheck,
+  Target,
+  Trophy,
+  History,
+  BarChart3,
+  FileSpreadsheet,
+  Maximize2,
+  Settings,
+  Database,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  Bell,
+} from 'lucide-react';
+
+export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCollapsed }) {
+  const { activeSession, elapsedActiveSeconds } = useTimer();
+  const { courses } = useStudy();
+
+  const navSections = [
+    {
+      group: 'Core Study',
+      items: [
+        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { id: 'courses', label: 'Courses', icon: GraduationCap, badge: courses.length },
+        { id: 'plans', label: 'Study Plans', icon: FolderKanban },
+        { id: 'subjects', label: 'Subjects', icon: CalendarDays },
+        { id: 'topics', label: 'Topics', icon: CheckSquare },
+        { id: 'resources', label: 'Resources', icon: Link2 },
+      ],
+    },
+    {
+      group: 'Focus & Scheduling',
+      items: [
+        {
+          id: 'timer',
+          label: 'Study Timer',
+          icon: Timer,
+          isTimerItem: true,
+        },
+        { id: 'focus', label: 'Focus Mode', icon: Maximize2 },
+        { id: 'timetable', label: 'Timetable', icon: CalendarRange },
+        { id: 'calendar', label: 'Calendar', icon: CalendarCheck },
+        { id: 'attendance', label: 'Attendance', icon: UserCheck },
+      ],
+    },
+    {
+      group: 'Intelligence & Reports',
+      items: [
+        { id: 'targets', label: 'Targets', icon: Target },
+        { id: 'goals', label: 'Goals', icon: Trophy },
+        { id: 'history', label: 'History', icon: History },
+        { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+        { id: 'reports', label: 'Reports', icon: FileSpreadsheet },
+      ],
+    },
+    {
+      group: 'System',
+      items: [
+        { id: 'settings', label: 'Settings', icon: Settings },
+        { id: 'backup', label: 'Backup', icon: Database },
+      ],
+    },
+  ];
+
+  return (
+    <aside
+      className={`hidden md:flex flex-col bg-white/90 dark:bg-[#0c111d]/90 backdrop-blur-2xl border-r border-slate-200/80 dark:border-white/[0.07] transition-all duration-300 z-20 shrink-0 ${
+        isCollapsed ? 'w-[72px]' : 'w-[250px]'
+      }`}
+    >
+      {/* Collapse / Expand Toggle Button */}
+      <div className="flex items-center justify-between p-3 border-b border-slate-100 dark:border-white/[0.06]">
+        {!isCollapsed && (
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 pl-2">
+            Command Menu
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors ml-auto"
+          title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+        >
+          {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+        </button>
+      </div>
+
+      {/* Navigation Links */}
+      <div className="flex-1 overflow-y-auto px-2.5 py-3 space-y-5">
+        {navSections.map((section) => (
+          <div key={section.group}>
+            {!isCollapsed && (
+              <div className="px-3 mb-1.5 text-[9px] font-extrabold uppercase tracking-widest text-slate-400">
+                {section.group}
+              </div>
+            )}
+            <div className="space-y-0.5">
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = currentView === item.id;
+                const isTimerRunning = item.isTimerItem && activeSession?.status === 'running';
+
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => onNavigate(item.id)}
+                    className={`w-full group relative flex items-center gap-3 px-3 py-2 rounded-2xl text-xs font-semibold transition-all duration-200 ${
+                      isActive
+                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                        : isTimerRunning
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                    title={isCollapsed ? item.label : undefined}
+                  >
+                    {/* Glowing Left Indicator on Active */}
+                    {isActive && (
+                      <span className="absolute left-1 w-1 h-3.5 rounded-full bg-white shadow-sm" />
+                    )}
+
+                    <div className="relative shrink-0 flex items-center justify-center">
+                      <Icon
+                        className={`w-4 h-4 transition-transform group-hover:scale-110 ${
+                          isTimerRunning ? 'animate-spin' : ''
+                        }`}
+                      />
+                      {isTimerRunning && (
+                        <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#0c111d] animate-ping" />
+                      )}
+                    </div>
+
+                    {!isCollapsed && (
+                      <span className="truncate flex-1 text-left">{item.label}</span>
+                    )}
+
+                    {!isCollapsed && isTimerRunning && (
+                      <span className="font-mono text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                        {formatSeconds(elapsedActiveSeconds)}
+                      </span>
+                    )}
+
+                    {!isCollapsed && item.badge !== undefined && item.badge > 0 && (
+                      <span
+                        className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full ${
+                          isActive
+                            ? 'bg-white/20 text-white'
+                            : 'bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-slate-400'
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Focus Mode Card Footer */}
+      {!isCollapsed && (
+        <div className="p-3 m-3 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-cyan-500/5 border border-indigo-500/20">
+          <div className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-bold text-xs mb-1">
+            <Sparkles className="w-3.5 h-3.5" />
+            Distraction-Free
+          </div>
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 mb-2 leading-relaxed">
+            Eliminate clutter and focus with clean fullscreen UI.
+          </p>
+          <button
+            type="button"
+            onClick={() => onNavigate('focus')}
+            className="w-full py-1.5 px-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-md shadow-indigo-600/20 transition-all text-center"
+          >
+            Launch Focus Mode
+          </button>
+        </div>
+      )}
+    </aside>
+  );
+}
