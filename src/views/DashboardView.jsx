@@ -143,7 +143,7 @@ export default function DashboardView({
   const userName = settings?.userName || 'Scholar';
 
   return (
-    <div className="space-y-6 sm:space-y-8 animate-fadeIn pb-16">
+    <div className="space-y-4 sm:space-y-6 animate-fadeIn pb-16">
       {/* Session Completion Modal */}
       <SessionCompletionModal
         isOpen={isCompletionModalOpen}
@@ -152,53 +152,53 @@ export default function DashboardView({
         onContinueStudy={handleContinueStudyFromModal}
       />
 
-      {/* ROW 1: STUDY COMMAND CENTER (HERO CARD) - Placed at the top */}
-      <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-white/[0.045] border border-slate-200/80 dark:border-white/[0.10] p-6 sm:p-8 shadow-xl dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] backdrop-blur-2xl command-card flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-sky-400/30">
-        {/* Subtle Animated Glow Behind Hero Card (Requirement 5) */}
-        <div className="absolute top-0 right-1/4 w-80 h-80 bg-sky-500/[0.08] rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-subtle"></div>
-        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-yellow-500/[0.05] rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-subtle"></div>
+      {/* ROW 1: STUDY COMMAND CENTER (HERO CARD) - Compact & Responsive */}
+      <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-white/[0.045] border border-slate-200/80 dark:border-white/[0.10] p-4 sm:p-5 shadow-xl dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] backdrop-blur-2xl command-card flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-sky-400/30">
+        {/* Subtle Animated Glow Behind Hero Card */}
+        <div className="absolute top-0 right-1/4 w-72 h-72 bg-sky-500/[0.08] rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-subtle"></div>
+        <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-yellow-500/[0.05] rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-subtle"></div>
 
         <div>
-          <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-sky-400 mb-1">
+          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-sky-400 mb-0.5">
             <Sparkles className="w-3.5 h-3.5" />
             Study Command Center
           </div>
-          {/* Large White Typography (Requirement 5) */}
-          <h1 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+          {/* Typography */}
+          <h1 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
             {getTimeGreeting().toUpperCase()} 👋
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-300 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-300 mt-0.5">
             "Ready for your next study session?"
           </p>
         </div>
 
-        {/* Hero Metrics (Requirement 5: TODAY 4h 32m / 5h, Current Streak 12 Days, Yellow streak icon, Sky-blue progress ring) */}
-        <div className="flex flex-wrap items-center gap-4 shrink-0">
-          {/* Current Streak with Yellow streak icon */}
-          <div className="flex items-center gap-3.5 p-3.5 px-5 rounded-2xl bg-yellow-500/10 border border-yellow-500/25 text-yellow-400 backdrop-blur-md">
-            <Flame className="w-7 h-7 fill-yellow-400 text-yellow-400 animate-pulse" />
+        {/* Hero Metrics */}
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          {/* Current Streak */}
+          <div className="flex items-center gap-2.5 p-2.5 px-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/25 text-yellow-400 backdrop-blur-md">
+            <Flame className="w-5 h-5 fill-yellow-400 text-yellow-400 animate-pulse" />
             <div>
-              <span className="text-[9px] uppercase font-bold text-yellow-400/80 block tracking-wider">
+              <span className="text-[8px] uppercase font-bold text-yellow-400/80 block tracking-wider">
                 Current Streak
               </span>
-              <div className="text-xl font-black text-slate-900 dark:text-white font-mono">
+              <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white font-mono">
                 <AnimatedNumber value={streak.current} /> DAYS
               </div>
             </div>
           </div>
 
-          {/* Today Quota with Sky-blue progress ring */}
-          <div className="flex items-center gap-3.5 p-3 px-4 rounded-2xl bg-white/40 dark:bg-white/[0.035] border border-slate-200/80 dark:border-white/[0.08] backdrop-blur-md">
+          {/* Today Quota */}
+          <div className="flex items-center gap-2.5 p-2 px-3.5 rounded-2xl bg-white/40 dark:bg-white/[0.035] border border-slate-200/80 dark:border-white/[0.08] backdrop-blur-md">
             <ProgressRing
               progress={dailyProgress}
-              size={54}
-              strokeWidth={5}
+              size={42}
+              strokeWidth={4}
               variant="sky"
             >
-              <span className="text-[10px] font-black text-white">{dailyProgress}%</span>
+              <span className="text-[9px] font-black text-white">{dailyProgress}%</span>
             </ProgressRing>
             <div>
-              <span className="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">
+              <span className="text-[8px] uppercase font-bold text-slate-400 block tracking-wider">
                 Today
               </span>
               <div className="text-xs font-black text-slate-900 dark:text-white font-mono">
