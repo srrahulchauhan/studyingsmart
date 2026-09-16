@@ -211,7 +211,7 @@ export default function PapaStudyCycleTimer() {
   const progressPercent = Math.min(100, Math.round((elapsedInPhase / currentTotal) * 100));
 
   return (
-    <div className="space-y-4 sm:space-y-5 animate-fadeIn max-w-3xl mx-auto">
+    <div className="space-y-3.5 animate-fadeIn max-w-3xl mx-auto">
       {/* PAPA BREAK MODAL */}
       {showPapaBreakModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
@@ -282,16 +282,16 @@ export default function PapaStudyCycleTimer() {
 
       {/* BREAK END REMINDER BANNER */}
       {showBreakEndBanner && (
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-sky-500/15 to-emerald-500/15 border border-emerald-400/50 shadow-md flex items-center justify-between gap-3 animate-fadeIn">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold text-base shrink-0 shadow-md shadow-emerald-500/30">
+        <div className="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-sky-500/15 to-emerald-500/15 border border-emerald-400/50 shadow-md flex items-center justify-between gap-3 animate-fadeIn">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md shadow-emerald-500/30">
               🔔
             </div>
             <div>
-              <div className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <div className="text-[9px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                 Break Complete!
               </div>
-              <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+              <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
                 “Break is finished — Time to continue studying now.”
               </div>
             </div>
@@ -299,65 +299,16 @@ export default function PapaStudyCycleTimer() {
           <button
             type="button"
             onClick={() => setShowBreakEndBanner(false)}
-            className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-bold transition-transform active:scale-95 shrink-0"
+            className="px-3 py-1 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-bold transition-transform active:scale-95 shrink-0"
           >
             Got it!
           </button>
         </div>
       )}
 
-      {/* TOP HEADER & INFO CARD - Premium Glassmorphic Design */}
-      <div className="relative overflow-hidden p-4 sm:p-5 rounded-3xl bg-white/80 dark:bg-[#070c18]/90 border border-slate-200/80 dark:border-white/[0.10] backdrop-blur-2xl shadow-xl transition-all duration-300 hover:border-sky-400/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        {/* Subtle Ambient Background Glow Orbs */}
-        <div className="absolute top-0 right-10 w-48 h-48 bg-sky-400/10 rounded-full blur-2xl pointer-events-none -z-10" />
-        <div className="absolute bottom-0 left-10 w-48 h-48 bg-pink-500/10 rounded-full blur-2xl pointer-events-none -z-10" />
-
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/15 text-sky-500 dark:text-sky-400 border border-sky-400/30 text-[10px] font-black uppercase tracking-widest shadow-xs">
-            <Sparkles className="w-3.5 h-3.5" />
-            Special 30m Study → 15m Break Loop
-          </div>
-
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex flex-wrap items-center gap-2">
-            Study Timer
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-pink-500/20 to-amber-500/20 text-pink-500 dark:text-pink-400 border border-pink-400/40 text-[11px] font-extrabold shadow-xs">
-              <span>👨‍👦</span>
-              <span>Papa Special Mode</span>
-            </span>
-          </h1>
-
-          <p className="text-xs text-slate-500 dark:text-slate-300 font-medium leading-relaxed">
-            30 Minutes Continuous Study <span className="text-sky-400 font-bold">➔</span> 15 Minutes Rest <span className="text-pink-400 font-bold">➔</span> Automatic Next Study Session.
-          </p>
-        </div>
-
-        {/* Audio Toggle & Cycle Counter */}
-        <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/10 border border-amber-400/30 text-amber-500 dark:text-amber-400 text-xs font-bold backdrop-blur-md shadow-xs">
-            <Flame className="w-4 h-4 fill-yellow-400 text-yellow-400 animate-pulse" />
-            <span className="text-slate-400 uppercase text-[9px] tracking-wider">Cycle</span>
-            <span className="text-slate-900 dark:text-white font-mono font-black text-xs">#{cycleCount}</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setSoundEnabled((prev) => !prev)}
-            className={`px-3 py-1.5 rounded-2xl border text-xs font-bold flex items-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-md ${
-              soundEnabled
-                ? 'bg-gradient-to-r from-sky-500 to-sky-400 text-white border-sky-400 shadow-sky-500/25'
-                : 'bg-slate-100 dark:bg-white/[0.05] border-slate-200 dark:border-white/10 text-slate-400'
-            }`}
-            title={soundEnabled ? 'Voice & Chimes Enabled' : 'Muted'}
-          >
-            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-            <span className="hidden sm:inline">{soundEnabled ? 'Audio On' : 'Muted'}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* MAIN TIMER DISPLAY CARD */}
+      {/* UNIFIED COMPACT GLASS CONTROL CENTER PANEL */}
       <div
-        className={`relative overflow-hidden rounded-3xl p-4 sm:p-6 text-center backdrop-blur-2xl transition-all duration-500 border shadow-xl ${
+        className={`relative overflow-hidden rounded-3xl p-3.5 sm:p-4 text-center backdrop-blur-2xl transition-all duration-500 border shadow-xl ${
           phase === 'study'
             ? 'bg-white/90 dark:bg-[#070c18]/90 border-sky-400/30 dark:border-sky-400/20 shadow-sky-500/10'
             : 'bg-white/90 dark:bg-[#070c18]/90 border-pink-400/40 dark:border-pink-500/30 shadow-pink-500/15'
@@ -365,196 +316,61 @@ export default function PapaStudyCycleTimer() {
       >
         {/* Dynamic Glow Background Orbs */}
         <div
-          className={`absolute top-0 right-1/4 w-60 h-60 rounded-full blur-3xl pointer-events-none -z-10 transition-colors duration-700 ${
+          className={`absolute top-0 right-1/4 w-48 h-48 rounded-full blur-3xl pointer-events-none -z-10 transition-colors duration-700 ${
             phase === 'study' ? 'bg-sky-500/[0.08]' : 'bg-pink-500/[0.12]'
           }`}
         />
         <div
-          className={`absolute bottom-0 left-1/4 w-60 h-60 rounded-full blur-3xl pointer-events-none -z-10 transition-colors duration-700 ${
+          className={`absolute bottom-0 left-1/4 w-48 h-48 rounded-full blur-3xl pointer-events-none -z-10 transition-colors duration-700 ${
             phase === 'study' ? 'bg-yellow-500/[0.05]' : 'bg-yellow-500/[0.08]'
           }`}
         />
 
-        {/* Current Course & Topic context tags */}
-        <div className="flex flex-wrap items-center justify-center gap-1.5 mb-3">
-          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-200">
-            {currentCourse ? currentCourse.name : 'General Curriculum'}
-          </span>
-          {currentSubject && (
-            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-sky-500/15 text-sky-400 border border-sky-400/25">
-              {currentSubject.name}
-            </span>
-          )}
-          {currentTopic && (
-            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-yellow-500/15 text-yellow-400 border border-yellow-400/25">
-              {currentTopic.name}
-            </span>
-          )}
-        </div>
-
-        {/* CURRENT STATUS BADGE (STUDY / BREAK) */}
-        <div className="mb-4">
-          {phase === 'study' ? (
-            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-sky-500/15 border border-sky-400/40 text-sky-500 dark:text-sky-400 font-extrabold text-xs shadow-[0_0_20px_rgba(14,165,233,0.3)]">
-              <span className="relative flex h-2 w-2">
-                {isRunning && (
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-80" />
-                )}
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-400" />
-              </span>
-              <span>● STUDY STATUS: FOCUSING (30 MIN)</span>
-            </div>
-          ) : (
-            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-pink-500/15 border border-pink-400/50 text-pink-500 dark:text-pink-400 font-extrabold text-xs shadow-[0_0_24px_rgba(236,72,153,0.35)] animate-pulse">
-              <Coffee className="w-3.5 h-3.5" />
-              <span>☕ BREAK TIME – 15 MINUTES</span>
-            </div>
-          )}
-        </div>
-
-        {/* COMPACT DIGITAL COUNTDOWN & PROGRESS RING */}
-        <div className="flex flex-col items-center justify-center my-3">
-          <div className="relative mb-2">
-            <ProgressRing
-              progress={progressPercent}
-              size={190}
-              strokeWidth={10}
-              variant={phase === 'study' ? 'sky' : 'pink'}
-            >
-              <div className="flex flex-col items-center justify-center select-none">
-                <div className="digital-timer text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-                  {formatSeconds(remainingSeconds)}
-                </div>
-                <div className="text-[10px] uppercase font-black tracking-widest mt-0.5 text-slate-400">
-                  {phase === 'study' ? 'Study Time Left' : 'Break Time Left'}
-                </div>
-                <div className="text-[10px] font-mono font-bold mt-0.5 text-slate-500 dark:text-slate-300">
-                  {progressPercent}% Complete
-                </div>
+        {/* TOP BAR INSIDE PANEL: Header + Cycle Badges + Audio Toggle */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-slate-100 dark:border-white/[0.08]">
+          <div className="flex items-center gap-2 text-left">
+            <span className="text-xl">👨‍👦</span>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
+                  Study Timer
+                </h1>
+                <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-pink-500/20 to-amber-500/20 text-pink-500 dark:text-pink-400 border border-pink-400/30 text-[9px] font-extrabold">
+                  Papa Special Mode
+                </span>
               </div>
-            </ProgressRing>
-          </div>
-
-          {/* Subtitle Countdown Notice */}
-          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
-            {phase === 'study'
-              ? 'When 30:00 reaches zero, a 15-minute break begins automatically.'
-              : 'When 15:00 reaches zero, the next 30-minute study session starts automatically.'}
-          </p>
-        </div>
-
-        {/* PAPA'S REMINDER QUOTE CARD */}
-        <div className="max-w-lg mx-auto my-3 p-3 rounded-2xl bg-white/60 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 backdrop-blur-md text-left flex items-center gap-3 shadow-sm">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-400 to-pink-500 text-white flex items-center justify-center text-lg shrink-0 shadow-sm">
-            👨‍👧
-          </div>
-          <div>
-            <div className="text-[9px] font-black uppercase tracking-wider text-pink-500 dark:text-pink-400">
-              Papa's Reminder
-            </div>
-            <div className="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">
-              {phase === 'study'
-                ? '“Focus deeply for 30 minutes. You will get a 15-minute break right after.”'
-                : '“Dear, take a 15-minute rest now, then continue studying.”'}
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                30m Continuous Study <span className="text-sky-400 font-bold">➔</span> 15m Rest <span className="text-pink-400 font-bold">➔</span> Auto Loop
+              </p>
             </div>
           </div>
-        </div>
 
-        {/* PRIMARY CONTROLS: START, PAUSE, RESET */}
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-2">
-          {!isRunning ? (
+          <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+            <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/10 border border-amber-400/30 text-amber-500 dark:text-amber-400 text-xs font-bold backdrop-blur-md">
+              <Flame className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400 animate-pulse" />
+              <span className="text-slate-400 uppercase text-[9px]">Cycle</span>
+              <span className="text-slate-900 dark:text-white font-mono font-black text-xs">#{cycleCount}</span>
+            </div>
+
             <button
               type="button"
-              onClick={handleStart}
-              className="py-4 px-8 sm:px-10 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-sm sm:text-base shadow-xl shadow-sky-500/30 flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95"
+              onClick={() => setSoundEnabled((prev) => !prev)}
+              className={`px-2.5 py-1 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-95 shadow-xs ${
+                soundEnabled
+                  ? 'bg-gradient-to-r from-sky-500 to-sky-400 text-white border-sky-400 shadow-sky-500/25'
+                  : 'bg-slate-100 dark:bg-white/[0.05] border-slate-200 dark:border-white/10 text-slate-400'
+              }`}
             >
-              <Play className="w-5 h-5 fill-current" />
-              ▶ START {phase === 'study' ? 'STUDY (30M)' : 'BREAK (15M)'}
+              {soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+              <span className="text-[11px]">{soundEnabled ? 'Audio On' : 'Muted'}</span>
             </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handlePause}
-              className="py-4 px-8 sm:px-10 rounded-2xl bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black text-sm sm:text-base shadow-xl shadow-yellow-500/25 flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95"
-            >
-              <Pause className="w-5 h-5 fill-current" />
-              ⏸ PAUSE
-            </button>
-          )}
-
-          {/* RESET BUTTON (Always resets back to 30:00 Study) */}
-          <button
-            type="button"
-            onClick={handleReset}
-            className="py-4 px-6 rounded-2xl bg-slate-100 dark:bg-white/[0.08] hover:bg-rose-500/15 hover:text-rose-500 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 font-bold text-sm sm:text-base flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
-            title="Reset timer to 30:00 Study"
-          >
-            <RotateCcw className="w-4 h-4" />
-            RESET
-          </button>
-
-          {/* SKIP BUTTON */}
-          <button
-            type="button"
-            onClick={handleSkipPhase}
-            className="py-4 px-5 rounded-2xl bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200 dark:hover:bg-white/[0.08] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all"
-            title="Skip to next phase"
-          >
-            <FastForward className="w-4 h-4" />
-            Skip Phase
-          </button>
-        </div>
-
-        {/* CYCLE METRICS FOOTER */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8 pt-6 border-t border-slate-100 dark:border-white/[0.08] text-xs">
-          <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06]">
-            <span className="text-[10px] text-slate-400 uppercase font-bold block mb-0.5">
-              Study Interval
-            </span>
-            <span className="font-extrabold text-sky-500 dark:text-sky-400 font-mono text-sm">
-              30 Minutes
-            </span>
-          </div>
-
-          <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06]">
-            <span className="text-[10px] text-slate-400 uppercase font-bold block mb-0.5">
-              Break Interval
-            </span>
-            <span className="font-extrabold text-pink-500 dark:text-pink-400 font-mono text-sm">
-              15 Minutes
-            </span>
-          </div>
-
-          <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06]">
-            <span className="text-[10px] text-slate-400 uppercase font-bold block mb-0.5">
-              Completed Loops
-            </span>
-            <span className="font-extrabold text-yellow-500 dark:text-yellow-400 font-mono text-sm">
-              {completedStudySessions} Sessions
-            </span>
-          </div>
-
-          <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06]">
-            <span className="text-[10px] text-slate-400 uppercase font-bold block mb-0.5">
-              Total Verified Study
-            </span>
-            <span className="font-extrabold text-emerald-500 dark:text-emerald-400 font-mono text-sm">
-              {formatDuration(completedStudySessions * 30)}
-            </span>
           </div>
         </div>
-      </div>
 
-      {/* CURRICULUM CONTEXT ACCORDION (Optional Tagging) */}
-      <div className="p-5 rounded-3xl bg-white/80 dark:bg-[#070c18]/80 border border-slate-200/80 dark:border-white/10 backdrop-blur-2xl">
-        <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-          <BookOpen className="w-4 h-4 text-sky-400" />
-          Assign Study Session to Course & Subject
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {/* TARGET CURRICULUM SELECTION INLINE BAR */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 my-2.5 p-2 rounded-2xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/[0.06] text-left">
           <div>
-            <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">
+            <label className="text-[9px] font-extrabold text-slate-400 uppercase block px-1 mb-0.5">
               Course
             </label>
             <select
@@ -564,7 +380,7 @@ export default function PapaStudyCycleTimer() {
                 setSelectedSubjectId('');
                 setSelectedTopicId('');
               }}
-              className="w-full text-xs font-semibold p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full text-xs font-semibold p-1.5 rounded-xl bg-white dark:bg-[#0c1322] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-400 truncate"
             >
               {courses.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -575,7 +391,7 @@ export default function PapaStudyCycleTimer() {
           </div>
 
           <div>
-            <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">
+            <label className="text-[9px] font-extrabold text-slate-400 uppercase block px-1 mb-0.5">
               Subject
             </label>
             <select
@@ -584,7 +400,7 @@ export default function PapaStudyCycleTimer() {
                 setSelectedSubjectId(e.target.value);
                 setSelectedTopicId('');
               }}
-              className="w-full text-xs font-semibold p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full text-xs font-semibold p-1.5 rounded-xl bg-white dark:bg-[#0c1322] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-400 truncate"
             >
               <option value="">All Subjects</option>
               {availableSubjects.map((s) => (
@@ -596,13 +412,13 @@ export default function PapaStudyCycleTimer() {
           </div>
 
           <div>
-            <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">
+            <label className="text-[9px] font-extrabold text-slate-400 uppercase block px-1 mb-0.5">
               Topic
             </label>
             <select
               value={selectedTopicId}
               onChange={(e) => setSelectedTopicId(e.target.value)}
-              className="w-full text-xs font-semibold p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full text-xs font-semibold p-1.5 rounded-xl bg-white dark:bg-[#0c1322] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-400 truncate"
             >
               <option value="">All Topics</option>
               {availableTopics.map((t) => (
@@ -613,7 +429,157 @@ export default function PapaStudyCycleTimer() {
             </select>
           </div>
         </div>
+
+        {/* STATUS BADGE */}
+        <div className="my-2">
+          {phase === 'study' ? (
+            <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-sky-500/15 border border-sky-400/40 text-sky-500 dark:text-sky-400 font-extrabold text-[11px] shadow-[0_0_20px_rgba(14,165,233,0.25)]">
+              <span className="relative flex h-2 w-2">
+                {isRunning && (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-80" />
+                )}
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-400" />
+              </span>
+              <span>• STUDY STATUS: FOCUSING (30 MIN)</span>
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-pink-500/15 border border-pink-400/50 text-pink-500 dark:text-pink-400 font-extrabold text-[11px] shadow-[0_0_20px_rgba(236,72,153,0.3)] animate-pulse">
+              <Coffee className="w-3.5 h-3.5" />
+              <span>☕ BREAK TIME – 15 MINUTES</span>
+            </div>
+          )}
+        </div>
+
+        {/* PROGRESS RING & DIGITAL COUNTDOWN */}
+        <div className="flex flex-col items-center justify-center my-1.5">
+          <div className="relative">
+            <ProgressRing
+              progress={progressPercent}
+              size={145}
+              strokeWidth={8}
+              variant={phase === 'study' ? 'sky' : 'pink'}
+            >
+              <div className="flex flex-col items-center justify-center select-none">
+                <div className="digital-timer text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                  {formatSeconds(remainingSeconds)}
+                </div>
+                <div className="text-[8px] uppercase font-black tracking-widest mt-0.5 text-slate-400">
+                  {phase === 'study' ? 'Study Time Left' : 'Break Time Left'}
+                </div>
+                <div className="text-[8px] font-mono font-bold mt-0.5 text-slate-500 dark:text-slate-300">
+                  {progressPercent}% complete
+                </div>
+              </div>
+            </ProgressRing>
+          </div>
+
+          <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-1">
+            {phase === 'study'
+              ? 'When 30:00 reaches zero, a 15-minute break begins automatically.'
+              : 'When 15:00 reaches zero, the next 30-minute study session starts automatically.'}
+          </p>
+        </div>
+
+        {/* PAPA'S REMINDER STRIP */}
+        <div className="max-w-md mx-auto my-2 p-2 px-3 rounded-xl bg-white/60 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 backdrop-blur-md text-left flex items-center gap-2.5 shadow-xs">
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-400 to-pink-500 text-white flex items-center justify-center text-xs shrink-0 shadow-xs">
+            👨‍👧
+          </div>
+          <div>
+            <div className="text-[8px] font-black uppercase tracking-wider text-pink-500 dark:text-pink-400">
+              Papa's Reminder
+            </div>
+            <div className="text-[11px] font-bold text-slate-800 dark:text-slate-100">
+              {phase === 'study'
+                ? '“Focus deeply for 30 minutes. You will get a 15-minute break right after.”'
+                : '“Dear, take a 15-minute rest now, then continue studying.”'}
+            </div>
+          </div>
+        </div>
+
+        {/* ACTION BUTTONS */}
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+          {!isRunning ? (
+            <button
+              type="button"
+              onClick={handleStart}
+              className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-xs shadow-lg shadow-sky-500/25 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+            >
+              <Play className="w-3.5 h-3.5 fill-current" />
+              ▶ START {phase === 'study' ? 'STUDY (30M)' : 'BREAK (15M)'}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handlePause}
+              className="py-2.5 px-6 rounded-xl bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black text-xs shadow-lg shadow-yellow-500/25 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+            >
+              <Pause className="w-3.5 h-3.5 fill-current" />
+              ⏸ PAUSE
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={handleReset}
+            className="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-white/[0.08] hover:bg-rose-500/15 hover:text-rose-500 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
+            title="Reset timer to 30:00 Study"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            RESET
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSkipPhase}
+            className="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200 dark:hover:bg-white/[0.08] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-bold text-xs flex items-center gap-1 transition-all"
+            title="Skip to next phase"
+          >
+            <FastForward className="w-3.5 h-3.5" />
+            Skip Phase
+          </button>
+        </div>
+
+        {/* METRICS INLINE FOOTER */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-2.5 border-t border-slate-100 dark:border-white/[0.08] text-xs">
+          <div className="p-1.5 rounded-xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06]">
+            <span className="text-[8px] text-slate-400 uppercase font-bold block">
+              Study Interval
+            </span>
+            <span className="font-extrabold text-sky-500 dark:text-sky-400 font-mono text-xs">
+              30 Minutes
+            </span>
+          </div>
+
+          <div className="p-1.5 rounded-xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06]">
+            <span className="text-[8px] text-slate-400 uppercase font-bold block">
+              Break Interval
+            </span>
+            <span className="font-extrabold text-pink-500 dark:text-pink-400 font-mono text-xs">
+              15 Minutes
+            </span>
+          </div>
+
+          <div className="p-1.5 rounded-xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06]">
+            <span className="text-[8px] text-slate-400 uppercase font-bold block">
+              Current Cycle
+            </span>
+            <span className="font-extrabold text-amber-500 dark:text-amber-400 font-mono text-xs">
+              #{cycleCount}
+            </span>
+          </div>
+
+          <div className="p-1.5 rounded-xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06]">
+            <span className="text-[8px] text-slate-400 uppercase font-bold block">
+              Sessions Saved
+            </span>
+            <span className="font-extrabold text-emerald-500 dark:text-emerald-400 font-mono text-xs">
+              {completedStudySessions} Done
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+
