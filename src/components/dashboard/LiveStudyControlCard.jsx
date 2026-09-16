@@ -142,8 +142,21 @@ export default function LiveStudyControlCard({
           </div>
         </div>
 
-        {/* Live Status Badge */}
-        <div className="flex items-center gap-2 self-start sm:self-auto">
+        {/* Live Status Badge & Papa Special Mode link */}
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          {onNavigate && (
+            <button
+              type="button"
+              onClick={() => onNavigate('timer')}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/10 hover:bg-pink-500/20 text-pink-500 dark:text-pink-400 border border-pink-400/30 text-xs font-bold transition-all shadow-xs"
+              title="Open 30m Study -> 15m Break Papa Cycle Timer"
+            >
+              <span>👨‍👦</span>
+              <span>30/15 Papa Cycle</span>
+              <span className="text-[9px] font-mono">→</span>
+            </button>
+          )}
+
           {isRunning && (
             <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-sky-500/15 text-sky-400 border border-sky-400/30 text-xs font-bold shadow-[0_0_16px_rgba(14,165,233,0.3)] animate-pulse">
               <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>

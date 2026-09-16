@@ -17,8 +17,10 @@ import {
   BookOpen,
   CalendarDays,
   CheckSquare,
+  Heart,
 } from 'lucide-react';
 import BreakModal from '../components/timer/BreakModal';
+import PapaStudyCycleTimer from '../components/timer/PapaStudyCycleTimer';
 
 export default function StudyTimerView({ onNavigate }) {
   const { courses, subjects, topics, studyPlans, activeCourseId } = useStudy();
@@ -40,7 +42,10 @@ export default function StudyTimerView({ onNavigate }) {
     pomodoroRemainingSeconds,
   } = useTimer();
 
-  // Selection form for starting a session
+  // Mode Selection: 'papa' (30m Study -> 15m Break) or 'standard' (Freeflow Stopwatch)
+  const [timerMode, setTimerMode] = useState('papa'); // Default to Papa 30/15 Special
+
+  // Selection form for starting a session in standard mode
   const [selectedCourseId, setSelectedCourseId] = useState(
     activeSession ? activeSession.courseId : (activeCourseId || (courses.length > 0 ? courses[0].id : ''))
   );
@@ -78,49 +83,85 @@ export default function StudyTimerView({ onNavigate }) {
 
   return (
     <div className="space-y-6 animate-fadeIn pb-12 max-w-4xl mx-auto">
-      {/* Break Mode Modal */}
+      {/* Break Mode Modal for standard session */}
       <BreakModal />
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
-            <Timer className="w-4 h-4" />
-            Accurate Study Control
-          </div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-            Study Timer
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Timestamp-based tracking. Break & pause intervals are completely excluded from actual study hours.
-          </p>
-        </div>
+      {/* Mode Switcher Tabs */}
+      <div className="flex items-center justify-center p-1.5 rounded-3xl bg-slate-100/90 dark:bg-white/[0.05] border border-slate-200/80 dark:border-white/10 backdrop-blur-xl">
+        <button
+          type="button"
+          onClick={() => setTimerMode('papa')}
+          className={`flex-1 py-3 px-4 rounded-2xl font-black text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 ${
+            timerMode === 'papa'
+              ? 'bg-gradient-to-r from-sky-500 to-sky-400 text-white shadow-lg shadow-sky-500/25 scale-[1.01]'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <span className="text-base">👨‍👦</span>
+          <span>30m Study → 15m Break (Papa Cycle)</span>
+          <span className="hidden sm:inline text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-white/20 text-white">
+            AUTO-LOOP
+          </span>
+        </button>
 
-        <div className="flex items-center gap-2">
-          {/* Pomodoro Toggle */}
-          <button
-            type="button"
-            onClick={() => setPomodoroMode(!pomodoroMode)}
-            className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
-              pomodoroMode
-                ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
-            }`}
-          >
-            🍅 Pomodoro: {pomodoroMode ? 'ON' : 'OFF'}
-          </button>
-
-          {/* Focus Mode Button */}
-          <button
-            type="button"
-            onClick={() => onNavigate('focus')}
-            className="py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
-          >
-            <Maximize2 className="w-3.5 h-3.5" />
-            Focus Mode
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setTimerMode('standard')}
+          className={`flex-1 py-3 px-4 rounded-2xl font-black text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 ${
+            timerMode === 'standard'
+              ? 'bg-gradient-to-r from-sky-500 to-sky-400 text-white shadow-lg shadow-sky-500/25 scale-[1.01]'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <Timer className="w-4 h-4" />
+          <span>Standard Stopwatch & Pomodoro</span>
+        </button>
       </div>
+
+      {/* RENDER PAPA STUDY CYCLE TIMER (When active) */}
+      {timerMode === 'papa' && <PapaStudyCycleTimer />}
+
+      {/* RENDER STANDARD STOPWATCH / POMODORO TIMER */}
+      {timerMode === 'standard' && (
+        <>
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
+                <Timer className="w-4 h-4" />
+                Accurate Study Control
+              </div>
+              <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+                Standard Study Timer
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Timestamp-based tracking. Break & pause intervals are completely excluded from actual study hours.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setPomodoroMode(!pomodoroMode)}
+                className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                  pomodoroMode
+                    ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                }`}
+              >
+                🍅 Pomodoro: {pomodoroMode ? 'ON' : 'OFF'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onNavigate('focus')}
+                className="py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+                Focus Mode
+              </button>
+            </div>
+          </div>
 
       {/* Main Timer Display Card (Requirement 6 & 18) */}
       <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-white/[0.045] border border-slate-200/80 dark:border-white/[0.09] shadow-xl dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] p-6 sm:p-10 text-center backdrop-blur-2xl command-card">
@@ -375,6 +416,8 @@ export default function StudyTimerView({ onNavigate }) {
           </div>
         </div>
       )}
-    </div>
-  );
+    </>
+  )}
+</div>
+);
 }
