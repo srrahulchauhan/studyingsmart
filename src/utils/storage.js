@@ -12,6 +12,7 @@ export const STORAGE_KEYS = {
   ATTENDANCE: 'studyflow_attendance',
   TARGETS: 'studyflow_targets',
   GOALS: 'studyflow_goals',
+  PENDING_TASKS: 'studyflow_pending_tasks',
   NOTIFICATIONS: 'studyflow_notifications',
   SETTINGS: 'studyflow_settings',
   ACTIVE_COURSE_ID: 'studyflow_active_course_id',
