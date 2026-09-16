@@ -246,7 +246,7 @@ function MainLayout() {
           )}
 
           {(currentView === 'settings' || currentView === 'backup') && (
-            <SettingsView />
+            <SettingsView initialSection={currentView} />
           )}
         </main>
       </div>

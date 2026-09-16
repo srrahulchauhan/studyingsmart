@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import ConfirmDeleteModal from '../components/modals/ConfirmDeleteModal';
 
-export default function SettingsView() {
+export default function SettingsView({ initialSection = 'settings' }) {
   const {
     settings,
     updateSettings,
@@ -36,6 +36,13 @@ export default function SettingsView() {
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
 
   const fileInputRef = useRef(null);
+  const backupRef = useRef(null);
+
+  React.useEffect(() => {
+    if (initialSection === 'backup' && backupRef.current) {
+      backupRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [initialSection]);
 
   const handleSaveSettings = (e) => {
     e.preventDefault();
@@ -278,7 +285,7 @@ export default function SettingsView() {
       </form>
 
       {/* Section 4: Data Management (Backup, Restore & Reset) */}
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+      <div ref={backupRef} className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
         <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <Database className="w-4 h-4 text-blue-500" />
           Data Backup & Management
