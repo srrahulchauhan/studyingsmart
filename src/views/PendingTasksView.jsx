@@ -153,7 +153,7 @@ export default function PendingTasksView({ onNavigate }) {
               📋 Pending Tasks
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-300 mt-1 max-w-xl">
-              अधूरे Tasks automatically carry-forward होते हैं और जब तक आप उन्हें Complete न कर दें, वे Pending List में सुरक्षित रहते हैं।
+              Unfinished tasks automatically carry forward across days and remain safely in your backlog until you mark them complete.
             </p>
           </div>
 

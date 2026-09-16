@@ -63,7 +63,7 @@ export default function PendingTasksPopupModal({ onNavigate }) {
                 Pending Tasks Available
               </div>
               <h2 className="text-lg font-black text-slate-900 dark:text-white mt-0.5">
-                कल के कुछ Tasks अभी Pending हैं।
+                Some tasks from yesterday are still pending.
               </h2>
             </div>
           </div>
@@ -79,7 +79,7 @@ export default function PendingTasksPopupModal({ onNavigate }) {
 
         {/* Description */}
         <p className="text-xs text-slate-500 dark:text-slate-400 my-3">
-          अधूरे Tasks automatically carry-forward होते हैं जब तक आप उन्हें Complete न कर दें। आप इन्हें अभी Continue कर सकते हैं।
+          Incomplete tasks automatically carry forward until you mark them completed. You can continue them now or catch up later.
         </p>
 
         {/* Pending Tasks Quick Preview List */}

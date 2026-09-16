@@ -238,7 +238,7 @@ export default function PapaStudyCycleTimer() {
                 Papa Message
               </div>
               <p className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white leading-relaxed font-sans">
-                “बेटा, 15 मिनट आराम कर लो, फिर पढ़ाई Continue करना।”
+                “Dear, take a 15-minute rest now, then continue studying.”
               </p>
             </div>
 
@@ -251,20 +251,20 @@ export default function PapaStudyCycleTimer() {
                 {formatSeconds(remainingSeconds)}
               </div>
               <p className="text-xs text-slate-400 mt-1">
-                15 मिनट पूरे होते ही अगला Study Session अपने-आप शुरू होगा।
+                The next 30-minute study session will begin automatically when break ends.
               </p>
             </div>
 
             {/* Relax suggestions */}
             <div className="grid grid-cols-3 gap-2 my-4 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
               <div className="p-2 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10">
-                💧 पानी पियो
+                💧 Drink Water
               </div>
               <div className="p-2 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10">
-                👀 आँखें आराम दो
+                👀 Rest Eyes
               </div>
               <div className="p-2 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10">
-                🚶 थोड़ा टहलो
+                🚶 Take a Walk
               </div>
             </div>
 
@@ -274,7 +274,7 @@ export default function PapaStudyCycleTimer() {
               onClick={() => setShowPapaBreakModal(false)}
               className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-pink-500 to-pink-400 hover:from-pink-400 hover:to-pink-300 text-white font-extrabold text-sm shadow-lg shadow-pink-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
-              ठीक है पापा, आराम कर रहा हूँ 👍
+              Got it Papa, resting now 👍
             </button>
           </div>
         </div>
@@ -292,7 +292,7 @@ export default function PapaStudyCycleTimer() {
                 Break Complete!
               </div>
               <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                “Break खत्म हो गया — अब Study Continue करें।”
+                “Break is finished — Time to continue studying now.”
               </div>
             </div>
           </div>
@@ -320,7 +320,7 @@ export default function PapaStudyCycleTimer() {
             </span>
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-300 mt-1">
-            30 मिनट लगातार Study ➔ 15 मिनट आराम ➔ अपने-आप अगला 30 मिनट Study (Continuous Cycle).
+            30 Minutes Continuous Study ➔ 15 Minutes Rest ➔ Automatic Next Study Session (Continuous Auto-Loop).
           </p>
         </div>
 
@@ -430,8 +430,8 @@ export default function PapaStudyCycleTimer() {
           {/* Subtitle Countdown Notice */}
           <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 mt-2">
             {phase === 'study'
-              ? '30:00 पूरे होते ही 15 मिनट का Break Timer अपने-आप शुरू होगा।'
-              : '15:00 पूरे होते ही अगला 30 मिनट Study Session अपने-आप शुरू होगा।'}
+              ? 'When 30:00 reaches zero, a 15-minute break begins automatically.'
+              : 'When 15:00 reaches zero, the next 30-minute study session starts automatically.'}
           </p>
         </div>
 
@@ -446,8 +446,8 @@ export default function PapaStudyCycleTimer() {
             </div>
             <div className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 mt-0.5">
               {phase === 'study'
-                ? '“मेहनत से 30 मिनट पढ़ाई करो। 30 मिनट के बाद 15 मिनट आराम मिलेगा।”'
-                : '“बेटा, 15 मिनट आराम कर लो, फिर पढ़ाई Continue करना।”'}
+                ? '“Focus deeply for 30 minutes. You will get a 15-minute break right after.”'
+                : '“Dear, take a 15-minute rest now, then continue studying.”'}
             </div>
           </div>
         </div>
