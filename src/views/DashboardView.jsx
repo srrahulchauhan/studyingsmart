@@ -46,6 +46,7 @@ export default function DashboardView({
     courses,
     subjects,
     topics,
+    pendingTasks,
     activeCourseId,
     activeCourse,
     getCourseStudyTime,
@@ -259,16 +260,16 @@ export default function DashboardView({
           onClick={() => onNavigate('attendance')}
         />
 
-        {/* CARD 4: PENDING TOPICS - Red (Requirement 7) */}
+        {/* CARD 4: PENDING TASKS - Red (Requirement 7) */}
         <StatCard
-          title="Pending Topics"
-          value={pendingTopicsCount}
-          description="In curriculum backlog"
+          title="Pending Tasks"
+          value={Math.max(pendingTopicsCount, pendingTasks ? pendingTasks.filter(t => t.status === 'Pending').length : 0)}
+          description="In rollover backlog"
           icon={AlertCircle}
           variant="red"
           sparklineData={[pendingTopicsCount + 4, pendingTopicsCount + 3, pendingTopicsCount + 1, pendingTopicsCount]}
-          footerText="Ready for focus"
-          onClick={() => onNavigate('topics')}
+          footerText="Carry-forward active"
+          onClick={() => onNavigate('pending-tasks')}
         />
 
         {/* CARD 5: WEEKLY STUDY - Sky Blue */}

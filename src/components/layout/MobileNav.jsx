@@ -37,6 +37,7 @@ export default function MobileNav({ currentView, onNavigate }) {
   ];
 
   const drawerItems = [
+    { id: 'pending-tasks', label: 'Pending Tasks', icon: ClipboardList },
     { id: 'plans', label: 'Study Plans', icon: ClipboardList },
     { id: 'subjects', label: 'Subjects', icon: Layers },
     { id: 'topics', label: 'Topics', icon: FileText },

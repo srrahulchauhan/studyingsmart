@@ -24,11 +24,14 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  CheckSquare,
 } from 'lucide-react';
 
 export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCollapsed }) {
   const { activeSession, elapsedActiveSeconds } = useTimer();
-  const { courses } = useStudy();
+  const { courses, pendingTasks } = useStudy();
+
+  const activePendingCount = pendingTasks ? pendingTasks.filter((t) => t.status === 'Pending').length : 0;
 
   // Requirement 8: Exact Professional Icons
   const navSections = [
@@ -40,6 +43,13 @@ export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCol
         { id: 'plans', label: 'Study Plans', icon: ClipboardList },
         { id: 'subjects', label: 'Subjects', icon: Layers },
         { id: 'topics', label: 'Topics', icon: FileText },
+        {
+          id: 'pending-tasks',
+          label: 'Pending Tasks',
+          icon: CheckSquare,
+          badge: activePendingCount > 0 ? activePendingCount : null,
+          badgeColor: 'bg-rose-500 text-white animate-pulse',
+        },
         { id: 'resources', label: 'Resources', icon: Library },
       ],
     },

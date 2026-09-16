@@ -37,6 +37,8 @@ import StudyHistoryView from './views/StudyHistoryView';
 import AnalyticsView from './views/AnalyticsView';
 import ReportsExportView from './views/ReportsExportView';
 import SettingsView from './views/SettingsView';
+import PendingTasksView from './views/PendingTasksView';
+import PendingTasksPopupModal from './components/modals/PendingTasksPopupModal';
 
 function MainLayout() {
   const {
@@ -237,11 +239,20 @@ function MainLayout() {
             <ReportsExportView />
           )}
 
+          {currentView === 'pending-tasks' && (
+            <PendingTasksView
+              onNavigate={handleNavigate}
+            />
+          )}
+
           {(currentView === 'settings' || currentView === 'backup') && (
             <SettingsView />
           )}
         </main>
       </div>
+
+      {/* Daily Pending Tasks Popup Reminder */}
+      <PendingTasksPopupModal onNavigate={handleNavigate} />
 
       {/* Animated Floating Plus Action Button with Feature Add Speed-Dial */}
       <QuickAddFAB

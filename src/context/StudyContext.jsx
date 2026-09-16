@@ -24,6 +24,7 @@ export function StudyProvider({ children }) {
   const [attendance, setAttendance] = useState(() => loadFromStorage(STORAGE_KEYS.ATTENDANCE, []));
   const [targets, setTargets] = useState(() => loadFromStorage(STORAGE_KEYS.TARGETS, []));
   const [goals, setGoals] = useState(() => loadFromStorage(STORAGE_KEYS.GOALS, []));
+  const [pendingTasks, setPendingTasks] = useState(() => loadFromStorage(STORAGE_KEYS.PENDING_TASKS, []));
   const [notifications, setNotifications] = useState(() => loadFromStorage(STORAGE_KEYS.NOTIFICATIONS, []));
   const [settings, setSettings] = useState(() => loadFromStorage(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS));
   const [activeCourseId, setActiveCourseId] = useState(() => loadFromStorage(STORAGE_KEYS.ACTIVE_COURSE_ID, null));
@@ -46,6 +47,7 @@ export function StudyProvider({ children }) {
   useEffect(() => saveToStorage(STORAGE_KEYS.ATTENDANCE, attendance), [attendance]);
   useEffect(() => saveToStorage(STORAGE_KEYS.TARGETS, targets), [targets]);
   useEffect(() => saveToStorage(STORAGE_KEYS.GOALS, goals), [goals]);
+  useEffect(() => saveToStorage(STORAGE_KEYS.PENDING_TASKS, pendingTasks), [pendingTasks]);
   useEffect(() => saveToStorage(STORAGE_KEYS.NOTIFICATIONS, notifications), [notifications]);
   useEffect(() => saveToStorage(STORAGE_KEYS.SETTINGS, settings), [settings]);
   useEffect(() => saveToStorage(STORAGE_KEYS.ACTIVE_COURSE_ID, activeCourseId), [activeCourseId]);
@@ -551,6 +553,97 @@ export function StudyProvider({ children }) {
     setGoals(prev => prev.filter(g => g.id !== id));
   }, []);
 
+  // --- PENDING TASKS AUTO-ROLLOVER & CRUD ---
+  // Rule 3 & 4: Automatically rolls over any incomplete task/topic scheduled before today,
+  // carries forward across Day 1 -> Day 2 -> Day 3... and NEVER auto-deletes until user completes it!
+  useEffect(() => {
+    const today = getTodayDateString();
+
+    topics.forEach((topic) => {
+      const topicDate = topic.targetDate || (topic.createdAt ? topic.createdAt.split('T')[0] : null);
+      if (topicDate && topicDate < today && topic.status !== 'Completed') {
+        setPendingTasks((prev) => {
+          const exists = prev.some((pt) => pt.topicId === topic.id || pt.id === `ptask_topic_${topic.id}`);
+          if (!exists) {
+            return [
+              ...prev,
+              {
+                id: `ptask_topic_${topic.id}`,
+                title: topic.name,
+                courseId: topic.courseId,
+                subjectId: topic.subjectId,
+                topicId: topic.id,
+                originalDate: topicDate,
+                estimatedMinutes: topic.estimatedMinutes || 60,
+                priority: topic.priority || 'Medium',
+                status: 'Pending',
+                completedAt: null,
+                source: 'topic',
+                createdAt: new Date().toISOString(),
+              },
+            ];
+          }
+          return prev;
+        });
+      }
+    });
+  }, [topics]);
+
+  const addPendingTask = useCallback((taskData) => {
+    const today = getTodayDateString();
+    const newTask = {
+      id: `ptask_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+      title: taskData.title.trim(),
+      courseId: taskData.courseId || activeCourseId,
+      subjectId: taskData.subjectId || null,
+      topicId: taskData.topicId || null,
+      originalDate: taskData.originalDate || today,
+      estimatedMinutes: Number(taskData.estimatedMinutes) || 45,
+      priority: taskData.priority || 'Medium',
+      status: 'Pending',
+      completedAt: null,
+      source: taskData.source || 'manual',
+      notes: taskData.notes || '',
+      createdAt: new Date().toISOString(),
+    };
+    setPendingTasks((prev) => [newTask, ...prev]);
+    return newTask;
+  }, [activeCourseId]);
+
+  const updatePendingTask = useCallback((id, updates) => {
+    setPendingTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...updates } : t)));
+  }, []);
+
+  const completePendingTask = useCallback((id) => {
+    setPendingTasks((prev) =>
+      prev.map((t) => {
+        if (t.id === id) {
+          if (t.topicId) {
+            setTopics((prevTopics) =>
+              prevTopics.map((top) => (top.id === t.topicId ? { ...top, status: 'Completed' } : top))
+            );
+          }
+          return {
+            ...t,
+            status: 'Completed',
+            completedAt: new Date().toISOString(),
+          };
+        }
+        return t;
+      })
+    );
+
+    addNotification({
+      title: 'Task Completed! ✅',
+      message: 'Pending task has been completed and removed from pending backlog.',
+      type: 'success',
+    });
+  }, [addNotification]);
+
+  const deletePendingTask = useCallback((id) => {
+    setPendingTasks((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
   // --- NOTIFICATIONS ---
   const addNotification = useCallback(({ title, message, type = 'info' }) => {
     const newNotif = {
@@ -842,6 +935,13 @@ export function StudyProvider({ children }) {
     addGoal,
     updateGoal,
     deleteGoal,
+
+    // Pending Tasks System
+    pendingTasks,
+    addPendingTask,
+    updatePendingTask,
+    completePendingTask,
+    deletePendingTask,
 
     // Notifications
     addNotification,
