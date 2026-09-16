@@ -23,7 +23,17 @@ import BreakModal from '../components/timer/BreakModal';
 import PapaStudyCycleTimer from '../components/timer/PapaStudyCycleTimer';
 
 export default function StudyTimerView({ onNavigate }) {
-  const { courses, subjects, topics, studyPlans, activeCourseId } = useStudy();
+  const {
+    courses,
+    subjects,
+    topics,
+    pendingTasks,
+    studyPlans,
+    activeCourseId,
+    completePendingTask,
+    toggleTopicComplete,
+    addNotification,
+  } = useStudy();
   const {
     activeSession,
     elapsedActiveSeconds,
@@ -78,6 +88,46 @@ export default function StudyTimerView({ onNavigate }) {
       studyPlanId: selectedPlanId || null,
       subjectId: selectedSubjectId || null,
       topicId: selectedTopicId || null,
+    });
+  };
+
+  const handleCompletePending = () => {
+    const targetTopicId = activeSession?.topicId || selectedTopicId;
+    const targetSubjectId = activeSession?.subjectId || selectedSubjectId;
+
+    if (targetTopicId) {
+      toggleTopicComplete(targetTopicId);
+      const matchingPt = pendingTasks.find(pt => pt.topicId === targetTopicId && pt.status === 'Pending');
+      if (matchingPt) {
+        completePendingTask(matchingPt.id);
+      } else {
+        addNotification({
+          title: 'Topic Completed! ✅',
+          message: 'Topic marked completed.',
+          type: 'success',
+        });
+      }
+      return;
+    }
+
+    if (targetSubjectId) {
+      const matchingPt = pendingTasks.find(pt => pt.subjectId === targetSubjectId && pt.status === 'Pending');
+      if (matchingPt) {
+        completePendingTask(matchingPt.id);
+        return;
+      }
+    }
+
+    const firstPt = pendingTasks.find(pt => pt.status === 'Pending' && (!selectedCourseId || pt.courseId === selectedCourseId));
+    if (firstPt) {
+      completePendingTask(firstPt.id);
+      return;
+    }
+
+    addNotification({
+      title: 'No Pending Task',
+      message: 'Select a course topic or pending task to complete.',
+      type: 'info',
     });
   };
 
@@ -269,15 +319,27 @@ export default function StudyTimerView({ onNavigate }) {
               {/* PRIMARY TIMER CONTROLS */}
               <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1">
                 {!activeSession ? (
-                  <button
-                    type="button"
-                    onClick={handleStart}
-                    disabled={!selectedCourseId}
-                    className="py-3 px-8 rounded-xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 disabled:opacity-50 text-white font-black text-xs shadow-lg shadow-sky-500/25 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
-                  >
-                    <Play className="w-4 h-4 fill-current" />
-                    ▶ START STUDY
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleStart}
+                      disabled={!selectedCourseId}
+                      className="py-3 px-8 rounded-xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 disabled:opacity-50 text-white font-black text-xs shadow-lg shadow-sky-500/25 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+                    >
+                      <Play className="w-4 h-4 fill-current" />
+                      ▶ START STUDY
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleCompletePending}
+                      className="py-3 px-5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-white font-black text-xs shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
+                      title="Mark selected topic or pending task as completed"
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      COMPLETE PENDING
+                    </button>
+                  </>
                 ) : (
                   <>
                     {isRunning ? (
@@ -318,16 +380,15 @@ export default function StudyTimerView({ onNavigate }) {
                       ■ STOP & SAVE
                     </button>
 
-                    {activeSession.topicId && (
-                      <button
-                        type="button"
-                        onClick={completeTopicFromTimer}
-                        className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-pink-400 text-white font-black text-xs shadow-md shadow-pink-500/25 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        COMPLETE TOPIC
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={handleCompletePending}
+                      className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-white font-black text-xs shadow-md shadow-emerald-500/25 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
+                      title="Mark topic or pending item completed"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      COMPLETE PENDING
+                    </button>
 
                     <button
                       type="button"

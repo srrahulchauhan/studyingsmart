@@ -28,9 +28,12 @@ export default function PapaStudyCycleTimer() {
     courses,
     subjects,
     topics,
+    pendingTasks,
     activeCourseId,
     addStudySession,
     addNotification,
+    completePendingTask,
+    toggleTopicComplete,
   } = useStudy();
 
   // Study & Break Durations (in seconds)
@@ -55,6 +58,7 @@ export default function PapaStudyCycleTimer() {
   );
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [selectedTopicId, setSelectedTopicId] = useState('');
+  const [selectedPendingTaskId, setSelectedPendingTaskId] = useState('');
 
   const availableSubjects = subjects.filter(
     (s) => !selectedCourseId || s.courseId === selectedCourseId
@@ -62,10 +66,62 @@ export default function PapaStudyCycleTimer() {
   const availableTopics = topics.filter(
     (t) => !selectedSubjectId || t.subjectId === selectedSubjectId
   );
+  const coursePendingTasks = pendingTasks.filter(
+    (pt) => pt.status === 'Pending' && (!selectedCourseId || pt.courseId === selectedCourseId)
+  );
 
   const currentCourse = courses.find((c) => c.id === selectedCourseId);
   const currentSubject = subjects.find((s) => s.id === selectedSubjectId);
   const currentTopic = topics.find((t) => t.id === selectedTopicId);
+
+  // Handler: Mark Topic / Pending Task Completed
+  const handleCompletePending = () => {
+    sounds.playClick();
+
+    if (selectedPendingTaskId) {
+      completePendingTask(selectedPendingTaskId);
+      setSelectedPendingTaskId('');
+      return;
+    }
+
+    if (selectedTopicId) {
+      toggleTopicComplete(selectedTopicId);
+      const matchingPt = pendingTasks.find(
+        (pt) => pt.topicId === selectedTopicId && pt.status === 'Pending'
+      );
+      if (matchingPt) {
+        completePendingTask(matchingPt.id);
+      } else {
+        addNotification({
+          title: 'Topic Completed! ✅',
+          message: `Topic "${currentTopic?.name || 'Selected Topic'}" marked completed.`,
+          type: 'success',
+        });
+      }
+      return;
+    }
+
+    if (selectedSubjectId) {
+      const matchingPt = pendingTasks.find(
+        (pt) => pt.subjectId === selectedSubjectId && pt.status === 'Pending'
+      );
+      if (matchingPt) {
+        completePendingTask(matchingPt.id);
+        return;
+      }
+    }
+
+    if (coursePendingTasks.length > 0) {
+      completePendingTask(coursePendingTasks[0].id);
+      return;
+    }
+
+    addNotification({
+      title: 'No Pending Tasks',
+      message: 'All items for this selection are already completed!',
+      type: 'info',
+    });
+  };
 
   // Voice Speech Synthesizer Helper
   const speakText = (text) => {
@@ -367,8 +423,8 @@ export default function PapaStudyCycleTimer() {
           </div>
         </div>
 
-        {/* TARGET CURRICULUM SELECTION INLINE BAR */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 my-2.5 p-2 rounded-2xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/[0.06] text-left">
+        {/* TARGET CURRICULUM & PENDING TASK SELECTION INLINE BAR */}
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 my-2.5 p-2 rounded-2xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/[0.06] text-left">
           <div>
             <label className="text-[9px] font-extrabold text-slate-400 uppercase block px-1 mb-0.5">
               Course
@@ -379,6 +435,7 @@ export default function PapaStudyCycleTimer() {
                 setSelectedCourseId(e.target.value);
                 setSelectedSubjectId('');
                 setSelectedTopicId('');
+                setSelectedPendingTaskId('');
               }}
               className="w-full text-xs font-semibold p-1.5 rounded-xl bg-white dark:bg-[#0c1322] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-400 truncate"
             >
@@ -399,6 +456,7 @@ export default function PapaStudyCycleTimer() {
               onChange={(e) => {
                 setSelectedSubjectId(e.target.value);
                 setSelectedTopicId('');
+                setSelectedPendingTaskId('');
               }}
               className="w-full text-xs font-semibold p-1.5 rounded-xl bg-white dark:bg-[#0c1322] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-400 truncate"
             >
@@ -417,13 +475,45 @@ export default function PapaStudyCycleTimer() {
             </label>
             <select
               value={selectedTopicId}
-              onChange={(e) => setSelectedTopicId(e.target.value)}
+              onChange={(e) => {
+                setSelectedTopicId(e.target.value);
+                setSelectedPendingTaskId('');
+              }}
               className="w-full text-xs font-semibold p-1.5 rounded-xl bg-white dark:bg-[#0c1322] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-400 truncate"
             >
               <option value="">All Topics</option>
               {availableTopics.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-[9px] font-extrabold text-rose-500 dark:text-rose-400 uppercase block px-1 mb-0.5 flex items-center justify-between">
+              <span>Pending Task</span>
+              <span className="text-[8px] font-mono font-bold px-1 rounded bg-rose-500/15 text-rose-500">
+                {coursePendingTasks.length}
+              </span>
+            </label>
+            <select
+              value={selectedPendingTaskId}
+              onChange={(e) => {
+                const ptId = e.target.value;
+                setSelectedPendingTaskId(ptId);
+                const targetPt = coursePendingTasks.find((t) => t.id === ptId);
+                if (targetPt) {
+                  if (targetPt.subjectId) setSelectedSubjectId(targetPt.subjectId);
+                  if (targetPt.topicId) setSelectedTopicId(targetPt.topicId);
+                }
+              }}
+              className="w-full text-xs font-semibold p-1.5 rounded-xl bg-white dark:bg-[#0c1322] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-400 truncate"
+            >
+              <option value="">-- Direct Pending Item --</option>
+              {coursePendingTasks.map((pt) => (
+                <option key={pt.id} value={pt.id}>
+                  📌 {pt.title}
                 </option>
               ))}
             </select>
@@ -497,13 +587,13 @@ export default function PapaStudyCycleTimer() {
           </div>
         </div>
 
-        {/* ACTION BUTTONS */}
+        {/* ACTION BUTTONS: START/PAUSE, RESET, SKIP, COMPLETE PENDING */}
         <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
           {!isRunning ? (
             <button
               type="button"
               onClick={handleStart}
-              className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-xs shadow-lg shadow-sky-500/25 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+              className="py-2.5 px-5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-xs shadow-lg shadow-sky-500/25 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
               ▶ START {phase === 'study' ? 'STUDY (30M)' : 'BREAK (15M)'}
@@ -512,23 +602,36 @@ export default function PapaStudyCycleTimer() {
             <button
               type="button"
               onClick={handlePause}
-              className="py-2.5 px-6 rounded-xl bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black text-xs shadow-lg shadow-yellow-500/25 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+              className="py-2.5 px-5 rounded-xl bg-yellow-500 hover:bg-yellow-400 text-slate-950 font-black text-xs shadow-lg shadow-yellow-500/25 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
             >
               <Pause className="w-3.5 h-3.5 fill-current" />
               ⏸ PAUSE
             </button>
           )}
 
+          {/* COMPLETE PENDING BUTTON */}
+          <button
+            type="button"
+            onClick={handleCompletePending}
+            className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-white font-black text-xs shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
+            title="Mark selected topic or pending task as completed"
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+            <span>COMPLETE PENDING</span>
+          </button>
+
+          {/* RESET BUTTON */}
           <button
             type="button"
             onClick={handleReset}
-            className="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-white/[0.08] hover:bg-rose-500/15 hover:text-rose-500 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
+            className="py-2.5 px-3.5 rounded-xl bg-slate-100 dark:bg-white/[0.08] hover:bg-rose-500/15 hover:text-rose-500 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-1 transition-all hover:scale-105 active:scale-95"
             title="Reset timer to 30:00 Study"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             RESET
           </button>
 
+          {/* SKIP BUTTON */}
           <button
             type="button"
             onClick={handleSkipPhase}
@@ -539,6 +642,7 @@ export default function PapaStudyCycleTimer() {
             Skip Phase
           </button>
         </div>
+
 
         {/* METRICS INLINE FOOTER */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-2.5 border-t border-slate-100 dark:border-white/[0.08] text-xs">
