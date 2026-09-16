@@ -577,12 +577,16 @@ export function StudyProvider({ children }) {
   // --- PENDING TASKS AUTO-ROLLOVER & CRUD ---
   // Rule 3 & 4: Automatically rolls over any incomplete task/topic scheduled before today,
   // carries forward across Day 1 -> Day 2 -> Day 3... and NEVER auto-deletes until user completes it!
+  // --- PENDING TASKS AUTO-ROLLOVER & CRUD ---
+  // Automatically rolls over any incomplete topic, subject, or task into Pending Tasks,
+  // carries forward across days, and NEVER auto-deletes until user explicitly completes it!
   useEffect(() => {
     const today = getTodayDateString();
 
+    // 1. Auto-rollover Topics
     topics.forEach((topic) => {
       const topicDate = topic.targetDate || (topic.createdAt ? topic.createdAt.split('T')[0] : null);
-      if (topicDate && topicDate < today && topic.status !== 'Completed') {
+      if (topic.status !== 'Completed' && (topicDate ? topicDate <= today : true)) {
         setPendingTasks((prev) => {
           const exists = prev.some((pt) => pt.topicId === topic.id || pt.id === `ptask_topic_${topic.id}`);
           if (!exists) {
@@ -594,7 +598,7 @@ export function StudyProvider({ children }) {
                 courseId: topic.courseId,
                 subjectId: topic.subjectId,
                 topicId: topic.id,
-                originalDate: topicDate,
+                originalDate: topicDate || today,
                 estimatedMinutes: topic.estimatedMinutes || 60,
                 priority: topic.priority || 'Medium',
                 status: 'Pending',
@@ -608,7 +612,37 @@ export function StudyProvider({ children }) {
         });
       }
     });
-  }, [topics]);
+
+    // 2. Auto-rollover Subjects
+    subjects.forEach((subject) => {
+      const subjectDate = subject.targetDate || (subject.createdAt ? subject.createdAt.split('T')[0] : null);
+      if (subject.status !== 'Completed' && (subjectDate ? subjectDate <= today : true)) {
+        setPendingTasks((prev) => {
+          const exists = prev.some((pt) => pt.subjectId === subject.id && pt.source === 'subject' || pt.id === `ptask_subj_${subject.id}`);
+          if (!exists) {
+            return [
+              ...prev,
+              {
+                id: `ptask_subj_${subject.id}`,
+                title: `Subject: ${subject.name}`,
+                courseId: subject.courseId,
+                subjectId: subject.id,
+                topicId: null,
+                originalDate: subjectDate || today,
+                estimatedMinutes: (subject.targetHours || 2) * 60,
+                priority: subject.priority || 'High',
+                status: 'Pending',
+                completedAt: null,
+                source: 'subject',
+                createdAt: new Date().toISOString(),
+              },
+            ];
+          }
+          return prev;
+        });
+      }
+    });
+  }, [topics, subjects]);
 
   const addPendingTask = useCallback((taskData) => {
     const today = getTodayDateString();
@@ -644,6 +678,11 @@ export function StudyProvider({ children }) {
               prevTopics.map((top) => (top.id === t.topicId ? { ...top, status: 'Completed' } : top))
             );
           }
+          if (t.subjectId && t.source === 'subject') {
+            setSubjects((prevSubjs) =>
+              prevSubjs.map((subj) => (subj.id === t.subjectId ? { ...subj, status: 'Completed' } : subj))
+            );
+          }
           return {
             ...t,
             status: 'Completed',
@@ -656,7 +695,7 @@ export function StudyProvider({ children }) {
 
     addNotification({
       title: 'Task Completed! ✅',
-      message: 'Pending task has been completed and removed from pending backlog.',
+      message: 'Pending item marked completed and updated across curriculum.',
       type: 'success',
     });
   }, [addNotification]);
