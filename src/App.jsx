@@ -9,8 +9,6 @@ import MobileNav from './components/layout/MobileNav';
 import GlobalSearchModal from './components/common/GlobalSearchModal';
 import QuickActionsModal from './components/common/QuickActionsModal';
 import CommandPaletteModal from './components/common/CommandPaletteModal';
-import FloatingStudyButton from './components/common/FloatingStudyButton';
-import QuickAddFAB from './components/common/QuickAddFAB';
 
 // Modals
 import CourseModal from './components/modals/CourseModal';
@@ -253,18 +251,6 @@ function MainLayout() {
 
       {/* Daily Pending Tasks Popup Reminder */}
       <PendingTasksPopupModal onNavigate={handleNavigate} />
-
-      {/* Animated Floating Plus Action Button with Feature Add Speed-Dial */}
-      <QuickAddFAB
-        onOpenNewCourse={() => setIsCourseModalOpen(true)}
-        onOpenNewPlan={() => setIsPlanModalOpen(true)}
-        onOpenNewSubject={() => setIsSubjectModalOpen(true)}
-        onOpenNewTopic={() => setIsTopicModalOpen(true)}
-        onOpenNewResource={() => setIsResourceModalOpen(true)}
-        onOpenNewTimetable={() => setIsTimetableModalOpen(true)}
-        onOpenNewTarget={() => setIsTargetModalOpen(true)}
-        onStartStudy={() => handleNavigate('timer')}
-      />
 
       {/* Mobile Bottom Navigation Bar & Drawer */}
       <MobileNav
