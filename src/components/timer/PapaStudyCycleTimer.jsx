@@ -211,68 +211,68 @@ export default function PapaStudyCycleTimer() {
   const progressPercent = Math.min(100, Math.round((elapsedInPhase / currentTotal) * 100));
 
   return (
-    <div className="space-y-6 animate-fadeIn max-w-4xl mx-auto">
-      {/* PAPA BREAK MODAL (High-Visibility Heartwarming Alert - Pops up when 30m Study Finishes) */}
+    <div className="space-y-4 sm:space-y-5 animate-fadeIn max-w-3xl mx-auto">
+      {/* PAPA BREAK MODAL */}
       {showPapaBreakModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-[#0a0f1d] border-2 border-pink-400 dark:border-pink-500/60 p-6 sm:p-8 shadow-[0_20px_70px_rgba(236,72,153,0.35)] text-center relative overflow-hidden animate-scaleIn">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#0a0f1d] border-2 border-pink-400 dark:border-pink-500/60 p-5 sm:p-6 shadow-[0_20px_70px_rgba(236,72,153,0.35)] text-center relative overflow-hidden animate-scaleIn">
             {/* Background Glow */}
             <div className="absolute -top-24 -right-24 w-60 h-60 bg-pink-500/20 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute -bottom-24 -left-24 w-60 h-60 bg-yellow-500/15 rounded-full blur-3xl pointer-events-none" />
 
             {/* Papa Avatar & Icon */}
-            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-tr from-pink-500 to-yellow-400 text-white flex items-center justify-center text-3xl sm:text-4xl shadow-lg shadow-pink-500/30 animate-bounce">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-tr from-pink-500 to-yellow-400 text-white flex items-center justify-center text-2xl sm:text-3xl shadow-lg shadow-pink-500/30 animate-bounce">
               👨‍👦
             </div>
 
             {/* Title */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-pink-500/15 text-pink-500 dark:text-pink-400 border border-pink-400/30 text-xs font-black uppercase tracking-widest mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-pink-500/15 text-pink-500 dark:text-pink-400 border border-pink-400/30 text-xs font-black uppercase tracking-widest mb-2">
               <Coffee className="w-3.5 h-3.5" />
               Break Time – 15 Minutes
             </div>
 
             {/* The Heartwarming Papa Message */}
-            <div className="p-5 sm:p-6 rounded-2xl bg-pink-500/10 dark:bg-white/[0.04] border border-pink-500/25 my-3 text-left">
-              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-pink-500 dark:text-pink-400 mb-1.5">
-                <Heart className="w-4 h-4 fill-pink-500 text-pink-500" />
+            <div className="p-4 rounded-2xl bg-pink-500/10 dark:bg-white/[0.04] border border-pink-500/25 my-2 text-left">
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-pink-500 dark:text-pink-400 mb-1">
+                <Heart className="w-3.5 h-3.5 fill-pink-500 text-pink-500" />
                 Papa Message
               </div>
-              <p className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white leading-relaxed font-sans">
+              <p className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-relaxed font-sans">
                 “Dear, take a 15-minute rest now, then continue studying.”
               </p>
             </div>
 
             {/* Live Break Countdown inside modal */}
-            <div className="my-4">
-              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            <div className="my-3">
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                 Break Remaining
               </div>
-              <div className="digital-timer text-4xl sm:text-5xl font-black text-pink-500 dark:text-pink-400 mt-1">
+              <div className="digital-timer text-3xl sm:text-4xl font-black text-pink-500 dark:text-pink-400 mt-0.5">
                 {formatSeconds(remainingSeconds)}
               </div>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-[11px] text-slate-400 mt-0.5">
                 The next 30-minute study session will begin automatically when break ends.
               </p>
             </div>
 
             {/* Relax suggestions */}
-            <div className="grid grid-cols-3 gap-2 my-4 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
-              <div className="p-2 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10">
+            <div className="grid grid-cols-3 gap-1.5 my-3 text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+              <div className="p-1.5 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10">
                 💧 Drink Water
               </div>
-              <div className="p-2 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10">
+              <div className="p-1.5 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10">
                 👀 Rest Eyes
               </div>
-              <div className="p-2 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10">
+              <div className="p-1.5 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/10">
                 🚶 Take a Walk
               </div>
             </div>
 
-            {/* Close / Dismiss Dialog (Timer continues in background) */}
+            {/* Close / Dismiss Dialog */}
             <button
               type="button"
               onClick={() => setShowPapaBreakModal(false)}
-              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-pink-500 to-pink-400 hover:from-pink-400 hover:to-pink-300 text-white font-extrabold text-sm shadow-lg shadow-pink-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full py-3 px-5 rounded-xl bg-gradient-to-r from-pink-500 to-pink-400 hover:from-pink-400 hover:to-pink-300 text-white font-extrabold text-xs shadow-lg shadow-pink-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               Got it Papa, resting now 👍
             </button>
@@ -282,16 +282,16 @@ export default function PapaStudyCycleTimer() {
 
       {/* BREAK END REMINDER BANNER */}
       {showBreakEndBanner && (
-        <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-500/15 via-sky-500/15 to-emerald-500/15 border-2 border-emerald-400/50 shadow-lg flex items-center justify-between gap-4 animate-fadeIn">
-          <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center font-bold text-xl shrink-0 shadow-md shadow-emerald-500/30">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-sky-500/15 to-emerald-500/15 border border-emerald-400/50 shadow-md flex items-center justify-between gap-3 animate-fadeIn">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold text-base shrink-0 shadow-md shadow-emerald-500/30">
               🔔
             </div>
             <div>
-              <div className="text-xs font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <div className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                 Break Complete!
               </div>
-              <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+              <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
                 “Break is finished — Time to continue studying now.”
               </div>
             </div>
@@ -299,7 +299,7 @@ export default function PapaStudyCycleTimer() {
           <button
             type="button"
             onClick={() => setShowBreakEndBanner(false)}
-            className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-bold transition-transform active:scale-95 shrink-0"
+            className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-bold transition-transform active:scale-95 shrink-0"
           >
             Got it!
           </button>
@@ -307,35 +307,35 @@ export default function PapaStudyCycleTimer() {
       )}
 
       {/* TOP HEADER & INFO CARD */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-white/90 dark:bg-[#070c18]/90 border border-slate-200/80 dark:border-white/10 backdrop-blur-2xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 rounded-2xl bg-white/90 dark:bg-[#070c18]/90 border border-slate-200/80 dark:border-white/10 backdrop-blur-2xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400 mb-1">
-            <Sparkles className="w-4 h-4" />
+          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-sky-500 dark:text-sky-400 mb-0.5">
+            <Sparkles className="w-3.5 h-3.5" />
             Special 30m Study → 15m Break Loop
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
             Study Timer
-            <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-pink-500/15 text-pink-500 border border-pink-400/30">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-pink-500/15 text-pink-500 border border-pink-400/30">
               Papa Special Mode
             </span>
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-300 mt-1">
-            30 Minutes Continuous Study ➔ 15 Minutes Rest ➔ Automatic Next Study Session (Continuous Auto-Loop).
+          <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-0.5">
+            30 Minutes Continuous Study ➔ 15 Minutes Rest ➔ Automatic Next Study Session.
           </p>
         </div>
 
         {/* Audio Toggle & Cycle Counter */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-100 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 text-xs font-bold">
-            <Flame className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-slate-400 uppercase text-[10px]">Cycle</span>
-            <span className="text-slate-900 dark:text-white font-mono font-black">#{cycleCount}</span>
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 text-xs font-bold">
+            <Flame className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+            <span className="text-slate-400 uppercase text-[9px]">Cycle</span>
+            <span className="text-slate-900 dark:text-white font-mono font-black text-xs">#{cycleCount}</span>
           </div>
 
           <button
             type="button"
             onClick={() => setSoundEnabled((prev) => !prev)}
-            className={`p-2.5 rounded-2xl border transition-all ${
+            className={`p-2 rounded-xl border transition-all ${
               soundEnabled
                 ? 'bg-sky-500/15 border-sky-400/30 text-sky-500 dark:text-sky-400'
                 : 'bg-slate-100 dark:bg-white/[0.04] border-slate-200 dark:border-white/10 text-slate-400'
@@ -349,7 +349,7 @@ export default function PapaStudyCycleTimer() {
 
       {/* MAIN TIMER DISPLAY CARD */}
       <div
-        className={`relative overflow-hidden rounded-3xl p-6 sm:p-10 text-center backdrop-blur-2xl transition-all duration-500 border shadow-xl ${
+        className={`relative overflow-hidden rounded-3xl p-4 sm:p-6 text-center backdrop-blur-2xl transition-all duration-500 border shadow-xl ${
           phase === 'study'
             ? 'bg-white/90 dark:bg-[#070c18]/90 border-sky-400/30 dark:border-sky-400/20 shadow-sky-500/10'
             : 'bg-white/90 dark:bg-[#070c18]/90 border-pink-400/40 dark:border-pink-500/30 shadow-pink-500/15'
@@ -357,70 +357,70 @@ export default function PapaStudyCycleTimer() {
       >
         {/* Dynamic Glow Background Orbs */}
         <div
-          className={`absolute top-0 right-1/4 w-80 h-80 rounded-full blur-3xl pointer-events-none -z-10 transition-colors duration-700 ${
+          className={`absolute top-0 right-1/4 w-60 h-60 rounded-full blur-3xl pointer-events-none -z-10 transition-colors duration-700 ${
             phase === 'study' ? 'bg-sky-500/[0.08]' : 'bg-pink-500/[0.12]'
           }`}
         />
         <div
-          className={`absolute bottom-0 left-1/4 w-80 h-80 rounded-full blur-3xl pointer-events-none -z-10 transition-colors duration-700 ${
+          className={`absolute bottom-0 left-1/4 w-60 h-60 rounded-full blur-3xl pointer-events-none -z-10 transition-colors duration-700 ${
             phase === 'study' ? 'bg-yellow-500/[0.05]' : 'bg-yellow-500/[0.08]'
           }`}
         />
 
         {/* Current Course & Topic context tags */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-5">
-          <span className="text-xs font-bold px-3 py-1 rounded-xl bg-slate-100 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-200">
+        <div className="flex flex-wrap items-center justify-center gap-1.5 mb-3">
+          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-200">
             {currentCourse ? currentCourse.name : 'General Curriculum'}
           </span>
           {currentSubject && (
-            <span className="text-xs font-bold px-3 py-1 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-400/25">
+            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-sky-500/15 text-sky-400 border border-sky-400/25">
               {currentSubject.name}
             </span>
           )}
           {currentTopic && (
-            <span className="text-xs font-bold px-3 py-1 rounded-xl bg-yellow-500/15 text-yellow-400 border border-yellow-400/25">
+            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-yellow-500/15 text-yellow-400 border border-yellow-400/25">
               {currentTopic.name}
             </span>
           )}
         </div>
 
         {/* CURRENT STATUS BADGE (STUDY / BREAK) */}
-        <div className="mb-6">
+        <div className="mb-4">
           {phase === 'study' ? (
-            <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-sky-500/15 border border-sky-400/40 text-sky-500 dark:text-sky-400 font-extrabold text-sm shadow-[0_0_20px_rgba(14,165,233,0.3)]">
-              <span className="relative flex h-2.5 w-2.5">
+            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-sky-500/15 border border-sky-400/40 text-sky-500 dark:text-sky-400 font-extrabold text-xs shadow-[0_0_20px_rgba(14,165,233,0.3)]">
+              <span className="relative flex h-2 w-2">
                 {isRunning && (
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-80" />
                 )}
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-400" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-400" />
               </span>
               <span>● STUDY STATUS: FOCUSING (30 MIN)</span>
             </div>
           ) : (
-            <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-pink-500/15 border border-pink-400/50 text-pink-500 dark:text-pink-400 font-extrabold text-sm shadow-[0_0_24px_rgba(236,72,153,0.35)] animate-pulse">
-              <Coffee className="w-4 h-4" />
+            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-pink-500/15 border border-pink-400/50 text-pink-500 dark:text-pink-400 font-extrabold text-xs shadow-[0_0_24px_rgba(236,72,153,0.35)] animate-pulse">
+              <Coffee className="w-3.5 h-3.5" />
               <span>☕ BREAK TIME – 15 MINUTES</span>
             </div>
           )}
         </div>
 
-        {/* BIG DIGITAL COUNTDOWN & PROGRESS RING */}
-        <div className="flex flex-col items-center justify-center my-6">
-          <div className="relative mb-3">
+        {/* COMPACT DIGITAL COUNTDOWN & PROGRESS RING */}
+        <div className="flex flex-col items-center justify-center my-3">
+          <div className="relative mb-2">
             <ProgressRing
               progress={progressPercent}
-              size={240}
-              strokeWidth={12}
+              size={190}
+              strokeWidth={10}
               variant={phase === 'study' ? 'sky' : 'pink'}
             >
               <div className="flex flex-col items-center justify-center select-none">
-                <div className="digital-timer text-5xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight">
+                <div className="digital-timer text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
                   {formatSeconds(remainingSeconds)}
                 </div>
-                <div className="text-[11px] uppercase font-black tracking-widest mt-1 text-slate-400">
+                <div className="text-[10px] uppercase font-black tracking-widest mt-0.5 text-slate-400">
                   {phase === 'study' ? 'Study Time Left' : 'Break Time Left'}
                 </div>
-                <div className="text-[10px] font-mono font-bold mt-1 text-slate-500 dark:text-slate-300">
+                <div className="text-[10px] font-mono font-bold mt-0.5 text-slate-500 dark:text-slate-300">
                   {progressPercent}% Complete
                 </div>
               </div>
@@ -428,7 +428,7 @@ export default function PapaStudyCycleTimer() {
           </div>
 
           {/* Subtitle Countdown Notice */}
-          <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 mt-2">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1">
             {phase === 'study'
               ? 'When 30:00 reaches zero, a 15-minute break begins automatically.'
               : 'When 15:00 reaches zero, the next 30-minute study session starts automatically.'}
@@ -436,15 +436,15 @@ export default function PapaStudyCycleTimer() {
         </div>
 
         {/* PAPA'S REMINDER QUOTE CARD */}
-        <div className="max-w-xl mx-auto my-6 p-4 sm:p-5 rounded-2xl bg-white/60 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 backdrop-blur-md text-left flex items-start gap-3.5 shadow-sm">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 to-pink-500 text-white flex items-center justify-center text-xl shrink-0 shadow-sm">
+        <div className="max-w-lg mx-auto my-3 p-3 rounded-2xl bg-white/60 dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 backdrop-blur-md text-left flex items-center gap-3 shadow-sm">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-400 to-pink-500 text-white flex items-center justify-center text-lg shrink-0 shadow-sm">
             👨‍👧
           </div>
           <div>
-            <div className="text-[10px] font-black uppercase tracking-wider text-pink-500 dark:text-pink-400">
+            <div className="text-[9px] font-black uppercase tracking-wider text-pink-500 dark:text-pink-400">
               Papa's Reminder
             </div>
-            <div className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 mt-0.5">
+            <div className="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">
               {phase === 'study'
                 ? '“Focus deeply for 30 minutes. You will get a 15-minute break right after.”'
                 : '“Dear, take a 15-minute rest now, then continue studying.”'}

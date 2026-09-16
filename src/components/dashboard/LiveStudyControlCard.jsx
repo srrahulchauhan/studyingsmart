@@ -121,20 +121,20 @@ export default function LiveStudyControlCard({
   const strokeDashoffsetSecondary = 628 - (breakSecondsMod / 60) * 628;
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-white/[0.045] border border-slate-200/80 dark:border-white/[0.10] shadow-xl dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] p-6 sm:p-8 backdrop-blur-2xl transition-all command-card hover:border-sky-400/30">
-      {/* Subtle Sky-blue + Pink Glow Orbs behind card (Requirement 6) */}
-      <div className="absolute top-1/4 -right-10 w-96 h-96 bg-sky-500/[0.09] rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-subtle"></div>
-      <div className="absolute bottom-1/4 -left-10 w-96 h-96 bg-pink-500/[0.07] rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-subtle"></div>
+    <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-white/[0.045] border border-slate-200/80 dark:border-white/[0.10] shadow-xl dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] p-4 sm:p-6 backdrop-blur-2xl transition-all command-card hover:border-sky-400/30">
+      {/* Subtle Sky-blue + Pink Glow Orbs behind card */}
+      <div className="absolute top-1/4 -right-10 w-72 h-72 bg-sky-500/[0.08] rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-subtle"></div>
+      <div className="absolute bottom-1/4 -left-10 w-72 h-72 bg-pink-500/[0.06] rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-subtle"></div>
 
       {/* Top Header: LIVE STUDY / Status & Curriculum Context */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-100 dark:border-white/[0.07]">
-        <div className="flex items-center gap-3">
-          <GlassIcon icon={Timer} variant="sky" size="md" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 sm:pb-4 border-b border-slate-100 dark:border-white/[0.07]">
+        <div className="flex items-center gap-2.5">
+          <GlassIcon icon={Timer} variant="sky" size="sm" />
           <div>
-            <div className="text-[11px] font-black uppercase tracking-widest text-sky-400 flex items-center gap-1.5">
+            <div className="text-[10px] font-black uppercase tracking-widest text-sky-400 flex items-center gap-1.5">
               <span>LIVE STUDY</span>
-              <span className="text-slate-400 text-[10px]">•</span>
-              <span className="text-slate-300 font-medium">CONTROL CENTER</span>
+              <span className="text-slate-400 text-[9px]">•</span>
+              <span className="text-slate-400 font-medium">CONTROL CENTER</span>
             </div>
             <div className="text-xs font-bold text-slate-800 dark:text-slate-100 mt-0.5">
               {currentCourse ? currentCourse.name : 'Select or Start Any Course'}
@@ -158,25 +158,25 @@ export default function LiveStudyControlCard({
           )}
 
           {isRunning && (
-            <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-sky-500/15 text-sky-400 border border-sky-400/30 text-xs font-bold shadow-[0_0_16px_rgba(14,165,233,0.3)] animate-pulse">
+            <span className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-sky-500/15 text-sky-400 border border-sky-400/30 text-xs font-bold shadow-[0_0_16px_rgba(14,165,233,0.3)] animate-pulse">
               <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
               ● STUDYING
             </span>
           )}
           {isPaused && (
-            <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-yellow-500/15 text-yellow-400 border border-yellow-400/30 text-xs font-bold shadow-[0_0_16px_rgba(234,179,8,0.25)]">
+            <span className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-yellow-500/15 text-yellow-400 border border-yellow-400/30 text-xs font-bold shadow-[0_0_16px_rgba(234,179,8,0.25)]">
               <span className="w-2 h-2 rounded-full bg-yellow-400"></span>
               ● PAUSED
             </span>
           )}
           {isBreak && (
-            <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-pink-500/15 text-pink-400 border border-pink-400/30 text-xs font-bold shadow-[0_0_16px_rgba(236,72,153,0.25)] animate-pulse">
+            <span className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-pink-500/15 text-pink-400 border border-pink-400/30 text-xs font-bold shadow-[0_0_16px_rgba(236,72,153,0.25)] animate-pulse">
               <Coffee className="w-3.5 h-3.5 text-pink-400" />
               ☕ ON BREAK
             </span>
           )}
           {isIdle && (
-            <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 text-slate-400 border border-white/10 text-xs font-semibold">
+            <span className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-white/5 text-slate-400 border border-white/10 text-xs font-semibold">
               <span className="w-2 h-2 rounded-full bg-slate-400"></span>
               ○ IDLE READY
             </span>
@@ -184,9 +184,9 @@ export default function LiveStudyControlCard({
         </div>
       </div>
 
-      {/* Center: Concentric Animated Rings + Huge White Timer */}
-      <div className="my-6 flex flex-col items-center justify-center text-center">
-        <div className="relative w-64 h-64 sm:w-76 sm:h-76 flex items-center justify-center">
+      {/* Center: Concentric Animated Rings + Sleek Compact White Timer */}
+      <div className="my-3 sm:my-4 flex flex-col items-center justify-center text-center">
+        <div className="relative w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center">
           <svg className="w-full h-full transform -rotate-90 origin-center overflow-visible" viewBox="0 0 270 270">
             <defs>
               <linearGradient id="sky-timer-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -210,7 +210,7 @@ export default function LiveStudyControlCard({
               fill="transparent"
             />
 
-            {/* Primary Sky-Blue Animated Progress Ring (Requirement 6) */}
+            {/* Primary Sky-Blue Animated Progress Ring */}
             <circle
               cx="135"
               cy="135"
@@ -227,7 +227,7 @@ export default function LiveStudyControlCard({
               }}
             />
 
-            {/* Secondary Pink Ring (Requirement 6) */}
+            {/* Secondary Pink Ring */}
             <circle
               cx="135"
               cy="135"
@@ -255,27 +255,27 @@ export default function LiveStudyControlCard({
           </svg>
 
           {/* Central Timer Typography Overlay */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">
               {isBreak ? 'Break Elapsed' : isPaused ? 'Study Paused' : 'Live Focus Time'}
             </span>
 
-            {/* Very large white timer typography (Requirement 6) */}
-            <div className="digital-timer text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white my-1 select-none drop-shadow-[0_2px_12px_rgba(255,255,255,0.15)]">
+            {/* Sleek timer typography */}
+            <div className="digital-timer text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white my-0.5 select-none drop-shadow-[0_2px_12px_rgba(255,255,255,0.15)]">
               {isBreak
                 ? formatSeconds(elapsedBreakSeconds)
                 : formatSeconds(elapsedActiveSeconds)}
             </div>
 
             {/* Micro Waveform Visualizer */}
-            <StudyVisualizer status={currentStatus} className="mt-2" />
+            <StudyVisualizer status={currentStatus} className="mt-1" />
           </div>
         </div>
 
-        {/* Below: Subject & Topic Indicator (Requirement 6) */}
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+        {/* Below: Subject & Topic Indicator */}
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
           {currentSubject ? (
-            <span className="text-xs font-bold px-3 py-1 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-400/25">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-400/25">
               {currentSubject.name}
             </span>
           ) : (
@@ -285,7 +285,7 @@ export default function LiveStudyControlCard({
           )}
 
           {currentTopic && (
-            <span className="text-xs font-bold px-3 py-1 rounded-xl bg-pink-500/10 text-pink-400 border border-pink-400/25">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-xl bg-pink-500/10 text-pink-400 border border-pink-400/25">
               {currentTopic.name}
             </span>
           )}
@@ -293,14 +293,14 @@ export default function LiveStudyControlCard({
 
         {/* Quick Subject & Topic Pickers when Idle */}
         {isIdle && (
-          <div className="mt-4 max-w-md w-full flex flex-wrap items-center justify-center gap-2 text-xs">
+          <div className="mt-2.5 max-w-md w-full flex flex-wrap items-center justify-center gap-2 text-xs">
             <select
               value={selectedSubjectId}
               onChange={(e) => {
                 setSelectedSubjectId(e.target.value);
                 setSelectedTopicId('');
               }}
-              className="py-2 px-3 rounded-xl bg-white/50 dark:bg-white/[0.05] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 font-medium focus:outline-none focus:ring-1 focus:ring-sky-400"
+              className="py-1.5 px-3 rounded-xl bg-white/50 dark:bg-white/[0.05] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 font-medium focus:outline-none focus:ring-1 focus:ring-sky-400"
             >
               <option value="">Choose Subject (Optional)</option>
               {availableSubjects.map((s) => (
@@ -314,7 +314,7 @@ export default function LiveStudyControlCard({
               value={selectedTopicId}
               onChange={(e) => setSelectedTopicId(e.target.value)}
               disabled={!selectedSubjectId}
-              className="py-2 px-3 rounded-xl bg-white/50 dark:bg-white/[0.05] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 font-medium disabled:opacity-40 focus:outline-none focus:ring-1 focus:ring-sky-400"
+              className="py-1.5 px-3 rounded-xl bg-white/50 dark:bg-white/[0.05] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 font-medium disabled:opacity-40 focus:outline-none focus:ring-1 focus:ring-sky-400"
             >
               <option value="">Choose Topic (Optional)</option>
               {availableTopics.map((t) => (
@@ -327,13 +327,13 @@ export default function LiveStudyControlCard({
         )}
       </div>
 
-      {/* Button Controls strictly matching Section 6 & 18 Colors */}
-      <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2 pb-5">
+      {/* Button Controls */}
+      <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1 pb-3">
         {isIdle && (
           <button
             type="button"
             onClick={handleStart}
-            className="py-3.5 px-9 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-sm shadow-[0_4px_24px_rgba(14,165,233,0.45)] hover:shadow-[0_6px_30px_rgba(14,165,233,0.6)] flex items-center gap-2.5 btn-premium hover:scale-105 active:scale-95 transition-all"
+            className="py-2.5 px-7 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-xs sm:text-sm shadow-[0_4px_20px_rgba(14,165,233,0.4)] flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
           >
             <Play className="w-4 h-4 fill-current" />
             ▶ START
@@ -342,33 +342,33 @@ export default function LiveStudyControlCard({
 
         {isRunning && (
           <>
-            {/* PAUSE: White/transparent */}
+            {/* PAUSE */}
             <button
               type="button"
               onClick={pauseStudy}
-              className="py-3 px-6 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs shadow-md backdrop-blur-md flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
+              className="py-2.5 px-5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs backdrop-blur-md flex items-center gap-1.5 btn-premium hover:scale-105 active:scale-95 transition-all"
             >
-              <Pause className="w-4 h-4" />
+              <Pause className="w-3.5 h-3.5" />
               ⏸ PAUSE
             </button>
 
-            {/* BREAK: Yellow */}
+            {/* BREAK */}
             <button
               type="button"
               onClick={() => takeBreak('Rest')}
-              className="py-3 px-6 rounded-2xl bg-gradient-to-r from-yellow-400 to-yellow-300 hover:from-yellow-300 hover:to-yellow-200 text-slate-950 font-black text-xs shadow-[0_4px_20px_rgba(234,179,8,0.35)] flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
+              className="py-2.5 px-5 rounded-2xl bg-gradient-to-r from-yellow-400 to-yellow-300 text-slate-950 font-black text-xs shadow-md flex items-center gap-1.5 btn-premium hover:scale-105 active:scale-95 transition-all"
             >
-              <Coffee className="w-4 h-4" />
+              <Coffee className="w-3.5 h-3.5" />
               ☕ BREAK
             </button>
 
-            {/* STOP: Red */}
+            {/* STOP */}
             <button
               type="button"
               onClick={handleStop}
-              className="py-3 px-6 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white font-black text-xs shadow-[0_4px_20px_rgba(239,68,68,0.35)] flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
+              className="py-2.5 px-5 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 text-white font-black text-xs shadow-md flex items-center gap-1.5 btn-premium hover:scale-105 active:scale-95 transition-all"
             >
-              <Square className="w-4 h-4 fill-current" />
+              <Square className="w-3.5 h-3.5 fill-current" />
               ■ STOP
             </button>
           </>
@@ -376,33 +376,33 @@ export default function LiveStudyControlCard({
 
         {isPaused && (
           <>
-            {/* RESUME / START: Sky Blue */}
+            {/* RESUME */}
             <button
               type="button"
               onClick={resumeStudy}
-              className="py-3 px-7 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-xs shadow-[0_4px_20px_rgba(14,165,233,0.45)] flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
+              className="py-2.5 px-6 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 text-white font-black text-xs shadow-md flex items-center gap-1.5 btn-premium hover:scale-105 active:scale-95 transition-all"
             >
-              <Play className="w-4 h-4 fill-current" />
+              <Play className="w-3.5 h-3.5 fill-current" />
               ▶ RESUME
             </button>
 
-            {/* BREAK: Yellow */}
+            {/* BREAK */}
             <button
               type="button"
               onClick={() => takeBreak('Rest')}
-              className="py-3 px-6 rounded-2xl bg-gradient-to-r from-yellow-400 to-yellow-300 hover:from-yellow-300 hover:to-yellow-200 text-slate-950 font-black text-xs shadow-[0_4px_20px_rgba(234,179,8,0.35)] flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
+              className="py-2.5 px-5 rounded-2xl bg-gradient-to-r from-yellow-400 to-yellow-300 text-slate-950 font-black text-xs shadow-md flex items-center gap-1.5 btn-premium hover:scale-105 active:scale-95 transition-all"
             >
-              <Coffee className="w-4 h-4" />
+              <Coffee className="w-3.5 h-3.5" />
               ☕ BREAK
             </button>
 
-            {/* STOP: Red */}
+            {/* STOP */}
             <button
               type="button"
               onClick={handleStop}
-              className="py-3 px-6 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white font-black text-xs shadow-[0_4px_20px_rgba(239,68,68,0.35)] flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
+              className="py-2.5 px-5 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 text-white font-black text-xs shadow-md flex items-center gap-1.5 btn-premium hover:scale-105 active:scale-95 transition-all"
             >
-              <Square className="w-4 h-4 fill-current" />
+              <Square className="w-3.5 h-3.5 fill-current" />
               ■ STOP
             </button>
           </>
@@ -410,23 +410,23 @@ export default function LiveStudyControlCard({
 
         {isBreak && (
           <>
-            {/* END BREAK & RESUME: Sky Blue */}
+            {/* END BREAK & RESUME */}
             <button
               type="button"
               onClick={resumeStudy}
-              className="py-3 px-7 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-xs shadow-[0_4px_20px_rgba(14,165,233,0.45)] flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
+              className="py-2.5 px-6 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 text-white font-black text-xs shadow-md flex items-center gap-1.5 btn-premium hover:scale-105 active:scale-95 transition-all"
             >
-              <Play className="w-4 h-4 fill-current" />
+              <Play className="w-3.5 h-3.5 fill-current" />
               ▶ END BREAK & RESUME
             </button>
 
-            {/* STOP: Red */}
+            {/* STOP */}
             <button
               type="button"
               onClick={handleStop}
-              className="py-3 px-6 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white font-black text-xs shadow-[0_4px_20px_rgba(239,68,68,0.35)] flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
+              className="py-2.5 px-5 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 text-white font-black text-xs shadow-md flex items-center gap-1.5 btn-premium hover:scale-105 active:scale-95 transition-all"
             >
-              <Square className="w-4 h-4 fill-current" />
+              <Square className="w-3.5 h-3.5 fill-current" />
               ■ STOP
             </button>
           </>
@@ -434,30 +434,30 @@ export default function LiveStudyControlCard({
       </div>
 
       {/* Real Stored Session Rollup Footer */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-5 border-t border-slate-100 dark:border-white/[0.07] text-center text-xs">
-        <div className="p-3.5 rounded-2xl bg-white/40 dark:bg-white/[0.025] border border-slate-100 dark:border-white/[0.05]">
-          <span className="text-[11px] text-slate-400 block mb-0.5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-3 border-t border-slate-100 dark:border-white/[0.07] text-center text-xs">
+        <div className="p-2.5 rounded-2xl bg-white/40 dark:bg-white/[0.025] border border-slate-100 dark:border-white/[0.05]">
+          <span className="text-[10px] text-slate-400 block mb-0.5">
             Today's {currentSubject ? currentSubject.name : 'Subject'}:
           </span>
-          <span className="text-sm sm:text-base font-black text-slate-800 dark:text-white font-mono">
+          <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-white font-mono">
             {formatDuration(todaySubjectMinutes)}
           </span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white/40 dark:bg-white/[0.025] border border-slate-100 dark:border-white/[0.05]">
-          <span className="text-[11px] text-slate-400 block mb-0.5">
+        <div className="p-2.5 rounded-2xl bg-white/40 dark:bg-white/[0.025] border border-slate-100 dark:border-white/[0.05]">
+          <span className="text-[10px] text-slate-400 block mb-0.5">
             Today's Course Total:
           </span>
-          <span className="text-sm sm:text-base font-black text-sky-400 font-mono">
+          <span className="text-xs sm:text-sm font-black text-sky-400 font-mono">
             {formatDuration(todayCourseMinutes)}
           </span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white/40 dark:bg-white/[0.025] border border-slate-100 dark:border-white/[0.05]">
-          <span className="text-[11px] text-slate-400 block mb-0.5">
+        <div className="p-2.5 rounded-2xl bg-white/40 dark:bg-white/[0.025] border border-slate-100 dark:border-white/[0.05]">
+          <span className="text-[10px] text-slate-400 block mb-0.5">
             Total {currentSubject ? currentSubject.name : 'Subject'} Hours:
           </span>
-          <span className="text-sm sm:text-base font-black text-slate-800 dark:text-white font-mono">
+          <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-white font-mono">
             {formatDuration(totalSubjectMinutes)}
           </span>
         </div>
