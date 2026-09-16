@@ -42,7 +42,6 @@ export default function MobileNav({ currentView, onNavigate }) {
     { id: 'subjects', label: 'Subjects', icon: Layers },
     { id: 'topics', label: 'Topics', icon: FileText },
     { id: 'resources', label: 'Resources', icon: Library },
-    { id: 'focus', label: 'Focus Mode', icon: Focus },
     { id: 'calendar', label: 'Calendar', icon: CalendarDays },
     { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
     { id: 'targets', label: 'Daily Targets', icon: Target },

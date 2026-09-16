@@ -17,11 +17,13 @@ import {
   AlertCircle,
   CheckSquare,
   Sparkles,
+  Layers,
 } from 'lucide-react';
 import SubjectModal from '../components/modals/SubjectModal';
 import TopicModal from '../components/modals/TopicModal';
 import ConfirmDeleteModal from '../components/modals/ConfirmDeleteModal';
 import confetti from 'canvas-confetti';
+import GlassIcon from '../components/common/GlassIcon';
 
 export default function SubjectTopicView({ onNavigate }) {
   const {

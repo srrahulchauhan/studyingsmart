@@ -62,7 +62,6 @@ export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCol
           icon: Timer,
           isTimerItem: true,
         },
-        { id: 'focus', label: 'Focus Mode', icon: Focus },
         { id: 'timetable', label: 'Timetable', icon: CalendarClock },
         { id: 'calendar', label: 'Calendar', icon: CalendarDays },
         { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
@@ -183,26 +182,6 @@ export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCol
           </div>
         ))}
       </div>
-
-      {/* Focus Mode Card Footer */}
-      {!isCollapsed && (
-        <div className="p-3.5 m-3 rounded-2xl bg-gradient-to-br from-sky-500/10 via-pink-500/5 to-transparent border border-sky-400/20 backdrop-blur-xl">
-          <div className="flex items-center gap-1.5 text-sky-400 font-black text-xs mb-1">
-            <Sparkles className="w-3.5 h-3.5" />
-            Distraction-Free
-          </div>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400 mb-2.5 leading-relaxed">
-            Eliminate all clutter and focus with clean fullscreen UI.
-          </p>
-          <button
-            type="button"
-            onClick={() => onNavigate('focus')}
-            className="w-full py-2 px-3 bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white text-xs font-black rounded-xl shadow-md shadow-sky-500/25 transition-all text-center btn-premium"
-          >
-            Launch Focus Mode
-          </button>
-        </div>
-      )}
     </aside>
   );
 }
