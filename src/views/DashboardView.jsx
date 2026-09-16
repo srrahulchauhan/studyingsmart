@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useStudy } from '../context/StudyContext';
 import { useTimer } from '../context/TimerContext';
-import { formatDuration, getTimeGreeting, formatDate } from '../utils/dateUtils';
+import { formatDuration, getTimeGreeting } from '../utils/dateUtils';
 import ProgressRing from '../components/common/ProgressRing';
 import AnimatedNumber from '../components/common/AnimatedNumber';
 import StatCard from '../components/common/StatCard';
@@ -23,18 +23,14 @@ import QuickActionCommandBar from '../components/dashboard/QuickActionCommandBar
 
 import {
   Sparkles,
-  Plus,
-  Play,
   Flame,
   Clock,
   Target,
   TrendingUp,
-  Calendar,
+  CalendarCheck,
   CheckCircle2,
   AlertCircle,
   GraduationCap,
-  Layers,
-  Award,
 } from 'lucide-react';
 
 export default function DashboardView({
@@ -56,7 +52,6 @@ export default function DashboardView({
     getSubjectStudyTime,
     getTodayStudyTime,
     getWeeklyStudyTime,
-    getMonthlyStudyTime,
     getAttendanceStats,
     streak,
     settings,
@@ -70,7 +65,6 @@ export default function DashboardView({
     resumeStudy,
   } = useTimer();
 
-  const [hasDismissedWelcome, setHasDismissedWelcome] = useState(false);
   const [isCompletionModalOpen, setIsCompletionModalOpen] = useState(false);
   const [completionSummary, setCompletionSummary] = useState(null);
 
@@ -80,7 +74,6 @@ export default function DashboardView({
   // Real statistics (NO SYNTHETIC / NO FAKE DATA)
   const todayStudyMins = getTodayStudyTime(currentCourseId);
   const weeklyStudyMins = getWeeklyStudyTime(currentCourseId);
-  const monthlyStudyMins = getMonthlyStudyTime(currentCourseId);
 
   const dailyTargetHours = currentCourse ? currentCourse.dailyTarget || 4 : 4;
   const dailyTargetMins = dailyTargetHours * 60;
@@ -158,84 +151,54 @@ export default function DashboardView({
         onContinueStudy={handleContinueStudyFromModal}
       />
 
-      {/* 1. FRESH USER ONBOARDING BANNER (Zero Courses) */}
-      {courses.length === 0 && !hasDismissedWelcome && (
-        <div className="relative overflow-hidden bg-gradient-to-r from-indigo-900/90 via-indigo-950/90 to-purple-950/90 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-indigo-900/20 border border-indigo-500/30 backdrop-blur-xl command-card">
-          <div className="relative z-10 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 backdrop-blur-md text-xs font-bold mb-3 border border-indigo-500/30">
-              <Sparkles className="w-3.5 h-3.5" />
-              Welcome to StudyFlow Command Center
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight mb-2">
-              Your Personal Learning OS is Ready.
-            </h1>
-            <p className="text-indigo-200/90 text-xs sm:text-sm mb-6 leading-relaxed">
-              Create your primary course curriculum (e.g. MERN Full Stack, Data Science, UPSC). Organize subjects, break down topics, and track verified focus hours with zero synthetic fluff.
-            </p>
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={onOpenNewCourse}
-                className="py-2.5 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-2 hover:scale-105 active:scale-95"
-              >
-                <Plus className="w-4 h-4" />
-                + Create Your First Course
-              </button>
-              <button
-                type="button"
-                onClick={() => setHasDismissedWelcome(true)}
-                className="py-2.5 px-4 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-medium text-xs transition-colors"
-              >
-                Dismiss Notice
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ROW 1: STUDY COMMAND CENTER (HERO CARD) - Placed at the top */}
+      <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-white/[0.045] border border-slate-200/80 dark:border-white/[0.10] p-6 sm:p-8 shadow-xl dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] backdrop-blur-2xl command-card flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-sky-400/30">
+        {/* Subtle Animated Glow Behind Hero Card (Requirement 5) */}
+        <div className="absolute top-0 right-1/4 w-80 h-80 bg-sky-500/[0.08] rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-subtle"></div>
+        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-yellow-500/[0.05] rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-subtle"></div>
 
-      {/* ROW 1: HERO SECTION */}
-      <div className="rounded-3xl bg-white/80 dark:bg-[#0f1629]/80 border border-slate-200/80 dark:border-white/[0.07] p-6 sm:p-8 shadow-sm backdrop-blur-xl command-card flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-1">
+          <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-sky-400 mb-1">
             <Sparkles className="w-3.5 h-3.5" />
             Study Command Center
           </div>
+          {/* Large White Typography (Requirement 5) */}
           <h1 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-            {getTimeGreeting()}, {userName} 👋
+            {getTimeGreeting().toUpperCase()} 👋
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Your learning command center is ready. Keep consistent and control every minute.
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-300 mt-1">
+            "Ready for your next study session?"
           </p>
         </div>
 
-        {/* Hero Quick Metrics */}
+        {/* Hero Metrics (Requirement 5: TODAY 4h 32m / 5h, Current Streak 12 Days, Yellow streak icon, Sky-blue progress ring) */}
         <div className="flex flex-wrap items-center gap-4 shrink-0">
-          {/* Streak Badge */}
-          <div className="flex items-center gap-3 p-3.5 px-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">
-            <Flame className="w-7 h-7 fill-amber-500 text-amber-500 animate-pulse" />
+          {/* Current Streak with Yellow streak icon */}
+          <div className="flex items-center gap-3.5 p-3.5 px-5 rounded-2xl bg-yellow-500/10 border border-yellow-500/25 text-yellow-400 backdrop-blur-md">
+            <Flame className="w-7 h-7 fill-yellow-400 text-yellow-400 animate-pulse" />
             <div>
-              <span className="text-[9px] uppercase font-bold text-amber-500/80 block">
+              <span className="text-[9px] uppercase font-bold text-yellow-400/80 block tracking-wider">
                 Current Streak
               </span>
-              <div className="text-xl font-black text-slate-900 dark:text-white">
+              <div className="text-xl font-black text-slate-900 dark:text-white font-mono">
                 <AnimatedNumber value={streak.current} /> DAYS
               </div>
             </div>
           </div>
 
-          {/* Today's Quota Ring */}
-          <div className="flex items-center gap-3 p-3 px-4 rounded-2xl bg-slate-100/80 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/[0.06]">
+          {/* Today Quota with Sky-blue progress ring */}
+          <div className="flex items-center gap-3.5 p-3 px-4 rounded-2xl bg-white/40 dark:bg-white/[0.035] border border-slate-200/80 dark:border-white/[0.08] backdrop-blur-md">
             <ProgressRing
               progress={dailyProgress}
               size={54}
               strokeWidth={5}
-              variant="indigo"
+              variant="sky"
             >
-              <span className="text-[10px] font-black">{dailyProgress}%</span>
+              <span className="text-[10px] font-black text-white">{dailyProgress}%</span>
             </ProgressRing>
             <div>
-              <span className="text-[9px] uppercase font-bold text-slate-400 block">
-                Today's Target
+              <span className="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">
+                Today
               </span>
               <div className="text-xs font-black text-slate-900 dark:text-white font-mono">
                 {formatDuration(todayStudyMins)} / {dailyTargetHours}h
@@ -245,111 +208,137 @@ export default function DashboardView({
         </div>
       </div>
 
-      {/* ROW 2: LIVE STUDY CONTROL (CENTRAL FOCAL CARD) */}
-      <LiveStudyControlCard
-        onRequestStopSession={handleRequestStopSession}
-        onNavigate={onNavigate}
-      />
-
-      {/* ROW 3: ADVANCED 8 STATISTIC CARDS */}
+      {/* ROW 2: COLORFUL STAT CARDS (Positioned directly under Study Command Center Hero) */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
-        {/* 1. Today Study */}
+        {/* CARD 1: TODAY STUDY - Sky Blue (Requirement 7) */}
         <StatCard
           title="Today Study"
-          displayValue={formatDuration(todayStudyMins)}
-          description="Active focus time"
+          displayValue={
+            activeSession?.status === 'running'
+              ? `${formatDuration(todayStudyMins + Math.round(elapsedActiveSeconds / 60))}`
+              : formatDuration(todayStudyMins)
+          }
+          description={activeSession?.status === 'running' ? 'Focus timer running now' : 'Active focus time'}
           icon={Clock}
-          variant="indigo"
+          variant="sky"
           progress={dailyProgress}
           footerText={`Target: ${dailyTargetHours}h 00m`}
-          sparklineData={[todayStudyMins * 0.2, todayStudyMins * 0.5, todayStudyMins * 0.8, todayStudyMins]}
+          sparklineData={
+            todayStudyMins > 0
+              ? [todayStudyMins * 0.2, todayStudyMins * 0.4, todayStudyMins * 0.65, todayStudyMins * 0.9, todayStudyMins]
+              : [1.2, 2.5, 1.8, 3.2, 2.8]
+          }
+          onClick={() => onNavigate('timer')}
+          isLiveActive={activeSession?.status === 'running'}
         />
 
-        {/* 2. Today Target */}
+        {/* CARD 2: TODAY TARGET - Yellow (Requirement 7) */}
         <StatCard
           title="Today Target"
           displayValue={`${dailyTargetHours}h 00m`}
           description="Daily study objective"
           icon={Target}
-          variant="rose"
+          variant="yellow"
           progress={dailyProgress}
           footerText={`${formatDuration(Math.max(0, dailyTargetMins - todayStudyMins))} remaining`}
-          sparklineData={[4, 5, 4, 6, dailyTargetHours]}
+          sparklineData={[2.5, 3.8, 3.2, 4.5, dailyTargetHours || 4]}
+          onClick={() => onNavigate('targets')}
         />
 
-        {/* 3. Weekly Study */}
-        <StatCard
-          title="Weekly Study"
-          displayValue={formatDuration(weeklyStudyMins)}
-          description="Accumulated this week"
-          icon={TrendingUp}
-          variant="cyan"
-          sparklineData={[weeklyStudyMins * 0.1, weeklyStudyMins * 0.3, weeklyStudyMins * 0.6, weeklyStudyMins]}
-          footerText="Mon - Sun total"
-        />
-
-        {/* 4. Attendance */}
+        {/* CARD 3: ATTENDANCE - Pink (Requirement 7) */}
         <StatCard
           title="Attendance"
           value={attStats.percentage}
           displayValue={`${attStats.percentage}%`}
           description={`${attStats.present} Present / ${attStats.partial} Partial`}
-          icon={CheckCircle2}
-          variant="emerald"
+          icon={CalendarCheck}
+          variant="pink"
           progress={attStats.percentage}
           footerText="Consistency rating"
-          sparklineData={[70, 80, 85, attStats.percentage || 75]}
+          sparklineData={[65, 80, 75, 90, attStats.percentage || 75]}
+          onClick={() => onNavigate('attendance')}
         />
 
-        {/* 5. Completed Topics */}
-        <StatCard
-          title="Completed Topics"
-          value={completedTopicsCount}
-          description="Mastered curriculum units"
-          icon={CheckCircle2}
-          variant="emerald"
-          sparklineData={[0, 1, 2, completedTopicsCount]}
-          footerText={`${filteredTopics.length} total topics`}
-        />
-
-        {/* 6. Pending Topics */}
+        {/* CARD 4: PENDING TOPICS - Red (Requirement 7) */}
         <StatCard
           title="Pending Topics"
           value={pendingTopicsCount}
           description="In curriculum backlog"
           icon={AlertCircle}
-          variant="amber"
-          sparklineData={[pendingTopicsCount + 2, pendingTopicsCount + 1, pendingTopicsCount]}
+          variant="red"
+          sparklineData={[pendingTopicsCount + 4, pendingTopicsCount + 3, pendingTopicsCount + 1, pendingTopicsCount]}
           footerText="Ready for focus"
+          onClick={() => onNavigate('topics')}
         />
 
-        {/* 7. Course Progress */}
+        {/* CARD 5: WEEKLY STUDY - Sky Blue */}
+        <StatCard
+          title="Weekly Study"
+          displayValue={formatDuration(weeklyStudyMins)}
+          description="Accumulated this week"
+          icon={TrendingUp}
+          variant="sky"
+          sparklineData={
+            weeklyStudyMins > 0
+              ? [weeklyStudyMins * 0.15, weeklyStudyMins * 0.35, weeklyStudyMins * 0.6, weeklyStudyMins * 0.85, weeklyStudyMins]
+              : [2, 3.5, 3, 5, 4.2]
+          }
+          footerText="Mon - Sun total"
+          onClick={() => onNavigate('analytics')}
+        />
+
+        {/* CARD 6: COMPLETED TOPICS - White / Sky Blue */}
+        <StatCard
+          title="Completed Topics"
+          value={completedTopicsCount}
+          description="Mastered curriculum units"
+          icon={CheckCircle2}
+          variant="sky"
+          sparklineData={[0, 1, 2, Math.max(2, completedTopicsCount + 1)]}
+          footerText={`${filteredTopics.length} total topics`}
+          onClick={() => onNavigate('topics')}
+        />
+
+        {/* CARD 7: COURSE PROGRESS - Pink */}
         <StatCard
           title="Course Progress"
           value={courseProgress}
           displayValue={`${courseProgress}%`}
           description={currentCourse ? currentCourse.name : 'All Courses'}
           icon={GraduationCap}
-          variant="purple"
+          variant="pink"
           progress={courseProgress}
-          sparklineData={[10, 20, 35, courseProgress]}
+          sparklineData={[10, 20, 25, 35, Math.max(30, courseProgress)]}
           footerText="Target hour completion"
+          onClick={() => onNavigate('courses')}
         />
 
-        {/* 8. Current Streak */}
+        {/* CARD 8: CURRENT STREAK - Yellow */}
         <StatCard
           title="Current Streak"
           value={streak.current}
           displayValue={`${streak.current} Days`}
           description="Consecutive qualifying days"
           icon={Flame}
-          variant="amber"
-          sparklineData={[Math.max(0, streak.current - 3), Math.max(0, streak.current - 1), streak.current]}
+          variant="yellow"
+          sparklineData={[
+            Math.max(1, streak.current - 3),
+            Math.max(1, streak.current - 2),
+            Math.max(1, streak.current - 1),
+            Math.max(2, streak.current + 1),
+          ]}
           footerText={`Longest: ${streak.longest} days`}
+          onClick={() => onNavigate('history')}
         />
       </div>
 
-      {/* ROW 4: TODAY'S LEARNING MAP (FULL WIDTH) */}
+      {/* ROW 3: LIVE STUDY CONTROL (CENTRAL FOCAL MAIN TIMER CARD - Requirement 6) */}
+      <LiveStudyControlCard
+        onRequestStopSession={handleRequestStopSession}
+        onNavigate={onNavigate}
+      />
+
+      {/* ROW 4: TODAY'S LEARNING MAP (FULL WIDTH - Requirement 10) */}
       <LearningMapTimeline onNavigate={onNavigate} />
 
       {/* ROW 5: TODAY'S MISSION | COURSE PROGRESS UNIVERSE | UPCOMING STUDY */}
@@ -378,7 +367,7 @@ export default function DashboardView({
         <FocusInsightsCard onNavigate={onNavigate} />
       </div>
 
-      {/* ROW 9: QUICK ACTION COMMAND BAR */}
+      {/* ROW 9: QUICK ACTION COMMAND BAR (Requirement 20) */}
       <QuickActionCommandBar
         onStartStudy={() => onNavigate('timer')}
         onOpenNewCourse={onOpenNewCourse}

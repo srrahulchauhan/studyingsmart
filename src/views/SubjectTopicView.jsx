@@ -90,18 +90,20 @@ export default function SubjectTopicView({ onNavigate }) {
   return (
     <div className="space-y-6 animate-fadeIn pb-12">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-violet-600 dark:text-violet-400 mb-1">
-            <CalendarDays className="w-4 h-4" />
-            Curriculum Breakdown
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/80 dark:bg-white/[0.045] p-6 rounded-3xl border border-slate-200/80 dark:border-white/[0.09] shadow-sm backdrop-blur-2xl command-card">
+        <div className="flex items-center gap-3">
+          <GlassIcon icon={Layers} variant="sky" size="md" />
+          <div>
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-sky-400 mb-0.5">
+              Curriculum Breakdown
+            </div>
+            <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+              Subjects & Topics
+            </h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Organize individual subjects, set targets, break into granular topics, and track focus.
+            </p>
           </div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-            Subjects & Topics
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Every subject dynamically accumulates all active study hours from its individual topics.
-          </p>
         </div>
 
         <button
@@ -110,23 +112,21 @@ export default function SubjectTopicView({ onNavigate }) {
             setSubjectToEdit(null);
             setIsSubjectModalOpen(true);
           }}
-          className="py-2.5 px-4 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md shadow-violet-600/20 flex items-center gap-1.5 transition-all self-start sm:self-auto"
+          className="py-2.5 px-5 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-xs shadow-lg shadow-sky-500/25 flex items-center gap-2 btn-premium transition-all"
         >
           <Plus className="w-4 h-4" />
-          + Add Subject
+          + New Subject
         </button>
       </div>
 
-      {/* Empty State */}
+      {/* Zero State */}
       {filteredSubjects.length === 0 ? (
-        <div className="py-16 px-6 text-center bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 max-w-lg mx-auto">
-          <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-violet-50 dark:bg-violet-950/50 text-violet-600 dark:text-violet-400 flex items-center justify-center">
-            <CalendarDays className="w-7 h-7" />
-          </div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-            No subjects added yet.
+        <div className="py-20 px-8 text-center bg-white/80 dark:bg-white/[0.045] rounded-3xl border border-slate-200/80 dark:border-white/[0.09] max-w-lg mx-auto backdrop-blur-2xl command-card">
+          <GlassIcon icon={Layers} variant="sky" size="xl" className="mx-auto mb-4" />
+          <h2 className="text-xl font-black text-slate-900 dark:text-white">
+            No subjects created yet.
           </h2>
-          <p className="text-xs text-slate-400 mt-1 mb-6 leading-relaxed">
+          <p className="text-xs text-slate-400 mt-1.5 mb-6 leading-relaxed max-w-xs mx-auto">
             Add subjects to your course (e.g. JavaScript, React, HTML, CSS) and populate them with topics to start tracking study time.
           </p>
           <button
@@ -135,86 +135,95 @@ export default function SubjectTopicView({ onNavigate }) {
               setSubjectToEdit(null);
               setIsSubjectModalOpen(true);
             }}
-            className="py-2.5 px-5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-lg shadow-violet-600/25"
+            className="py-3 px-7 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-xs shadow-lg shadow-sky-500/30 transition-all btn-premium inline-flex items-center gap-2"
           >
+            <Plus className="w-4 h-4" />
             + Add First Subject
           </button>
         </div>
       ) : (
         <div className="space-y-4">
           {filteredSubjects.map((subject) => {
-            const course = courses.find(c => c.id === subject.courseId);
-            const subjectTopics = topics.filter(t => t.subjectId === subject.id);
-            const completedCount = subjectTopics.filter(t => t.status === 'Completed').length;
+            const course = courses.find((c) => c.id === subject.courseId);
+            const subjectTopics = topics.filter((t) => t.subjectId === subject.id);
+            const completedCount = subjectTopics.filter((t) => t.status === 'Completed').length;
             const pendingCount = subjectTopics.length - completedCount;
 
-            // Strict rollup: sum of topic sessions
             const actualSubjectMins = getSubjectStudyTime(subject.id);
             const targetMins = (subject.targetHours || 0) * 60;
-            const remainingMins = Math.max(0, targetMins - actualSubjectMins);
             const progress = targetMins > 0 ? Math.min(100, Math.round((actualSubjectMins / targetMins) * 100)) : (subjectTopics.length > 0 ? Math.round((completedCount / subjectTopics.length) * 100) : 0);
 
-            // Is expanded (default open for first 3)
             const isExpanded = expandedSubjects[subject.id] !== undefined ? expandedSubjects[subject.id] : true;
 
+            // Requirement 13: Subject Cards
             return (
               <div
                 key={subject.id}
-                className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden"
+                className="rounded-3xl bg-white/80 dark:bg-white/[0.045] border border-slate-200/80 dark:border-white/[0.09] shadow-sm dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] backdrop-blur-2xl overflow-hidden command-card hover:border-sky-400/30"
               >
                 {/* Subject Header / Accordion Trigger */}
-                <div className="p-5 bg-gradient-to-r from-slate-50/50 via-white to-slate-50/50 dark:from-slate-800/30 dark:via-slate-900 dark:to-slate-800/30 border-b border-slate-100 dark:border-slate-800">
+                <div className="p-5 bg-white/40 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/[0.06]">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start gap-3">
                       <button
                         type="button"
                         onClick={() => toggleExpand(subject.id)}
-                        className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 mt-0.5"
+                        className="p-2 rounded-xl bg-white/50 dark:bg-white/[0.06] text-slate-400 hover:text-white mt-0.5 transition-colors"
                       >
                         {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                       </button>
 
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-violet-50 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300">
-                            {course ? course.name : 'Course'}
-                          </span>
-                          <span className="text-[10px] font-semibold text-slate-400">
-                            Priority: {subject.priority}
-                          </span>
+                      <div className="flex items-start gap-2.5">
+                        <GlassIcon icon={Layers} variant="sky" size="md" />
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-400/20">
+                              {course ? course.name : 'Course'}
+                            </span>
+                            <span className="text-[10px] font-semibold text-slate-400">
+                              Priority: {subject.priority}
+                            </span>
+                          </div>
+                          <h2 className="text-base font-black text-slate-900 dark:text-white mt-0.5">
+                            {subject.name}
+                          </h2>
+                          {subject.purpose && (
+                            <p className="text-xs text-slate-400 italic mt-0.5">
+                              "{subject.purpose}"
+                            </p>
+                          )}
                         </div>
-                        <h2 className="text-lg font-bold text-slate-900 dark:text-white mt-1">
-                          {subject.name}
-                        </h2>
-                        {subject.purpose && (
-                          <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-0.5">
-                            "{subject.purpose}"
-                          </p>
-                        )}
                       </div>
                     </div>
 
-                    {/* Quick Subject Metrics & Actions */}
+                    {/* Quick Subject Metrics matching Requirement 13 */}
                     <div className="flex flex-wrap items-center gap-3">
-                      <div className="flex items-center gap-4 text-xs bg-white dark:bg-slate-800/80 px-4 py-2 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-xs">
+                      <div className="flex items-center gap-3.5 text-xs bg-white/60 dark:bg-white/[0.035] px-4 py-2.5 rounded-2xl border border-slate-200/80 dark:border-white/[0.08]">
                         <div>
-                          <span className="text-[10px] text-slate-400 block">Actual Study</span>
-                          <span className="font-extrabold text-violet-600 dark:text-violet-400">
+                          <span className="text-[10px] text-slate-400 block font-medium">Actual Hours</span>
+                          <span className="font-black text-sky-400 font-mono">
                             {formatDuration(actualSubjectMins)}
                           </span>
                         </div>
-                        <div className="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
+                        <div className="h-6 w-px bg-slate-200 dark:bg-white/10"></div>
                         <div>
-                          <span className="text-[10px] text-slate-400 block">Target</span>
-                          <span className="font-bold text-slate-700 dark:text-slate-200">
+                          <span className="text-[10px] text-slate-400 block font-medium">Target</span>
+                          <span className="font-bold text-slate-800 dark:text-white font-mono">
                             {subject.targetHours || 0}h
                           </span>
                         </div>
-                        <div className="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
+                        <div className="h-6 w-px bg-slate-200 dark:bg-white/10"></div>
                         <div>
-                          <span className="text-[10px] text-slate-400 block">Topics</span>
-                          <span className="font-bold text-slate-700 dark:text-slate-200">
-                            {completedCount}/{subjectTopics.length}
+                          <span className="text-[10px] text-slate-400 block font-medium">Progress</span>
+                          <span className="font-black text-yellow-400 font-mono">
+                            {progress}%
+                          </span>
+                        </div>
+                        <div className="h-6 w-px bg-slate-200 dark:bg-white/10"></div>
+                        <div>
+                          <span className="text-[10px] text-slate-400 block font-medium">Completed / Pending</span>
+                          <span className="font-bold text-slate-700 dark:text-slate-300 font-mono">
+                            {completedCount} / {pendingCount}
                           </span>
                         </div>
                       </div>
@@ -226,7 +235,7 @@ export default function SubjectTopicView({ onNavigate }) {
                           setTopicToEdit(null);
                           setIsTopicModalOpen(true);
                         }}
-                        className="py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5"
+                        className="py-2 px-3.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-black shadow-md shadow-sky-500/25 transition-all flex items-center gap-1.5 btn-premium"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         Add Topic
@@ -238,7 +247,7 @@ export default function SubjectTopicView({ onNavigate }) {
                           setSubjectToEdit(subject);
                           setIsSubjectModalOpen(true);
                         }}
-                        className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors"
                         title="Edit Subject"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
@@ -247,7 +256,7 @@ export default function SubjectTopicView({ onNavigate }) {
                       <button
                         type="button"
                         onClick={() => setSubjectToDelete(subject)}
-                        className="p-2 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                        className="p-2 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors"
                         title="Delete Subject"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -255,11 +264,11 @@ export default function SubjectTopicView({ onNavigate }) {
                     </div>
                   </div>
 
-                  {/* Progress Bar */}
-                  <div className="mt-3">
-                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  {/* Thin Colored Progress Bar (Requirement 13) */}
+                  <div className="mt-3.5">
+                    <div className="w-full bg-slate-100 dark:bg-white/[0.06] h-1.5 rounded-full overflow-hidden">
                       <div
-                        className="bg-violet-600 h-full rounded-full transition-all duration-500"
+                        className="bg-gradient-to-r from-sky-500 to-sky-400 h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(14,165,233,0.5)]"
                         style={{ width: `${progress}%` }}
                       ></div>
                     </div>
@@ -339,10 +348,10 @@ export default function SubjectTopicView({ onNavigate }) {
                                     </p>
                                   )}
 
-                                  <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-1">
+                                  <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-1 font-mono">
                                     <span>Est: {formatDuration(topic.estimatedMinutes)}</span>
                                     <span>•</span>
-                                    <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                                    <span className="font-bold text-sky-400">
                                       Studied: {formatDuration(topicStudyMins)}
                                     </span>
                                     {topic.targetDate && (
@@ -361,7 +370,7 @@ export default function SubjectTopicView({ onNavigate }) {
                                 <button
                                   type="button"
                                   onClick={() => handleStartStudyTopic(topic)}
-                                  className="py-1.5 px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-500 text-emerald-600 dark:text-emerald-400 hover:text-white border border-emerald-300/60 dark:border-emerald-800 text-xs font-bold transition-all flex items-center gap-1.5"
+                                  className="py-1.5 px-3 rounded-xl bg-sky-500/15 text-sky-400 hover:bg-sky-500 hover:text-white border border-sky-400/30 text-xs font-bold transition-all flex items-center gap-1.5 btn-premium"
                                   title="Launch Focus Timer on this Topic"
                                 >
                                   <Play className="w-3.5 h-3.5 fill-current" />

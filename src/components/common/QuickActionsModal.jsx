@@ -2,16 +2,18 @@ import React from 'react';
 import {
   Plus,
   Play,
-  GraduationCap,
-  FolderKanban,
+  BookOpen,
+  CalendarClock,
+  Layers,
+  FileText,
+  Library,
   CalendarDays,
-  CheckSquare,
-  Link2,
-  CalendarRange,
   Target,
   Trophy,
   X,
+  Sparkles,
 } from 'lucide-react';
+import GlassIcon from './GlassIcon';
 
 export default function QuickActionsModal({
   isOpen,
@@ -33,7 +35,7 @@ export default function QuickActionsModal({
       title: 'Start Study Session',
       desc: 'Launch focus timer on any topic',
       icon: Play,
-      color: 'bg-emerald-500 text-white',
+      variant: 'sky',
       handler: () => {
         onClose();
         onStartStudy();
@@ -41,9 +43,9 @@ export default function QuickActionsModal({
     },
     {
       title: 'New Course',
-      desc: 'Define a new curriculum or exam',
-      icon: GraduationCap,
-      color: 'bg-indigo-500 text-white',
+      desc: 'Define curriculum or exam track',
+      icon: BookOpen,
+      variant: 'sky',
       handler: () => {
         onClose();
         onOpenNewCourse();
@@ -51,9 +53,9 @@ export default function QuickActionsModal({
     },
     {
       title: 'New Study Plan',
-      desc: 'Create a 30-day or milestone plan',
-      icon: FolderKanban,
-      color: 'bg-blue-500 text-white',
+      desc: 'Create 30-day or milestone plan',
+      icon: CalendarClock,
+      variant: 'pink',
       handler: () => {
         onClose();
         onOpenNewPlan();
@@ -62,8 +64,8 @@ export default function QuickActionsModal({
     {
       title: 'Add Subject',
       desc: 'Add a subject to your course',
-      icon: CalendarDays,
-      color: 'bg-violet-500 text-white',
+      icon: Layers,
+      variant: 'white',
       handler: () => {
         onClose();
         onOpenNewSubject();
@@ -72,8 +74,8 @@ export default function QuickActionsModal({
     {
       title: 'Add Topic',
       desc: 'Break subjects into discrete topics',
-      icon: CheckSquare,
-      color: 'bg-sky-500 text-white',
+      icon: FileText,
+      variant: 'yellow',
       handler: () => {
         onClose();
         onOpenNewTopic();
@@ -82,8 +84,8 @@ export default function QuickActionsModal({
     {
       title: 'Add Resource',
       desc: 'Save YouTube, Docs, GitHub or Notes',
-      icon: Link2,
-      color: 'bg-teal-500 text-white',
+      icon: Library,
+      variant: 'sky',
       handler: () => {
         onClose();
         onOpenNewResource();
@@ -92,8 +94,8 @@ export default function QuickActionsModal({
     {
       title: 'Schedule Timetable',
       desc: 'Set recurring study slots for the week',
-      icon: CalendarRange,
-      color: 'bg-amber-500 text-white',
+      icon: CalendarDays,
+      variant: 'pink',
       handler: () => {
         onClose();
         onOpenNewTimetable();
@@ -103,7 +105,7 @@ export default function QuickActionsModal({
       title: 'Set Target',
       desc: 'Configure daily or weekly study hours',
       icon: Target,
-      color: 'bg-rose-500 text-white',
+      variant: 'yellow',
       handler: () => {
         onClose();
         onOpenNewTarget();
@@ -113,7 +115,7 @@ export default function QuickActionsModal({
       title: 'Create Goal',
       desc: 'Set long-term learning goals',
       icon: Trophy,
-      color: 'bg-purple-500 text-white',
+      variant: 'pink',
       handler: () => {
         onClose();
         onOpenNewGoal();
@@ -122,50 +124,48 @@ export default function QuickActionsModal({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-6">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-          <div>
-            <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">
-              ⚡ Quick Actions
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Create an item or launch your study timer instantly.
-            </p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fadeIn">
+      <div className="w-full max-w-lg bg-white/95 dark:bg-[#080d1a]/95 border border-slate-200/90 dark:border-white/15 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl p-6 transition-all animate-scaleIn">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-white/[0.08]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-sky-500/15 border border-sky-400/30 flex items-center justify-center text-sky-400">
+              <Sparkles className="w-4 h-4 animate-spin-slow" />
+            </div>
+            <div>
+              <h2 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
+                Quick Actions & Feature Add
+              </h2>
+              <p className="text-xs text-slate-400">
+                Create an item or launch your study timer instantly.
+              </p>
+            </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl bg-slate-100 dark:bg-slate-800"
+            className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-xl bg-slate-100 dark:bg-white/[0.08] transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-4 max-h-[70vh] overflow-y-auto">
-          {actions.map((act) => {
-            const Icon = act.icon;
-            return (
-              <button
-                key={act.title}
-                type="button"
-                onClick={act.handler}
-                className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50/50 dark:hover:bg-slate-800 border border-slate-100 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-800 text-left transition-all group"
-              >
-                <div
-                  className={`w-9 h-9 rounded-xl ${act.color} flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform`}
-                >
-                  <Icon className="w-4 h-4" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-4 max-h-[70vh] overflow-y-auto pr-1">
+          {actions.map((act) => (
+            <button
+              key={act.title}
+              type="button"
+              onClick={act.handler}
+              className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50/80 dark:bg-white/[0.035] hover:bg-sky-500/10 dark:hover:bg-sky-500/15 border border-slate-200/80 dark:border-white/[0.08] hover:border-sky-400/50 dark:hover:border-sky-400/50 text-left transition-all duration-200 group hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <GlassIcon icon={act.icon} variant={act.variant} size="sm" />
+              <div>
+                <div className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-sky-500 dark:group-hover:text-sky-400 transition-colors">
+                  {act.title}
                 </div>
-                <div>
-                  <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
-                    {act.title}
-                  </div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">{act.desc}</div>
-                </div>
-              </button>
-            );
-          })}
+                <div className="text-[10px] text-slate-400 mt-0.5 leading-snug">{act.desc}</div>
+              </div>
+            </button>
+          ))}
         </div>
       </div>
     </div>

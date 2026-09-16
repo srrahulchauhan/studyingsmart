@@ -122,21 +122,25 @@ export default function StudyTimerView({ onNavigate }) {
         </div>
       </div>
 
-      {/* Main Timer Display Card */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-lg p-6 sm:p-10 text-center relative overflow-hidden">
+      {/* Main Timer Display Card (Requirement 6 & 18) */}
+      <div className="relative overflow-hidden rounded-3xl bg-white/80 dark:bg-white/[0.045] border border-slate-200/80 dark:border-white/[0.09] shadow-xl dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] p-6 sm:p-10 text-center backdrop-blur-2xl command-card">
+        {/* Subtle Sky-blue + Pink Glow Orbs */}
+        <div className="absolute top-1/4 -right-10 w-80 h-80 bg-sky-500/[0.08] rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-subtle"></div>
+        <div className="absolute bottom-1/4 -left-10 w-80 h-80 bg-pink-500/[0.06] rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-subtle"></div>
+
         {/* Active Session Status Ring & Details */}
         <div className="max-w-xl mx-auto">
           <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
-            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800">
+            <span className="text-xs font-bold px-3 py-1 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-400/25">
               {currentCourse ? currentCourse.name : 'Select Course'}
             </span>
             {currentSubject && (
-              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-violet-50 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 border border-violet-200/50 dark:border-violet-800">
+              <span className="text-xs font-bold px-3 py-1 rounded-xl bg-pink-500/15 text-pink-400 border border-pink-400/25">
                 {currentSubject.name}
               </span>
             )}
             {currentTopic && (
-              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200/50 dark:border-sky-800">
+              <span className="text-xs font-bold px-3 py-1 rounded-xl bg-yellow-500/15 text-yellow-400 border border-yellow-400/25">
                 {currentTopic.name}
               </span>
             )}
@@ -145,36 +149,37 @@ export default function StudyTimerView({ onNavigate }) {
           {/* Live Status Badge */}
           <div className="mb-4">
             {isRunning ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 text-xs font-bold animate-pulse">
-                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                ACTIVE STUDYING
+              <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-sky-500/15 text-sky-400 border border-sky-400/30 text-xs font-bold shadow-[0_0_16px_rgba(14,165,233,0.3)] animate-pulse">
+                <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+                ● STUDYING
               </span>
             ) : isPaused ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 text-xs font-bold">
-                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                STUDY PAUSED
+              <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-yellow-500/15 text-yellow-400 border border-yellow-400/30 text-xs font-bold shadow-[0_0_16px_rgba(234,179,8,0.25)]">
+                <span className="w-2 h-2 rounded-full bg-yellow-400"></span>
+                ● PAUSED
               </span>
             ) : isBreak ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 text-xs font-bold">
-                <span className="w-2 h-2 rounded-full bg-rose-500"></span>
-                ON BREAK
+              <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-pink-500/15 text-pink-400 border border-pink-400/30 text-xs font-bold shadow-[0_0_16px_rgba(236,72,153,0.25)] animate-pulse">
+                <Coffee className="w-3.5 h-3.5 text-pink-400" />
+                ☕ ON BREAK
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 text-xs font-semibold">
-                READY TO STUDY
+              <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 text-slate-400 border border-white/10 text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-slate-400"></span>
+                ○ READY TO STUDY
               </span>
             )}
           </div>
 
           {/* BIG DIGITAL CLOCK */}
           <div className="my-6">
-            <div className="text-6xl sm:text-7xl md:text-8xl font-black font-mono tracking-tight text-slate-900 dark:text-white select-none">
+            <div className="digital-timer text-6xl sm:text-7xl md:text-8xl font-black tracking-tight text-slate-900 dark:text-white select-none drop-shadow-[0_2px_16px_rgba(255,255,255,0.18)]">
               {pomodoroMode && activeSession
                 ? formatSeconds(pomodoroRemainingSeconds)
                 : formatSeconds(elapsedActiveSeconds)}
             </div>
-            <div className="text-xs font-medium text-slate-400 mt-2 uppercase tracking-widest">
-              {pomodoroMode && activeSession ? 'Pomodoro Remaining' : 'Actual Study Duration (Active Time Only)'}
+            <div className="text-xs font-bold text-slate-400 mt-2 uppercase tracking-widest font-mono">
+              {pomodoroMode && activeSession ? 'Pomodoro Remaining' : 'Verified Focus Duration'}
             </div>
           </div>
 
@@ -186,10 +191,10 @@ export default function StudyTimerView({ onNavigate }) {
                   key={preset}
                   type="button"
                   onClick={() => setPomodoroPreset(preset)}
-                  className={`py-1.5 px-3 rounded-xl text-xs font-semibold transition-all ${
+                  className={`py-1.5 px-3 rounded-xl text-xs font-bold transition-all ${
                     pomodoroPreset === preset
-                      ? 'bg-rose-600 text-white shadow-md shadow-rose-600/20'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                      ? 'bg-gradient-to-r from-pink-500 to-pink-400 text-white shadow-md shadow-pink-500/25'
+                      : 'bg-white/10 text-slate-300 hover:bg-white/20 border border-white/10'
                   }`}
                 >
                   {preset}
@@ -198,41 +203,41 @@ export default function StudyTimerView({ onNavigate }) {
             </div>
           )}
 
-          {/* Session Metrics Bar (When session is active) */}
+          {/* Session Metrics Bar */}
           {activeSession && (
-            <div className="grid grid-cols-3 gap-3 my-6 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 text-xs">
+            <div className="grid grid-cols-3 gap-3 my-6 p-4 rounded-2xl bg-white/40 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05] text-xs">
               <div>
                 <span className="text-[10px] text-slate-400 block mb-0.5">Started At</span>
-                <span className="font-bold text-slate-700 dark:text-slate-200">
+                <span className="font-bold text-slate-800 dark:text-slate-100 font-mono">
                   {formatTime(activeSession.startTime)}
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 block mb-0.5">Total Break Time</span>
-                <span className="font-bold text-amber-600 dark:text-amber-400">
+                <span className="text-[10px] text-slate-400 block mb-0.5">Break Time</span>
+                <span className="font-bold text-yellow-400 font-mono">
                   {formatSeconds(elapsedBreakSeconds)}
                 </span>
               </div>
               <div>
                 <span className="text-[10px] text-slate-400 block mb-0.5">Net Study Time</span>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="font-bold text-sky-400 font-mono">
                   {formatDuration(Math.floor(elapsedActiveSeconds / 60))}
                 </span>
               </div>
             </div>
           )}
 
-          {/* PRIMARY TIMER CONTROLS */}
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          {/* PRIMARY TIMER CONTROLS STRICTLY FOLLOWING REQUIREMENT 6 & 18 */}
+          <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2">
             {!activeSession ? (
               <button
                 type="button"
                 onClick={handleStart}
                 disabled={!selectedCourseId}
-                className="py-4 px-8 rounded-2xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-extrabold text-base shadow-xl shadow-emerald-600/25 flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                className="py-4 px-9 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 disabled:opacity-50 text-white font-black text-base shadow-xl shadow-sky-500/30 flex items-center gap-2.5 btn-premium hover:scale-105 active:scale-95 transition-all"
               >
                 <Play className="w-5 h-5 fill-current" />
-                START STUDY
+                ▶ START STUDY
               </button>
             ) : (
               <>
@@ -240,45 +245,45 @@ export default function StudyTimerView({ onNavigate }) {
                   <button
                     type="button"
                     onClick={pauseStudy}
-                    className="py-3 px-6 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs sm:text-sm shadow-md shadow-amber-500/20 flex items-center gap-2 transition-all"
+                    className="py-3 px-6 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs sm:text-sm shadow-md backdrop-blur-md flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
                   >
                     <Pause className="w-4 h-4 fill-current" />
-                    PAUSE
+                    ⏸ PAUSE
                   </button>
                 ) : (
                   <button
                     type="button"
                     onClick={resumeStudy}
-                    className="py-3 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/20 flex items-center gap-2 transition-all"
+                    className="py-3 px-6 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-xs sm:text-sm shadow-md shadow-sky-500/25 flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
                   >
                     <Play className="w-4 h-4 fill-current" />
-                    RESUME
+                    ▶ RESUME
                   </button>
                 )}
 
                 <button
                   type="button"
                   onClick={() => takeBreak('Rest')}
-                  className="py-3 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs sm:text-sm flex items-center gap-2 transition-all"
+                  className="py-3 px-5 rounded-2xl bg-gradient-to-r from-yellow-400 to-yellow-300 hover:from-yellow-300 hover:to-yellow-200 text-slate-950 font-black text-xs sm:text-sm shadow-md shadow-yellow-400/25 flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
                 >
-                  <Coffee className="w-4 h-4 text-amber-500" />
-                  TAKE BREAK
+                  <Coffee className="w-4 h-4" />
+                  ☕ BREAK
                 </button>
 
                 <button
                   type="button"
                   onClick={() => stopStudy(false)}
-                  className="py-3 px-6 rounded-2xl bg-slate-900 hover:bg-black text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white font-bold text-xs sm:text-sm shadow-md flex items-center gap-2 transition-all"
+                  className="py-3 px-6 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white font-black text-xs sm:text-sm shadow-md shadow-red-500/30 flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
                 >
                   <Square className="w-4 h-4 fill-current" />
-                  STOP & SAVE
+                  ■ STOP & SAVE
                 </button>
 
                 {activeSession.topicId && (
                   <button
                     type="button"
                     onClick={completeTopicFromTimer}
-                    className="py-3 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-indigo-600/20 flex items-center gap-2 transition-all"
+                    className="py-3 px-5 rounded-2xl bg-gradient-to-r from-pink-500 to-pink-400 hover:from-pink-400 hover:to-pink-300 text-white font-black text-xs sm:text-sm shadow-md shadow-pink-500/25 flex items-center gap-2 btn-premium hover:scale-105 active:scale-95 transition-all"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     COMPLETE TOPIC
@@ -288,7 +293,7 @@ export default function StudyTimerView({ onNavigate }) {
                 <button
                   type="button"
                   onClick={cancelStudy}
-                  className="py-3 px-3 rounded-2xl text-slate-400 hover:text-rose-500 text-xs transition-colors"
+                  className="py-3 px-3 rounded-2xl text-slate-400 hover:text-red-400 text-xs transition-colors"
                   title="Discard Session"
                 >
                   Discard

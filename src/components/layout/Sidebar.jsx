@@ -4,43 +4,43 @@ import { useStudy } from '../../context/StudyContext';
 import { formatSeconds } from '../../utils/dateUtils';
 import {
   LayoutDashboard,
-  GraduationCap,
-  CalendarDays,
-  FolderKanban,
-  CheckSquare,
-  Link2,
+  BookOpen,
+  ClipboardList,
+  Layers,
+  FileText,
+  Library,
   Timer,
-  CalendarRange,
+  CalendarClock,
+  CalendarDays,
   CalendarCheck,
-  UserCheck,
   Target,
   Trophy,
   History,
-  BarChart3,
-  FileSpreadsheet,
-  Maximize2,
+  ChartNoAxesCombined,
+  FileBarChart,
+  Focus,
   Settings,
   Database,
   ChevronLeft,
   ChevronRight,
   Sparkles,
-  Bell,
 } from 'lucide-react';
 
 export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCollapsed }) {
   const { activeSession, elapsedActiveSeconds } = useTimer();
   const { courses } = useStudy();
 
+  // Requirement 8: Exact Professional Icons
   const navSections = [
     {
       group: 'Core Study',
       items: [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-        { id: 'courses', label: 'Courses', icon: GraduationCap, badge: courses.length },
-        { id: 'plans', label: 'Study Plans', icon: FolderKanban },
-        { id: 'subjects', label: 'Subjects', icon: CalendarDays },
-        { id: 'topics', label: 'Topics', icon: CheckSquare },
-        { id: 'resources', label: 'Resources', icon: Link2 },
+        { id: 'courses', label: 'Courses', icon: BookOpen, badge: courses.length },
+        { id: 'plans', label: 'Study Plans', icon: ClipboardList },
+        { id: 'subjects', label: 'Subjects', icon: Layers },
+        { id: 'topics', label: 'Topics', icon: FileText },
+        { id: 'resources', label: 'Resources', icon: Library },
       ],
     },
     {
@@ -52,10 +52,10 @@ export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCol
           icon: Timer,
           isTimerItem: true,
         },
-        { id: 'focus', label: 'Focus Mode', icon: Maximize2 },
-        { id: 'timetable', label: 'Timetable', icon: CalendarRange },
-        { id: 'calendar', label: 'Calendar', icon: CalendarCheck },
-        { id: 'attendance', label: 'Attendance', icon: UserCheck },
+        { id: 'focus', label: 'Focus Mode', icon: Focus },
+        { id: 'timetable', label: 'Timetable', icon: CalendarClock },
+        { id: 'calendar', label: 'Calendar', icon: CalendarDays },
+        { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
       ],
     },
     {
@@ -64,8 +64,8 @@ export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCol
         { id: 'targets', label: 'Targets', icon: Target },
         { id: 'goals', label: 'Goals', icon: Trophy },
         { id: 'history', label: 'History', icon: History },
-        { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-        { id: 'reports', label: 'Reports', icon: FileSpreadsheet },
+        { id: 'analytics', label: 'Analytics', icon: ChartNoAxesCombined },
+        { id: 'reports', label: 'Reports', icon: FileBarChart },
       ],
     },
     {
@@ -79,14 +79,14 @@ export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCol
 
   return (
     <aside
-      className={`hidden md:flex flex-col bg-white/90 dark:bg-[#0c111d]/90 backdrop-blur-2xl border-r border-slate-200/80 dark:border-white/[0.07] transition-all duration-300 z-20 shrink-0 ${
+      className={`hidden md:flex flex-col bg-white/80 dark:bg-[#070b16]/80 backdrop-blur-2xl border-r border-slate-200/80 dark:border-white/[0.08] transition-all duration-300 z-20 shrink-0 ${
         isCollapsed ? 'w-[72px]' : 'w-[250px]'
       }`}
     >
       {/* Collapse / Expand Toggle Button */}
-      <div className="flex items-center justify-between p-3 border-b border-slate-100 dark:border-white/[0.06]">
+      <div className="flex items-center justify-between p-3.5 border-b border-slate-100 dark:border-white/[0.07]">
         {!isCollapsed && (
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 pl-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-2">
             Command Menu
           </span>
         )}
@@ -105,7 +105,7 @@ export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCol
         {navSections.map((section) => (
           <div key={section.group}>
             {!isCollapsed && (
-              <div className="px-3 mb-1.5 text-[9px] font-extrabold uppercase tracking-widest text-slate-400">
+              <div className="px-3 mb-1.5 text-[9px] font-black uppercase tracking-widest text-slate-400">
                 {section.group}
               </div>
             )}
@@ -120,12 +120,12 @@ export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCol
                     key={item.id}
                     type="button"
                     onClick={() => onNavigate(item.id)}
-                    className={`w-full group relative flex items-center gap-3 px-3 py-2 rounded-2xl text-xs font-semibold transition-all duration-200 ${
+                    className={`w-full group relative flex items-center gap-3 px-3 py-2 rounded-2xl text-xs font-bold transition-all duration-200 ${
                       isActive
-                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                        ? 'bg-gradient-to-r from-sky-500 to-sky-400 text-white shadow-md shadow-sky-500/30'
                         : isTimerRunning
-                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-white'
+                        ? 'bg-sky-500/15 text-sky-400 border border-sky-400/30'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.05] hover:text-slate-900 dark:hover:text-white'
                     }`}
                     title={isCollapsed ? item.label : undefined}
                   >
@@ -141,7 +141,7 @@ export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCol
                         }`}
                       />
                       {isTimerRunning && (
-                        <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#0c111d] animate-ping" />
+                        <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-sky-400 ring-2 ring-white dark:ring-[#0c111d] animate-ping" />
                       )}
                     </div>
 
@@ -150,7 +150,7 @@ export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCol
                     )}
 
                     {!isCollapsed && isTimerRunning && (
-                      <span className="font-mono text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                      <span className="font-mono text-[10px] font-bold text-sky-400">
                         {formatSeconds(elapsedActiveSeconds)}
                       </span>
                     )}
@@ -176,18 +176,18 @@ export default function Sidebar({ currentView, onNavigate, isCollapsed, setIsCol
 
       {/* Focus Mode Card Footer */}
       {!isCollapsed && (
-        <div className="p-3 m-3 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-cyan-500/5 border border-indigo-500/20">
-          <div className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-bold text-xs mb-1">
+        <div className="p-3.5 m-3 rounded-2xl bg-gradient-to-br from-sky-500/10 via-pink-500/5 to-transparent border border-sky-400/20 backdrop-blur-xl">
+          <div className="flex items-center gap-1.5 text-sky-400 font-black text-xs mb-1">
             <Sparkles className="w-3.5 h-3.5" />
             Distraction-Free
           </div>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400 mb-2 leading-relaxed">
-            Eliminate clutter and focus with clean fullscreen UI.
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 mb-2.5 leading-relaxed">
+            Eliminate all clutter and focus with clean fullscreen UI.
           </p>
           <button
             type="button"
             onClick={() => onNavigate('focus')}
-            className="w-full py-1.5 px-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-md shadow-indigo-600/20 transition-all text-center"
+            className="w-full py-2 px-3 bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white text-xs font-black rounded-xl shadow-md shadow-sky-500/25 transition-all text-center btn-premium"
           >
             Launch Focus Mode
           </button>

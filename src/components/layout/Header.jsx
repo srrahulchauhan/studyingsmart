@@ -92,13 +92,13 @@ export default function Header({
           onClick={() => onNavigate('dashboard')}
           className="flex items-center gap-2.5 text-left group focus:outline-none"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 text-white flex items-center justify-center shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-sky-400 text-white flex items-center justify-center shadow-md shadow-sky-500/25 group-hover:scale-105 transition-transform">
             <BookOpen className="w-4 h-4" />
           </div>
           <div className="hidden xl:block">
             <div className="font-extrabold text-sm tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
               StudyFlow
-              <span className="text-[9px] uppercase font-mono font-bold px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+              <span className="text-[9px] uppercase font-mono font-bold px-1.5 py-0.2 rounded bg-sky-500/10 text-sky-400 border border-sky-400/20">
                 OS
               </span>
             </div>
@@ -224,31 +224,31 @@ export default function Header({
         {/* Special Live Status Indicator (Requirement 47) */}
         <div className="hidden lg:flex items-center">
           {isStudying && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold shadow-sm animate-pulse">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-400/30 text-sky-400 text-xs font-mono font-bold shadow-sm animate-pulse">
+              <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
               <span>● STUDYING</span>
-              <span className="text-emerald-500 font-mono">
+              <span className="text-sky-400 font-mono">
                 {formatSeconds(elapsedActiveSeconds)}
               </span>
             </div>
           )}
 
           {isBreak && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-600 dark:text-cyan-400 text-xs font-mono font-bold shadow-sm animate-pulse">
-              <Coffee className="w-3 h-3 text-cyan-500" />
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-400/30 text-pink-400 text-xs font-mono font-bold shadow-sm animate-pulse">
+              <Coffee className="w-3 h-3 text-pink-400" />
               <span>● ON BREAK</span>
             </div>
           )}
 
           {isPaused && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-mono font-bold shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-400/30 text-yellow-400 text-xs font-mono font-bold shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-yellow-400"></span>
               <span>● PAUSED</span>
             </div>
           )}
 
           {!activeSession && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/[0.04] text-slate-400 text-xs font-semibold">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 text-slate-400 border border-white/10 text-xs font-semibold">
               <span className="w-2 h-2 rounded-full bg-slate-400"></span>
               <span>○ IDLE</span>
             </div>
@@ -278,6 +278,19 @@ export default function Header({
           <span>{streak.current}d</span>
         </div>
 
+        {/* Animated Plus (+) Add Feature Button */}
+        <button
+          type="button"
+          onClick={onOpenQuickActions}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-gradient-to-r from-sky-500/15 via-pink-500/10 to-yellow-500/15 hover:from-sky-500/25 hover:to-pink-500/20 border border-sky-400/30 text-sky-600 dark:text-sky-400 font-bold text-xs transition-all shadow-sm hover:scale-105 active:scale-95 group"
+          title="Add New Feature / Quick Actions (+)"
+        >
+          <div className="w-4 h-4 rounded-full bg-sky-500/20 flex items-center justify-center group-hover:rotate-90 transition-transform duration-300">
+            <Plus className="w-3 h-3 stroke-[2.5]" />
+          </div>
+          <span className="hidden sm:inline">Add Feature</span>
+        </button>
+
         {/* Command Palette Mobile Trigger */}
         <button
           type="button"
@@ -303,59 +316,71 @@ export default function Header({
           </button>
 
           {isNotifOpen && (
-            <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-[#0f1629] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl py-3 z-50 text-xs animate-fadeIn command-card">
-              <div className="flex items-center justify-between px-4 pb-2 border-b border-slate-100 dark:border-white/[0.06]">
-                <span className="font-bold text-slate-900 dark:text-slate-100">
+            <div className="absolute right-0 mt-2 w-80 bg-white/95 dark:bg-[#080d19]/95 border border-slate-200 dark:border-white/10 rounded-3xl shadow-2xl backdrop-blur-2xl py-3 z-50 text-xs animate-fadeIn command-card">
+              <div className="flex items-center justify-between px-4 pb-2.5 border-b border-slate-100 dark:border-white/[0.07]">
+                <span className="font-black text-slate-900 dark:text-white uppercase tracking-wider text-[11px]">
                   Notification Center
                 </span>
                 {notifications.length > 0 && (
                   <button
                     type="button"
                     onClick={clearAllNotifications}
-                    className="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline"
+                    className="text-[11px] font-bold text-sky-400 hover:text-sky-300 hover:underline"
                   >
                     Clear All
                   </button>
                 )}
               </div>
 
-              <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 dark:divide-white/[0.04]">
+              <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 dark:divide-white/[0.05]">
                 {notifications.length === 0 ? (
-                  <div className="py-6 px-4 text-center text-slate-400">
+                  <div className="py-6 px-4 text-center text-slate-400 text-xs">
                     No new notifications
                   </div>
                 ) : (
-                  notifications.map((n) => (
-                    <div
-                      key={n.id}
-                      onClick={() => markNotificationRead(n.id)}
-                      className={`p-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors ${
-                        !n.read ? 'bg-indigo-500/[0.05]' : ''
-                      }`}
-                    >
-                      <div className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                        {n.type === 'success' && (
-                          <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
-                        )}
-                        {n.type === 'info' && (
-                          <Info className="w-3 h-3 text-indigo-500 shrink-0" />
-                        )}
-                        {n.type === 'warning' && (
-                          <AlertCircle className="w-3 h-3 text-amber-500 shrink-0" />
-                        )}
-                        <span className="truncate">{n.title}</span>
+                  notifications.map((n) => {
+                    const iconColor =
+                      n.type === 'success'
+                        ? 'text-sky-400'
+                        : n.type === 'warning'
+                        ? 'text-yellow-400'
+                        : n.type === 'danger'
+                        ? 'text-red-400'
+                        : 'text-pink-400';
+
+                    const dotEmoji =
+                      n.type === 'success'
+                        ? '🔵'
+                        : n.type === 'warning'
+                        ? '🟡'
+                        : n.type === 'danger'
+                        ? '🔴'
+                        : '🩷';
+
+                    return (
+                      <div
+                        key={n.id}
+                        onClick={() => markNotificationRead(n.id)}
+                        className={`p-3.5 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors ${
+                          !n.read ? 'bg-sky-500/[0.06]' : ''
+                        }`}
+                      >
+                        <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                          <span>{dotEmoji}</span>
+                          <span className="truncate">{n.title}</span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-0.5 pl-4">
+                          {n.message}
+                        </p>
+                        <span className="text-[9px] text-slate-400 mt-1 block font-mono pl-4">
+                          {new Date(n.time).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
                       </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                        {n.message}
-                      </p>
-                      <span className="text-[9px] text-slate-400 mt-1 block font-mono">
-                        {new Date(n.time).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </span>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>

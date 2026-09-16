@@ -25,7 +25,7 @@ export const DEFAULT_SETTINGS = {
   pomodoroWorkMinutes: 25,
   pomodoroBreakMinutes: 5,
   pomodoroLongBreakMinutes: 15,
-  darkMode: false,
+  darkMode: true,
   timeFormat: '12h', // '12h' | '24h'
   weekStartDay: 'Monday', // 'Monday' | 'Sunday'
   soundEnabled: true,
