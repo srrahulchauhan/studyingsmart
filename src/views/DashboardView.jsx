@@ -80,18 +80,8 @@ export default function DashboardView({
   const dailyTargetMins = dailyTargetHours * 60;
   const dailyProgress = dailyTargetMins > 0 ? Math.min(100, Math.round((todayStudyMins / dailyTargetMins) * 100)) : 0;
 
-  // Topics counts & 3-task completion breakdown
+  // Topics counts
   const filteredTopics = topics.filter((t) => !currentCourseId || t.courseId === currentCourseId);
-  
-  const lectureCompletedCount = filteredTopics.filter(t => t.lectureStatus === 'Completed').length;
-  const lecturePendingCount = filteredTopics.filter(t => t.lectureStatus !== 'Completed').length;
-
-  const notesCompletedCount = filteredTopics.filter(t => t.notesStatus === 'Completed').length;
-  const notesPendingCount = filteredTopics.filter(t => t.notesStatus !== 'Completed').length;
-
-  const revisionRequiredTopics = filteredTopics.filter(t => t.revisionRequired);
-  const revisionCompletedCount = revisionRequiredTopics.filter(t => t.revisionStatus === 'Completed').length;
-  const revisionPendingCount = revisionRequiredTopics.filter(t => t.revisionStatus !== 'Completed').length;
 
   const completedTopicsCount = filteredTopics.filter((t) => {
     const lectureDone = t.lectureStatus === 'Completed';
@@ -225,111 +215,7 @@ export default function DashboardView({
         </div>
       </div>
 
-      {/* ROW 1.5: 📚 TOPIC COMPLETION SYSTEM DASHBOARD CARDS */}
-      <div className="bg-white/80 dark:bg-white/[0.045] p-4 rounded-3xl border border-slate-200/80 dark:border-white/[0.10] shadow-sm backdrop-blur-2xl">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-sky-400">
-            <span>📚 Topic Completion System</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => onNavigate('topics')}
-            className="text-xs font-bold text-sky-400 hover:text-sky-300 transition-colors"
-          >
-            Manage Topics →
-          </button>
-        </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          {/* 🎥 Lecture Card */}
-          <div
-            onClick={() => onNavigate('topics')}
-            className="p-3 rounded-2xl bg-sky-500/10 border border-sky-500/25 text-sky-400 cursor-pointer hover:scale-[1.02] transition-all"
-          >
-            <div className="flex items-center gap-1.5 text-xs font-black mb-1">
-              <span>🎥</span> Lecture
-            </div>
-            <div className="text-base font-black font-mono text-slate-900 dark:text-white">
-              {lectureCompletedCount} <span className="text-xs text-emerald-500">Done</span>
-            </div>
-            <div className="text-[10px] text-slate-400 font-medium">
-              {lecturePendingCount > 0 ? `🔴 ${lecturePendingCount} Pending` : '✅ All Done'}
-            </div>
-          </div>
-
-          {/* 📝 Make Notes Card */}
-          <div
-            onClick={() => onNavigate('topics')}
-            className={`p-3 rounded-2xl border cursor-pointer hover:scale-[1.02] transition-all ${
-              notesPendingCount > 0
-                ? 'bg-rose-500/10 border-rose-500/30 text-rose-400 animate-pulse-subtle'
-                : 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400'
-            }`}
-          >
-            <div className="flex items-center gap-1.5 text-xs font-black mb-1">
-              <span>📝</span> Make Notes
-            </div>
-            <div className="text-base font-black font-mono text-slate-900 dark:text-white">
-              {notesCompletedCount} <span className="text-xs text-emerald-500">Done</span>
-            </div>
-            <div className="text-[10px] opacity-80 font-medium">
-              {notesPendingCount > 0 ? `🔴 ${notesPendingCount} Pending` : '✅ All Done'}
-            </div>
-          </div>
-
-          {/* 🔄 Revision Card */}
-          <div
-            onClick={() => onNavigate('topics')}
-            className={`p-3 rounded-2xl border cursor-pointer hover:scale-[1.02] transition-all ${
-              revisionPendingCount > 0
-                ? 'bg-amber-500/10 border-amber-500/30 text-amber-400 animate-pulse-subtle'
-                : 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400'
-            }`}
-          >
-            <div className="flex items-center gap-1.5 text-xs font-black mb-1">
-              <span>🔄</span> Revision
-            </div>
-            <div className="text-base font-black font-mono text-slate-900 dark:text-white">
-              {revisionCompletedCount} <span className="text-xs text-emerald-500">Done</span>
-            </div>
-            <div className="text-[10px] opacity-80 font-medium">
-              {revisionPendingCount > 0 ? `🔴 ${revisionPendingCount} Pending` : '✅ All Done'}
-            </div>
-          </div>
-
-          {/* 🔴 Pending Tasks Card */}
-          <div
-            onClick={() => onNavigate('pending-tasks')}
-            className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-rose-400 cursor-pointer hover:scale-[1.02] transition-all"
-          >
-            <div className="flex items-center gap-1.5 text-xs font-black mb-1">
-              <span>🔴</span> Pending Tasks
-            </div>
-            <div className="text-base font-black font-mono text-slate-900 dark:text-white">
-              {pendingTasks ? pendingTasks.filter(t => t.status === 'Pending').length : 0} <span className="text-xs text-rose-400">Backlog</span>
-            </div>
-            <div className="text-[10px] text-slate-400 font-medium">
-              Auto-rollover active
-            </div>
-          </div>
-
-          {/* 🎉 Completed Topics Card */}
-          <div
-            onClick={() => onNavigate('topics')}
-            className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 cursor-pointer hover:scale-[1.02] transition-all"
-          >
-            <div className="flex items-center gap-1.5 text-xs font-black mb-1">
-              <span>🎉</span> Completed Topics
-            </div>
-            <div className="text-base font-black font-mono text-slate-900 dark:text-white">
-              {completedTopicsCount} / {filteredTopics.length}
-            </div>
-            <div className="text-[10px] text-slate-400 font-medium">
-              100% Mastered units
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* ROW 2: COLORFUL STAT CARDS (Positioned directly under Study Command Center Hero) */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
