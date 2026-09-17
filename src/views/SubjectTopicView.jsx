@@ -40,6 +40,8 @@ export default function SubjectTopicView({ onNavigate }) {
     deleteSubject,
     addTopic,
     updateTopic,
+    updateTopicSubTask,
+    toggleTopicRevisionRequired,
     deleteTopic,
     toggleTopicComplete,
     getSubjectStudyTime,
@@ -421,107 +423,232 @@ export default function SubjectTopicView({ onNavigate }) {
                         </button>
                       </div>
                     ) : (
-                      <div className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                      <div className="space-y-3">
                         {subjectTopics.map((topic) => {
                           const topicStudyMins = getTopicStudyTime(topic.id);
-                          const isCompleted = topic.status === 'Completed';
+                          const isLectureDone = topic.lectureStatus === 'Completed';
+                          const isNotesDone = topic.notesStatus === 'Completed';
+                          const isRevisionDone = !topic.revisionRequired || topic.revisionStatus === 'Completed';
+                          const isTopicSuccess = isLectureDone && isNotesDone && isRevisionDone;
 
                           return (
                             <div
                               key={topic.id}
-                              className={`py-3 px-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors ${
-                                isCompleted ? 'opacity-75' : ''
+                              className={`py-4 px-4 rounded-2xl border transition-all ${
+                                isTopicSuccess
+                                  ? 'bg-emerald-500/[0.03] border-emerald-500/25 dark:bg-emerald-950/[0.1]'
+                                  : 'bg-white/60 dark:bg-white/[0.025] border-slate-200/80 dark:border-white/[0.08]'
                               }`}
                             >
-                              {/* Left: Checkbox & Name */}
-                              <div className="flex items-start gap-3">
-                                <button
-                                  type="button"
-                                  onClick={() => handleToggleComplete(topic)}
-                                  className="mt-0.5 text-slate-400 hover:text-emerald-500 transition-colors"
-                                  title={isCompleted ? 'Mark Pending' : 'Complete Topic'}
-                                >
-                                  {isCompleted ? (
-                                    <CheckCircle2 className="w-5 h-5 text-emerald-500 fill-emerald-50 dark:fill-emerald-950/40" />
-                                  ) : (
-                                    <Circle className="w-5 h-5" />
-                                  )}
-                                </button>
-
-                                <div>
-                                  <div className="flex items-center gap-2">
-                                    <h4 className={`text-sm font-bold text-slate-800 dark:text-slate-100 ${
-                                      isCompleted ? 'line-through text-slate-400 dark:text-slate-500' : ''
-                                    }`}>
-                                      {topic.name}
-                                    </h4>
-                                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
-                                      topic.status === 'Completed'
-                                        ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50'
-                                        : topic.status === 'In Progress'
-                                        ? 'bg-amber-50 text-amber-600 dark:bg-amber-950/50'
-                                        : 'bg-slate-100 text-slate-500 dark:bg-slate-800'
-                                    }`}>
-                                      {topic.status}
-                                    </span>
-                                  </div>
-
-                                  {topic.description && (
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                      {topic.description}
-                                    </p>
-                                  )}
-
-                                  <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-1 font-mono">
-                                    <span>Est: {formatDuration(topic.estimatedMinutes)}</span>
-                                    <span>•</span>
-                                    <span className="font-bold text-sky-400">
-                                      Studied: {formatDuration(topicStudyMins)}
-                                    </span>
-                                    {topic.targetDate && (
-                                      <>
-                                        <span>•</span>
-                                        <span>Due: {formatDate(topic.targetDate)}</span>
-                                      </>
+                              {/* Top Header: Topic Name, Progress Badge & Actions */}
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                                <div className="flex items-center gap-2.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleToggleComplete(topic)}
+                                    className="text-slate-400 hover:text-emerald-500 transition-colors"
+                                    title={isTopicSuccess ? 'Reset Topic Tasks' : 'Mark All Tasks Completed'}
+                                  >
+                                    {isTopicSuccess ? (
+                                      <CheckCircle2 className="w-5 h-5 text-emerald-500 fill-emerald-50 dark:fill-emerald-950/40" />
+                                    ) : (
+                                      <Circle className="w-5 h-5 text-slate-400" />
                                     )}
+                                  </button>
+
+                                  <div>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <h4 className={`text-base font-black text-slate-900 dark:text-white ${
+                                        isTopicSuccess ? 'line-through text-slate-500 dark:text-slate-400' : ''
+                                      }`}>
+                                        {topic.name}
+                                      </h4>
+
+                                      {/* Status Indicator */}
+                                      {isTopicSuccess ? (
+                                        <span className="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 flex items-center gap-1 shadow-sm">
+                                          🎉 SUCCESS / COMPLETED
+                                        </span>
+                                      ) : (
+                                        <span className="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-500 border border-amber-500/30 flex items-center gap-1">
+                                          ⚠️ INCOMPLETE
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {topic.description && (
+                                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                        {topic.description}
+                                      </p>
+                                    )}
+
+                                    <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-1 font-mono">
+                                      <span>Est: {formatDuration(topic.estimatedMinutes)}</span>
+                                      <span>•</span>
+                                      <span className="font-bold text-sky-400">
+                                        Studied: {formatDuration(topicStudyMins)}
+                                      </span>
+                                      {topic.targetDate && (
+                                        <>
+                                          <span>•</span>
+                                          <span>Due: {formatDate(topic.targetDate)}</span>
+                                        </>
+                                      )}
+                                    </div>
                                   </div>
+                                </div>
+
+                                {/* Action buttons */}
+                                <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleStartStudyTopic(topic)}
+                                    className="py-1.5 px-3 rounded-xl bg-sky-500/15 text-sky-400 hover:bg-sky-500 hover:text-white border border-sky-400/30 text-xs font-bold transition-all flex items-center gap-1.5 btn-premium"
+                                    title="Launch Focus Timer on this Topic"
+                                  >
+                                    <Play className="w-3.5 h-3.5 fill-current" />
+                                    Start Study
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setTopicToEdit(topic);
+                                      setTargetSubjectForTopic(subject.id);
+                                      setIsTopicModalOpen(true);
+                                    }}
+                                    className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    title="Edit Topic"
+                                  >
+                                    <Edit2 className="w-3.5 h-3.5" />
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => setTopicToDelete(topic)}
+                                    className="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg"
+                                    title="Delete Topic"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
                                 </div>
                               </div>
 
-                              {/* Right: Actions */}
-                              <div className="flex items-center gap-2 self-end sm:self-center">
-                                {/* Start Study Button */}
-                                <button
-                                  type="button"
-                                  onClick={() => handleStartStudyTopic(topic)}
-                                  className="py-1.5 px-3 rounded-xl bg-sky-500/15 text-sky-400 hover:bg-sky-500 hover:text-white border border-sky-400/30 text-xs font-bold transition-all flex items-center gap-1.5 btn-premium"
-                                  title="Launch Focus Timer on this Topic"
+                              {/* 3 Option Sub-Cards Grid */}
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 mt-3">
+                                {/* 1. 🎥 Lecture Card */}
+                                <div
+                                  onClick={() => updateTopicSubTask(topic.id, 'lecture')}
+                                  className={`p-3 rounded-xl border cursor-pointer select-none transition-all flex items-center justify-between ${
+                                    isLectureDone
+                                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                                      : 'bg-rose-500/10 border-rose-500/30 text-rose-500 dark:text-rose-400 animate-pulse-subtle'
+                                  }`}
                                 >
-                                  <Play className="w-3.5 h-3.5 fill-current" />
-                                  Start Study
-                                </button>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-base">🎥</span>
+                                    <div>
+                                      <div className="text-xs font-extrabold">Lecture</div>
+                                      <div className="text-[10px] opacity-80 font-medium">
+                                        {isLectureDone ? 'Lecture = Completed ✅' : 'Lecture = Pending 🔴'}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-black/10 dark:bg-white/10">
+                                    {isLectureDone ? '✅ Done' : '🔴 Pending'}
+                                  </span>
+                                </div>
 
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setTopicToEdit(topic);
-                                    setTargetSubjectForTopic(subject.id);
-                                    setIsTopicModalOpen(true);
-                                  }}
-                                  className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
-                                  title="Edit Topic"
+                                {/* 2. 📝 Make Notes Card */}
+                                <div
+                                  onClick={() => updateTopicSubTask(topic.id, 'notes')}
+                                  className={`p-3 rounded-xl border cursor-pointer select-none transition-all flex items-center justify-between ${
+                                    isNotesDone
+                                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                                      : 'bg-rose-500/10 border-rose-500/30 text-rose-500 dark:text-rose-400 animate-pulse-subtle'
+                                  }`}
                                 >
-                                  <Edit2 className="w-3.5 h-3.5" />
-                                </button>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-base">📝</span>
+                                    <div>
+                                      <div className="text-xs font-extrabold">Make Notes</div>
+                                      <div className="text-[10px] opacity-80 font-medium">
+                                        {isNotesDone ? 'Notes = Completed ✅' : 'Notes = Pending 🔴'}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-black/10 dark:bg-white/10">
+                                    {isNotesDone ? '✅ Done' : '🔴 Pending'}
+                                  </span>
+                                </div>
 
-                                <button
-                                  type="button"
-                                  onClick={() => setTopicToDelete(topic)}
-                                  className="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg"
-                                  title="Delete Topic"
+                                {/* 3. 🔄 Revision Card with ON/OFF Control */}
+                                <div
+                                  className={`p-3 rounded-xl border transition-all flex flex-col justify-between gap-2 ${
+                                    !topic.revisionRequired
+                                      ? 'bg-slate-100 dark:bg-white/[0.04] border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400'
+                                      : topic.revisionStatus === 'Completed'
+                                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                                      : 'bg-rose-500/10 border-rose-500/30 text-rose-500 dark:text-rose-400 animate-pulse-subtle'
+                                  }`}
                                 >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-base">🔄</span>
+                                      <span className="text-xs font-extrabold">Revision</span>
+                                    </div>
+
+                                    {/* Revision Required Toggle Switch (Yes / No) */}
+                                    <div className="flex items-center gap-1 bg-black/10 dark:bg-white/10 p-0.5 rounded-lg" onClick={(e) => e.stopPropagation()}>
+                                      <button
+                                        type="button"
+                                        onClick={() => toggleTopicRevisionRequired(topic.id, true)}
+                                        className={`px-1.5 py-0.5 text-[9px] font-bold rounded ${
+                                          topic.revisionRequired ? 'bg-sky-500 text-white' : 'text-slate-400 hover:text-slate-200'
+                                        }`}
+                                        title="Enable Revision for this topic"
+                                      >
+                                        Yes
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => toggleTopicRevisionRequired(topic.id, false)}
+                                        className={`px-1.5 py-0.5 text-[9px] font-bold rounded ${
+                                          !topic.revisionRequired ? 'bg-slate-500 text-white' : 'text-slate-400 hover:text-slate-200'
+                                        }`}
+                                        title="Exclude Revision for this topic"
+                                      >
+                                        No
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  <div
+                                    onClick={() => {
+                                      if (topic.revisionRequired) {
+                                        updateTopicSubTask(topic.id, 'revision');
+                                      }
+                                    }}
+                                    className={`flex items-center justify-between text-[10px] font-medium pt-1 ${
+                                      topic.revisionRequired ? 'cursor-pointer select-none' : 'opacity-60 cursor-not-allowed'
+                                    }`}
+                                  >
+                                    <span>
+                                      {!topic.revisionRequired
+                                        ? 'Revision = Excluded ⭕'
+                                        : topic.revisionStatus === 'Completed'
+                                        ? 'Revision = Completed ✅'
+                                        : 'Revision = Pending 🔴'}
+                                    </span>
+                                    <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-black/10 dark:bg-white/10">
+                                      {!topic.revisionRequired
+                                        ? '⭕ Skipped'
+                                        : topic.revisionStatus === 'Completed'
+                                        ? '✅ Done'
+                                        : '🔴 Pending'}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           );

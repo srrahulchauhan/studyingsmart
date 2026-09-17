@@ -17,7 +17,25 @@ export function StudyProvider({ children }) {
   const [courses, setCourses] = useState(() => loadFromStorage(STORAGE_KEYS.COURSES, []));
   const [studyPlans, setStudyPlans] = useState(() => loadFromStorage(STORAGE_KEYS.STUDY_PLANS, []));
   const [subjects, setSubjects] = useState(() => loadFromStorage(STORAGE_KEYS.SUBJECTS, []));
-  const [topics, setTopics] = useState(() => loadFromStorage(STORAGE_KEYS.TOPICS, []));
+  const [topics, setTopics] = useState(() => {
+    const raw = loadFromStorage(STORAGE_KEYS.TOPICS, []);
+    return raw.map(t => {
+      const isComp = t.status === 'Completed';
+      const lectureStatus = t.lectureStatus || (isComp ? 'Completed' : 'Pending');
+      const notesStatus = t.notesStatus || (isComp ? 'Completed' : 'Pending');
+      const revisionStatus = t.revisionStatus || (isComp ? 'Completed' : 'Pending');
+      const revisionRequired = t.revisionRequired ?? true;
+      const isFullComp = lectureStatus === 'Completed' && notesStatus === 'Completed' && (!revisionRequired || revisionStatus === 'Completed');
+      return {
+        ...t,
+        lectureStatus,
+        notesStatus,
+        revisionStatus,
+        revisionRequired,
+        status: isFullComp ? 'Completed' : 'Pending',
+      };
+    });
+  });
   const [resources, setResources] = useState(() => loadFromStorage(STORAGE_KEYS.RESOURCES, []));
   const [timetable, setTimetable] = useState(() => loadFromStorage(STORAGE_KEYS.TIMETABLE, []));
   const [studySessions, setStudySessions] = useState(() => loadFromStorage(STORAGE_KEYS.STUDY_SESSIONS, []));
@@ -315,8 +333,23 @@ export function StudyProvider({ children }) {
     setResources(prev => prev.filter(r => r.subjectId !== id));
   }, []);
 
+  // Helper to check full topic completion status
+  const checkTopicCompletion = (t) => {
+    const lectureDone = t.lectureStatus === 'Completed';
+    const notesDone = t.notesStatus === 'Completed';
+    const revisionDone = !t.revisionRequired || t.revisionStatus === 'Completed';
+    return lectureDone && notesDone && revisionDone;
+  };
+
   // --- CRUD: TOPICS ---
   const addTopic = useCallback((topicData) => {
+    const lectureStatus = topicData.lectureStatus || 'Pending';
+    const notesStatus = topicData.notesStatus || 'Pending';
+    const revisionStatus = topicData.revisionStatus || 'Pending';
+    const revisionRequired = topicData.revisionRequired ?? true;
+
+    const isComp = lectureStatus === 'Completed' && notesStatus === 'Completed' && (!revisionRequired || revisionStatus === 'Completed');
+
     const newTopic = {
       id: `topic_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
       courseId: topicData.courseId || activeCourseId,
@@ -327,7 +360,11 @@ export function StudyProvider({ children }) {
       estimatedMinutes: Number(topicData.estimatedMinutes) || 60,
       targetDate: topicData.targetDate || '',
       priority: topicData.priority || 'Medium',
-      status: topicData.status || 'Pending', // 'Pending' | 'In Progress' | 'Completed' | 'Skipped'
+      lectureStatus,
+      notesStatus,
+      revisionStatus,
+      revisionRequired,
+      status: isComp ? 'Completed' : 'Pending',
       createdAt: new Date().toISOString(),
     };
     setTopics(prev => [...prev, newTopic]);
@@ -335,7 +372,49 @@ export function StudyProvider({ children }) {
   }, [activeCourseId]);
 
   const updateTopic = useCallback((id, updates) => {
-    setTopics(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
+    setTopics(prev => prev.map(t => {
+      if (t.id === id) {
+        const updated = { ...t, ...updates };
+        const isComp = checkTopicCompletion(updated);
+        return { ...updated, status: isComp ? 'Completed' : 'Pending' };
+      }
+      return t;
+    }));
+  }, []);
+
+  const updateTopicSubTask = useCallback((id, taskType, newStatus = null) => {
+    setTopics(prev => prev.map(t => {
+      if (t.id === id) {
+        let lectureStatus = t.lectureStatus || 'Pending';
+        let notesStatus = t.notesStatus || 'Pending';
+        let revisionStatus = t.revisionStatus || 'Pending';
+
+        if (taskType === 'lecture') {
+          lectureStatus = newStatus || (lectureStatus === 'Completed' ? 'Pending' : 'Completed');
+        } else if (taskType === 'notes') {
+          notesStatus = newStatus || (notesStatus === 'Completed' ? 'Pending' : 'Completed');
+        } else if (taskType === 'revision') {
+          revisionStatus = newStatus || (revisionStatus === 'Completed' ? 'Pending' : 'Completed');
+        }
+
+        const updated = { ...t, lectureStatus, notesStatus, revisionStatus };
+        const isComp = checkTopicCompletion(updated);
+        return { ...updated, status: isComp ? 'Completed' : 'Pending' };
+      }
+      return t;
+    }));
+  }, []);
+
+  const toggleTopicRevisionRequired = useCallback((id, isRequired = null) => {
+    setTopics(prev => prev.map(t => {
+      if (t.id === id) {
+        const revisionRequired = isRequired !== null ? isRequired : !t.revisionRequired;
+        const updated = { ...t, revisionRequired };
+        const isComp = checkTopicCompletion(updated);
+        return { ...updated, status: isComp ? 'Completed' : 'Pending' };
+      }
+      return t;
+    }));
   }, []);
 
   const deleteTopic = useCallback((id) => {
@@ -346,8 +425,16 @@ export function StudyProvider({ children }) {
   const toggleTopicComplete = useCallback((id) => {
     setTopics(prev => prev.map(t => {
       if (t.id === id) {
-        const nextStatus = t.status === 'Completed' ? 'Pending' : 'Completed';
-        return { ...t, status: nextStatus };
+        const currentlyComplete = checkTopicCompletion(t);
+        const targetStatus = currentlyComplete ? 'Pending' : 'Completed';
+        const updated = {
+          ...t,
+          lectureStatus: targetStatus,
+          notesStatus: targetStatus,
+          revisionStatus: targetStatus,
+          status: targetStatus,
+        };
+        return updated;
       }
       return t;
     }));
@@ -583,33 +670,99 @@ export function StudyProvider({ children }) {
   useEffect(() => {
     const today = getTodayDateString();
 
-    // 1. Auto-rollover Topics
+    // 1. Auto-rollover Topics into individual sub-task pending cards
     topics.forEach((topic) => {
       const topicDate = topic.targetDate || (topic.createdAt ? topic.createdAt.split('T')[0] : null);
-      if (topic.status !== 'Completed' && (topicDate ? topicDate <= today : true)) {
-        setPendingTasks((prev) => {
-          const exists = prev.some((pt) => pt.topicId === topic.id || pt.id === `ptask_topic_${topic.id}`);
-          if (!exists) {
-            return [
-              ...prev,
-              {
-                id: `ptask_topic_${topic.id}`,
-                title: topic.name,
-                courseId: topic.courseId,
-                subjectId: topic.subjectId,
-                topicId: topic.id,
-                originalDate: topicDate || today,
-                estimatedMinutes: topic.estimatedMinutes || 60,
-                priority: topic.priority || 'Medium',
-                status: 'Pending',
-                completedAt: null,
-                source: 'topic',
-                createdAt: new Date().toISOString(),
-              },
-            ];
-          }
-          return prev;
-        });
+      if (topicDate ? topicDate <= today : true) {
+        // Lecture Pending
+        if (topic.lectureStatus === 'Pending') {
+          setPendingTasks((prev) => {
+            const taskId = `ptask_topic_lecture_${topic.id}`;
+            if (!prev.some((pt) => pt.id === taskId)) {
+              return [
+                ...prev,
+                {
+                  id: taskId,
+                  title: `🎥 Lecture: ${topic.name}`,
+                  courseId: topic.courseId,
+                  subjectId: topic.subjectId,
+                  topicId: topic.id,
+                  taskType: 'lecture',
+                  originalDate: topicDate || today,
+                  estimatedMinutes: Math.round((topic.estimatedMinutes || 60) * 0.4),
+                  priority: topic.priority || 'Medium',
+                  status: 'Pending',
+                  completedAt: null,
+                  source: 'topic',
+                  createdAt: new Date().toISOString(),
+                },
+              ];
+            }
+            return prev;
+          });
+        } else {
+          setPendingTasks((prev) => prev.map((pt) => (pt.id === `ptask_topic_lecture_${topic.id}` ? { ...pt, status: 'Completed' } : pt)));
+        }
+
+        // Notes Pending
+        if (topic.notesStatus === 'Pending') {
+          setPendingTasks((prev) => {
+            const taskId = `ptask_topic_notes_${topic.id}`;
+            if (!prev.some((pt) => pt.id === taskId)) {
+              return [
+                ...prev,
+                {
+                  id: taskId,
+                  title: `📝 Notes: ${topic.name}`,
+                  courseId: topic.courseId,
+                  subjectId: topic.subjectId,
+                  topicId: topic.id,
+                  taskType: 'notes',
+                  originalDate: topicDate || today,
+                  estimatedMinutes: Math.round((topic.estimatedMinutes || 60) * 0.4),
+                  priority: topic.priority || 'High',
+                  status: 'Pending',
+                  completedAt: null,
+                  source: 'topic',
+                  createdAt: new Date().toISOString(),
+                },
+              ];
+            }
+            return prev;
+          });
+        } else {
+          setPendingTasks((prev) => prev.map((pt) => (pt.id === `ptask_topic_notes_${topic.id}` ? { ...pt, status: 'Completed' } : pt)));
+        }
+
+        // Revision Pending (only if revisionRequired is true)
+        if (topic.revisionRequired && topic.revisionStatus === 'Pending') {
+          setPendingTasks((prev) => {
+            const taskId = `ptask_topic_revision_${topic.id}`;
+            if (!prev.some((pt) => pt.id === taskId)) {
+              return [
+                ...prev,
+                {
+                  id: taskId,
+                  title: `🔄 Revision: ${topic.name}`,
+                  courseId: topic.courseId,
+                  subjectId: topic.subjectId,
+                  topicId: topic.id,
+                  taskType: 'revision',
+                  originalDate: topicDate || today,
+                  estimatedMinutes: Math.round((topic.estimatedMinutes || 60) * 0.2),
+                  priority: topic.priority || 'Medium',
+                  status: 'Pending',
+                  completedAt: null,
+                  source: 'topic',
+                  createdAt: new Date().toISOString(),
+                },
+              ];
+            }
+            return prev;
+          });
+        } else {
+          setPendingTasks((prev) => prev.map((pt) => (pt.id === `ptask_topic_revision_${topic.id}` ? { ...pt, status: 'Completed' } : pt)));
+        }
       }
     });
 
@@ -652,6 +805,7 @@ export function StudyProvider({ children }) {
       courseId: taskData.courseId || activeCourseId,
       subjectId: taskData.subjectId || null,
       topicId: taskData.topicId || null,
+      taskType: taskData.taskType || null,
       originalDate: taskData.originalDate || today,
       estimatedMinutes: Number(taskData.estimatedMinutes) || 45,
       priority: taskData.priority || 'Medium',
@@ -674,9 +828,19 @@ export function StudyProvider({ children }) {
       prev.map((t) => {
         if (t.id === id) {
           if (t.topicId) {
-            setTopics((prevTopics) =>
-              prevTopics.map((top) => (top.id === t.topicId ? { ...top, status: 'Completed' } : top))
-            );
+            if (t.taskType) {
+              updateTopicSubTask(t.topicId, t.taskType, 'Completed');
+            } else {
+              setTopics((prevTopics) =>
+                prevTopics.map((top) => (top.id === t.topicId ? {
+                  ...top,
+                  lectureStatus: 'Completed',
+                  notesStatus: 'Completed',
+                  revisionStatus: 'Completed',
+                  status: 'Completed',
+                } : top))
+              );
+            }
           }
           if (t.subjectId && t.source === 'subject') {
             setSubjects((prevSubjs) =>
@@ -698,7 +862,7 @@ export function StudyProvider({ children }) {
       message: 'Pending item marked completed and updated across curriculum.',
       type: 'success',
     });
-  }, [addNotification]);
+  }, [addNotification, updateTopicSubTask]);
 
   const deletePendingTask = useCallback((id) => {
     setPendingTasks((prev) => prev.filter((t) => t.id !== id));
@@ -946,6 +1110,8 @@ export function StudyProvider({ children }) {
     deleteSubject,
     addTopic,
     updateTopic,
+    updateTopicSubTask,
+    toggleTopicRevisionRequired,
     deleteTopic,
     toggleTopicComplete,
     addResource,

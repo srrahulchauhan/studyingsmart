@@ -13,7 +13,11 @@ export default function TopicModal({ isOpen, topicToEdit, subjectId, courseId, o
     estimatedMinutes: 60,
     targetDate: '',
     priority: 'Medium',
-    status: 'Pending',
+    lectureStatus: 'Pending',
+    notesStatus: 'Pending',
+    revisionStatus: 'Pending',
+    revisionRequired: true,
+    targetDate: '',
   });
 
   const availableSubjects = subjects.filter(s => !formData.courseId || s.courseId === formData.courseId);
@@ -28,7 +32,10 @@ export default function TopicModal({ isOpen, topicToEdit, subjectId, courseId, o
         estimatedMinutes: topicToEdit.estimatedMinutes ?? 60,
         targetDate: topicToEdit.targetDate || '',
         priority: topicToEdit.priority || 'Medium',
-        status: topicToEdit.status || 'Pending',
+        lectureStatus: topicToEdit.lectureStatus || 'Pending',
+        notesStatus: topicToEdit.notesStatus || 'Pending',
+        revisionStatus: topicToEdit.revisionStatus || 'Pending',
+        revisionRequired: topicToEdit.revisionRequired ?? true,
       });
     } else {
       setFormData({
@@ -39,7 +46,10 @@ export default function TopicModal({ isOpen, topicToEdit, subjectId, courseId, o
         estimatedMinutes: 60,
         targetDate: '',
         priority: 'Medium',
-        status: 'Pending',
+        lectureStatus: 'Pending',
+        notesStatus: 'Pending',
+        revisionStatus: 'Pending',
+        revisionRequired: true,
       });
     }
   }, [topicToEdit, subjectId, courseId, courses, isOpen]);
@@ -178,34 +188,97 @@ export default function TopicModal({ isOpen, topicToEdit, subjectId, courseId, o
             </div>
           </div>
 
-          {/* Status & Target Date */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Sub-Tasks Pre-Config: Lecture & Notes */}
+          <div className="grid grid-cols-2 gap-3 bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
             <div>
               <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Status
+                🎥 Lecture Status
               </label>
               <select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                value={formData.lectureStatus}
+                onChange={(e) => setFormData({ ...formData, lectureStatus: e.target.value })}
+                className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs"
               >
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-                <option value="Skipped">Skipped</option>
+                <option value="Pending">🔴 Pending</option>
+                <option value="Completed">✅ Completed</option>
               </select>
             </div>
+
             <div>
               <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Target Date
+                📝 Notes Status
               </label>
-              <input
-                type="date"
-                value={formData.targetDate}
-                onChange={(e) => setFormData({ ...formData, targetDate: e.target.value })}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
-              />
+              <select
+                value={formData.notesStatus}
+                onChange={(e) => setFormData({ ...formData, notesStatus: e.target.value })}
+                className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs"
+              >
+                <option value="Pending">🔴 Pending</option>
+                <option value="Completed">✅ Completed</option>
+              </select>
             </div>
+          </div>
+
+          {/* Revision Control (Required Toggle & Status) */}
+          <div className="bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-slate-800 dark:text-slate-200">
+                🔄 Revision Required?
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, revisionRequired: true })}
+                  className={`px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all ${
+                    formData.revisionRequired
+                      ? 'bg-emerald-500 text-white shadow-sm'
+                      : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
+                  }`}
+                >
+                  ✅ Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, revisionRequired: false })}
+                  className={`px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all ${
+                    !formData.revisionRequired
+                      ? 'bg-rose-500 text-white shadow-sm'
+                      : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
+                  }`}
+                >
+                  ⭕ No
+                </button>
+              </div>
+            </div>
+
+            {formData.revisionRequired && (
+              <div>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Revision Status
+                </label>
+                <select
+                  value={formData.revisionStatus}
+                  onChange={(e) => setFormData({ ...formData, revisionStatus: e.target.value })}
+                  className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs"
+                >
+                  <option value="Pending">🔴 Pending</option>
+                  <option value="Completed">✅ Completed</option>
+                </select>
+              </div>
+            )}
+          </div>
+
+          {/* Target Date */}
+          <div>
+            <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              Target Date
+            </label>
+            <input
+              type="date"
+              value={formData.targetDate}
+              onChange={(e) => setFormData({ ...formData, targetDate: e.target.value })}
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+            />
           </div>
 
           {/* Form Actions */}
