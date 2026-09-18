@@ -10,7 +10,26 @@ export function TimerProvider({ children }) {
 
   // Active session state recovered from LocalStorage if page was refreshed
   const [activeSession, setActiveSession] = useState(() => {
-    return loadFromStorage(STORAGE_KEYS.ACTIVE_SESSION, null);
+    const raw = loadFromStorage(STORAGE_KEYS.ACTIVE_SESSION, null);
+    if (!raw) return null;
+    const now = Date.now();
+    const lastActive = raw.lastActiveTimestamp || (raw.startTime ? new Date(raw.startTime).getTime() : now);
+    // If session is older than 4 hours, auto-expire it
+    if (now - lastActive > 4 * 60 * 60 * 1000) {
+      return null;
+    }
+    // Auto-pause recovered session so timer only ticks when user explicitly resumes
+    if (raw.status === 'running') {
+      const closedIntervals = (raw.activeIntervals || []).map((inv) =>
+        inv.end === null ? { ...inv, end: now } : inv
+      );
+      return {
+        ...raw,
+        status: 'paused',
+        activeIntervals: closedIntervals,
+      };
+    }
+    return raw;
   });
 
   // Current live elapsed seconds (computed reactively from timestamps)

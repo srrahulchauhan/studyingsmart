@@ -54,6 +54,7 @@ export default function PapaStudyCycleTimer() {
   const [showTimeOverBanner, setShowTimeOverBanner] = useState(false);
   const [showPapaBreakModal, setShowPapaBreakModal] = useState(false);
   const [showBreakEndBanner, setShowBreakEndBanner] = useState(false);
+  const [showConfirmCompleteModal, setShowConfirmCompleteModal] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Session start timestamp
@@ -328,7 +329,7 @@ export default function PapaStudyCycleTimer() {
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
-              onClick={handleCompleteSubjectAndSave}
+              onClick={() => setShowConfirmCompleteModal(true)}
               className="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-black shadow-md transition-all hover:scale-105 active:scale-95 flex items-center gap-1"
             >
               <CheckCircle2 className="w-4 h-4" />
@@ -341,6 +342,62 @@ export default function PapaStudyCycleTimer() {
             >
               Continue Overtime
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* CONFIRMATION MODAL FOR TASK COMPLETION */}
+      {showConfirmCompleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#090e1a] border-2 border-emerald-500/50 p-6 shadow-2xl text-center relative overflow-hidden animate-scaleIn space-y-4">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center text-3xl shadow-md border border-emerald-400/30">
+              <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+            </div>
+
+            <div>
+              <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                Complete Task & Save Time?
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Are you sure you want to mark this task complete right now and log your exact study time?
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-left space-y-1.5 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400 font-bold uppercase text-[10px]">Target Item:</span>
+                <span className="font-extrabold text-slate-900 dark:text-white truncate max-w-[200px]">
+                  {currentPendingTask?.title || currentTopic?.name || currentSubject?.name || currentCourse?.name || 'Selected Task'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400 font-bold uppercase text-[10px]">Exact Time Studied:</span>
+                <span className="font-mono font-black text-emerald-500 dark:text-emerald-400">
+                  ⏱️ {Math.max(elapsedStudySeconds > 0 ? 1 : 0, Math.round(elapsedStudySeconds / 60))} Minutes
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowConfirmCompleteModal(false)}
+                className="w-1/2 py-2.5 px-4 rounded-xl text-xs font-extrabold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowConfirmCompleteModal(false);
+                  handleCompleteSubjectAndSave();
+                }}
+                className="w-1/2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-white font-extrabold text-xs shadow-lg shadow-emerald-500/25 transition-transform active:scale-95 flex items-center justify-center gap-1.5"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Yes, Complete ✅</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -684,7 +741,7 @@ export default function PapaStudyCycleTimer() {
           {/* COMPLETE PENDING & SAVE TIME BUTTON */}
           <button
             type="button"
-            onClick={handleCompleteSubjectAndSave}
+            onClick={() => setShowConfirmCompleteModal(true)}
             className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-white font-black text-xs shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
             title="Mark selected task completed and save exact study time"
           >
