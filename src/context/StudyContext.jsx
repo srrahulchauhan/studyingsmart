@@ -814,7 +814,9 @@ export function StudyProvider({ children }) {
       estimatedMinutes: Number(taskData.estimatedMinutes) || 45,
       priority: taskData.priority || 'Medium',
       status: 'Pending',
+      startedAt: null,
       completedAt: null,
+      actualMinutes: null,
       source: taskData.source || 'manual',
       notes: taskData.notes || '',
       createdAt: new Date().toISOString(),
@@ -827,6 +829,22 @@ export function StudyProvider({ children }) {
     setPendingTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...updates } : t)));
   }, []);
 
+  const startPendingTask = useCallback((id) => {
+    const startISO = new Date().toISOString();
+    setPendingTasks((prev) =>
+      prev.map((t) => {
+        if (t.id === id) {
+          return {
+            ...t,
+            startedAt: t.startedAt || startISO,
+            status: 'In Progress',
+          };
+        }
+        return t;
+      })
+    );
+  }, []);
+
   const completePendingTask = useCallback((id) => {
     const completionISO = new Date().toISOString();
     const completionDateStr = getTodayDateString();
@@ -834,6 +852,12 @@ export function StudyProvider({ children }) {
     setPendingTasks((prev) =>
       prev.map((t) => {
         if (t.id === id) {
+          const startedAtISO = t.startedAt || t.createdAt || completionISO;
+          const startMs = new Date(startedAtISO).getTime();
+          const endMs = new Date(completionISO).getTime();
+          const elapsedMins = Math.max(1, Math.round((endMs - startMs) / 60000));
+          const actualDuration = t.actualMinutes || (startMs !== endMs ? elapsedMins : (t.estimatedMinutes || 30));
+
           if (t.topicId) {
             if (t.taskType) {
               updateTopicSubTask(t.topicId, t.taskType, 'Completed');
@@ -862,20 +886,22 @@ export function StudyProvider({ children }) {
               subjectId: t.subjectId || null,
               topicId: t.topicId || null,
               date: completionDateStr,
-              startTime: t.createdAt || completionISO,
+              startTime: startedAtISO,
               endTime: completionISO,
-              sessionDuration: t.estimatedMinutes || 30,
-              actualStudyDuration: t.estimatedMinutes || 30,
+              sessionDuration: actualDuration,
+              actualStudyDuration: actualDuration,
               breakDuration: 0,
-              notes: `Completed pending task "${t.title}" (Scheduled: ${t.originalDate || 'Earlier'}, Completed: ${completionDateStr})`,
+              notes: `Completed task "${t.title}" (Duration: ${actualDuration}m)`,
             });
           }
 
           return {
             ...t,
             status: 'Completed',
+            startedAt: startedAtISO,
             completedAt: completionISO,
             completedDate: completionDateStr,
+            actualMinutes: actualDuration,
           };
         }
         return t;
@@ -884,7 +910,7 @@ export function StudyProvider({ children }) {
 
     addNotification({
       title: 'Task Completed! ✅',
-      message: 'Pending item completed! Completion date & time recorded in report.',
+      message: 'Pending item completed! Start, end, and duration logged.',
       type: 'success',
     });
   }, [addNotification, updateTopicSubTask, addStudySession]);
@@ -916,8 +942,10 @@ export function StudyProvider({ children }) {
       status: revisionData.status || (revisionData.revisionDate < todayStr ? 'Pending' : revisionData.revisionDate === todayStr ? 'Today' : 'Upcoming'),
       sourceUrl: revisionData.sourceUrl || revisionData.videoUrl || '',
       videoUrl: revisionData.videoUrl || revisionData.sourceUrl || '',
+      startedAt: null,
       completedAt: null,
       completedDate: null,
+      actualMinutes: null,
       originalCompletionDate: revisionData.originalCompletionDate || null,
       createdAt: new Date().toISOString(),
     };
@@ -934,6 +962,13 @@ export function StudyProvider({ children }) {
     setRevisions((prev) => prev.map((r) => (r.id === id ? { ...r, ...updates } : r)));
   }, []);
 
+  const startRevision = useCallback((id) => {
+    const startISO = new Date().toISOString();
+    setRevisions((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, startedAt: r.startedAt || startISO, status: 'In Progress' } : r))
+    );
+  }, []);
+
   const deleteRevision = useCallback((id) => {
     setRevisions((prev) => prev.filter((r) => r.id !== id));
   }, []);
@@ -945,7 +980,11 @@ export function StudyProvider({ children }) {
     setRevisions((prev) =>
       prev.map((r) => {
         if (r.id === id) {
-          const duration = actualDurationMinutes || r.durationMinutes || 30;
+          const startedAtISO = r.startedAt || r.createdAt || completionISO;
+          const startMs = new Date(startedAtISO).getTime();
+          const endMs = new Date(completionISO).getTime();
+          const elapsedMins = Math.max(1, Math.round((endMs - startMs) / 60000));
+          const duration = actualDurationMinutes || (startMs !== endMs ? elapsedMins : (r.durationMinutes || 30));
 
           if (r.courseId || activeCourseId) {
             addStudySession({
@@ -953,7 +992,7 @@ export function StudyProvider({ children }) {
               subjectId: r.subjectId || null,
               topicId: r.topicId || null,
               date: completionDateStr,
-              startTime: r.createdAt || completionISO,
+              startTime: startedAtISO,
               endTime: completionISO,
               sessionDuration: duration,
               actualStudyDuration: duration,
@@ -965,8 +1004,10 @@ export function StudyProvider({ children }) {
           return {
             ...r,
             status: 'Completed',
+            startedAt: startedAtISO,
             completedAt: completionISO,
             completedDate: completionDateStr,
+            actualMinutes: duration,
           };
         }
         return r;
@@ -975,7 +1016,7 @@ export function StudyProvider({ children }) {
 
     addNotification({
       title: 'Revision Completed! 📚✅',
-      message: 'Great job! Revision logged in history and study stats.',
+      message: 'Great job! Revision start, completion time & duration recorded.',
       type: 'success',
     });
   }, [addNotification, addStudySession, activeCourseId]);
@@ -1257,6 +1298,7 @@ export function StudyProvider({ children }) {
     pendingTasks,
     addPendingTask,
     updatePendingTask,
+    startPendingTask,
     completePendingTask,
     deletePendingTask,
 
@@ -1264,6 +1306,7 @@ export function StudyProvider({ children }) {
     revisions,
     addRevision,
     updateRevision,
+    startRevision,
     deleteRevision,
     completeRevision,
 

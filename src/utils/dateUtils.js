@@ -124,3 +124,32 @@ export function getTimeGreeting() {
   if (hour < 17) return 'Good Afternoon';
   return 'Good Evening';
 }
+
+/**
+ * Calculate duration in minutes between start and end timestamps
+ */
+export function calculateTaskDuration(startedAt, completedAt) {
+  if (!startedAt || !completedAt) return 0;
+  const start = new Date(startedAt).getTime();
+  const end = new Date(completedAt).getTime();
+  if (isNaN(start) || isNaN(end) || end < start) return 0;
+  return Math.max(1, Math.round((end - start) / 60000));
+}
+
+/**
+ * Format a time range string e.g. "09:30 AM → 10:45 AM (1h 15m)"
+ */
+export function formatTaskTimeRange(startedAt, completedAt) {
+  if (!startedAt && !completedAt) return '';
+  const startTime = startedAt ? formatTime(startedAt) : null;
+  const endTime = completedAt ? formatTime(completedAt) : null;
+
+  if (startTime && endTime) {
+    const mins = calculateTaskDuration(startedAt, completedAt);
+    return `${startTime} → ${endTime} (${formatDuration(mins)})`;
+  }
+  if (startTime) return `Started at ${startTime}`;
+  if (endTime) return `Completed at ${endTime}`;
+  return '';
+}
+
