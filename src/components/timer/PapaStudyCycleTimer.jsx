@@ -37,26 +37,6 @@ export default function PapaStudyCycleTimer() {
     toggleTopicComplete,
   } = useStudy();
 
-  // Durations (in seconds)
-  const STUDY_TARGET_SECONDS = 30 * 60; // 30 minutes base target
-  const BREAK_SECONDS = 15 * 60; // 15 minutes rest
-
-  // Core Timer State
-  const [phase, setPhase] = useState('study'); // 'study' | 'break'
-  const [elapsedStudySeconds, setElapsedStudySeconds] = useState(0); // Actual seconds studied in current session
-  const [breakRemainingSeconds, setBreakRemainingSeconds] = useState(BREAK_SECONDS);
-  const [isRunning, setIsRunning] = useState(false);
-  const [cycleCount, setCycleCount] = useState(1);
-  const [completedStudySessions, setCompletedStudySessions] = useState(0);
-
-  // Time Over & Overtime Flags
-  const [targetTimeAlertPlayed, setTargetTimeAlertPlayed] = useState(false);
-  const [showTimeOverBanner, setShowTimeOverBanner] = useState(false);
-  const [showPapaBreakModal, setShowPapaBreakModal] = useState(false);
-  const [showBreakEndBanner, setShowBreakEndBanner] = useState(false);
-  const [showConfirmCompleteModal, setShowConfirmCompleteModal] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-
   // Session start timestamp
   const sessionStartTimeRef = useRef(new Date().toISOString());
 
@@ -83,6 +63,26 @@ export default function PapaStudyCycleTimer() {
   const currentTopic = topics.find((t) => t.id === selectedTopicId);
   const currentPendingTask = pendingTasks.find((pt) => pt.id === selectedPendingTaskId);
 
+  // Dynamic target study time based on selected task or topic (or default to 30 mins)
+  const targetStudyMinutes =
+    currentPendingTask?.estimatedMinutes ||
+    currentTopic?.estimatedMinutes ||
+    30;
+  const STUDY_TARGET_SECONDS = Number(targetStudyMinutes) * 60;
+
+  // Core Timer State
+  const [phase, setPhase] = useState('study'); // 'study'
+  const [elapsedStudySeconds, setElapsedStudySeconds] = useState(0); // Actual seconds studied in current session
+  const [isRunning, setIsRunning] = useState(false);
+  const [cycleCount, setCycleCount] = useState(1);
+  const [completedStudySessions, setCompletedStudySessions] = useState(0);
+
+  // Time Over & Overtime Flags
+  const [targetTimeAlertPlayed, setTargetTimeAlertPlayed] = useState(false);
+  const [showTimeOverBanner, setShowTimeOverBanner] = useState(false);
+  const [showConfirmCompleteModal, setShowConfirmCompleteModal] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+
   // Voice Speech Synthesizer Helper
   const speakText = (text) => {
     if (!soundEnabled || typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -107,14 +107,14 @@ export default function PapaStudyCycleTimer() {
         setElapsedStudySeconds((prevSec) => {
           const nextSec = prevSec + 1;
 
-          // TARGET TIME (30 MIN) REACHED!
+          // TARGET TIME REACHED!
           if (nextSec === STUDY_TARGET_SECONDS && !targetTimeAlertPlayed) {
             setTargetTimeAlertPlayed(true);
             setShowTimeOverBanner(true);
 
             if (soundEnabled) {
               sounds.playBreakAlert();
-              speakText('Time Over! Target 30 minutes study completed. You can complete your subject now or continue extra study.');
+              speakText(`Time Over! Target ${targetStudyMinutes} minutes study completed. You can complete your task now or continue extra study.`);
             }
 
             addNotification({
@@ -319,7 +319,7 @@ export default function PapaStudyCycleTimer() {
             </div>
             <div className="text-left">
               <div className="text-xs font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                <span>Time Over! (Target 30 Minutes Reached)</span>
+                <span>Time Over! (Target {targetStudyMinutes} Minutes Reached)</span>
               </div>
               <p className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">
                 You can complete your subject now, or continue studying extra time!
@@ -506,7 +506,7 @@ export default function PapaStudyCycleTimer() {
                 </span>
               </div>
               <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                30m Target Study <span className="text-sky-400 font-bold">➔</span> Overtime Supported <span className="text-pink-400 font-bold">➔</span> Exact Time Recorded
+                {targetStudyMinutes}m Target Study <span className="text-sky-400 font-bold">➔</span> Overtime Supported <span className="text-pink-400 font-bold">➔</span> Exact Time Recorded
               </p>
             </div>
           </div>
@@ -693,9 +693,9 @@ export default function PapaStudyCycleTimer() {
           <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-1">
             {phase === 'study'
               ? isOvertime
-                ? 'Overtime active! Click "Complete Pending" anytime to save all elapsed study time.'
-                : 'Target: 30 Min. Whenever you hit "Complete Pending", your exact study time gets recorded.'
-              : 'When 15:00 reaches zero, the next 30-minute study session starts automatically.'}
+                ? 'Overtime active! Click "Complete & Save" anytime to save all elapsed study time.'
+                : `Target: ${targetStudyMinutes} Min. Whenever you hit "Complete Task", your exact study time gets recorded.`
+              : ''}
           </p>
         </div>
 
@@ -725,7 +725,7 @@ export default function PapaStudyCycleTimer() {
               className="py-2.5 px-5 rounded-xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-white font-black text-xs shadow-lg shadow-sky-500/25 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
-              ▶ START {phase === 'study' ? 'STUDY' : 'BREAK'}
+              ▶ START TASK
             </button>
           ) : (
             <button
@@ -746,7 +746,7 @@ export default function PapaStudyCycleTimer() {
             title="Mark selected task completed and save exact study time"
           >
             <CheckCircle2 className="w-4 h-4 text-white" />
-            <span>COMPLETE & SAVE ({studiedMinutes}M)</span>
+            <span>COMPLETE TASK ({studiedMinutes}M)</span>
           </button>
 
           {/* RESET BUTTON */}
@@ -759,36 +759,16 @@ export default function PapaStudyCycleTimer() {
             <RotateCcw className="w-3.5 h-3.5" />
             RESET
           </button>
-
-          {/* SKIP PHASE BUTTON */}
-          <button
-            type="button"
-            onClick={handleSkipPhase}
-            className="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200 dark:hover:bg-white/[0.08] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-bold text-xs flex items-center gap-1 transition-all"
-            title="Skip to break or next phase"
-          >
-            <FastForward className="w-3.5 h-3.5" />
-            Skip Phase
-          </button>
         </div>
 
         {/* METRICS INLINE FOOTER */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-2.5 border-t border-slate-100 dark:border-white/[0.08] text-xs">
+        <div className="grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-slate-100 dark:border-white/[0.08] text-xs">
           <div className="p-1.5 rounded-xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06]">
             <span className="text-[8px] text-slate-400 uppercase font-bold block">
               Current Session
             </span>
             <span className="font-extrabold text-sky-500 dark:text-sky-400 font-mono text-xs">
               {studiedMinutes} Minutes
-            </span>
-          </div>
-
-          <div className="p-1.5 rounded-xl bg-slate-50/80 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06]">
-            <span className="text-[8px] text-slate-400 uppercase font-bold block">
-              Break Interval
-            </span>
-            <span className="font-extrabold text-pink-500 dark:text-pink-400 font-mono text-xs">
-              15 Minutes
             </span>
           </div>
 

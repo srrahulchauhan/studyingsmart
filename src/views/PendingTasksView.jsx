@@ -20,6 +20,7 @@ import {
   ArrowRight,
   Flame,
   Archive,
+  RotateCcw,
 } from 'lucide-react';
 import GlassIcon from '../components/common/GlassIcon';
 
@@ -30,6 +31,7 @@ export default function PendingTasksView({ onNavigate }) {
     subjects,
     activeCourseId,
     addPendingTask,
+    updatePendingTask,
     startPendingTask,
     completePendingTask,
     deletePendingTask,
@@ -429,7 +431,7 @@ export default function PendingTasksView({ onNavigate }) {
                     <div className="flex flex-wrap items-center gap-2">
                       <h4
                         className={`text-sm font-black text-slate-900 dark:text-white truncate ${
-                          task.status === 'Completed' ? 'line-through text-slate-400' : ''
+                          task.status === 'Completed' ? 'text-slate-400' : ''
                         }`}
                       >
                         {task.title}

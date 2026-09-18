@@ -148,7 +148,7 @@ export default function StudyTimerView({ onNavigate }) {
           }`}
         >
           <span className="text-sm">👨‍👦</span>
-          <span>30m Study → 15m Break (Papa Cycle)</span>
+          <span>30m Study Target (Papa Cycle)</span>
           <span className="hidden sm:inline text-[8px] font-mono font-bold px-1 py-0.5 rounded bg-white/20 text-white">
             AUTO-LOOP
           </span>
@@ -361,15 +361,6 @@ export default function StudyTimerView({ onNavigate }) {
                         ▶ RESUME
                       </button>
                     )}
-
-                    <button
-                      type="button"
-                      onClick={() => takeBreak('Rest')}
-                      className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-yellow-400 to-yellow-300 text-slate-950 font-black text-xs shadow-md shadow-yellow-400/25 flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95"
-                    >
-                      <Coffee className="w-3.5 h-3.5" />
-                      ☕ BREAK
-                    </button>
 
                     <button
                       type="button"

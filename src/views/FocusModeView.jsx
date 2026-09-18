@@ -106,15 +106,6 @@ export default function FocusModeView({ onExitFocus }) {
 
             <button
               type="button"
-              onClick={() => takeBreak('Rest')}
-              className="py-3.5 px-6 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 font-bold text-sm flex items-center gap-2 transition-all"
-            >
-              <Coffee className="w-4 h-4 text-amber-500" />
-              Take Break
-            </button>
-
-            <button
-              type="button"
               onClick={() => {
                 stopStudy(false);
                 onExitFocus();

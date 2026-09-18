@@ -460,7 +460,7 @@ export default function SubjectTopicView({ onNavigate }) {
                                   <div>
                                     <div className="flex items-center gap-2 flex-wrap">
                                       <h4 className={`text-base font-black text-slate-900 dark:text-white ${
-                                        isTopicSuccess ? 'line-through text-slate-500 dark:text-slate-400' : ''
+                                        isTopicSuccess ? 'text-slate-500 dark:text-slate-400' : ''
                                       }`}>
                                         {topic.name}
                                       </h4>

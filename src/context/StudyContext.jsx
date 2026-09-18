@@ -743,68 +743,91 @@ export function StudyProvider({ children }) {
     setPendingTasks((prev) =>
       prev.map((t) => {
         if (t.id === id) {
-          const startedAtISO = t.startedAt || t.createdAt || completionISO;
-          const startMs = new Date(startedAtISO).getTime();
-          const endMs = new Date(completionISO).getTime();
-          const elapsedMins = Math.max(1, Math.round((endMs - startMs) / 60000));
-          const actualDuration = t.actualMinutes || (startMs !== endMs ? elapsedMins : (t.estimatedMinutes || 30));
-
-          if (t.topicId) {
-            if (t.taskType) {
-              updateTopicSubTask(t.topicId, t.taskType, 'Completed');
-            } else {
-              setTopics((prevTopics) =>
-                prevTopics.map((top) => (top.id === t.topicId ? {
-                  ...top,
-                  lectureStatus: 'Completed',
-                  notesStatus: 'Completed',
-                  revisionStatus: 'Completed',
-                  status: 'Completed',
-                } : top))
+          if (t.status === 'Completed') {
+            if (t.topicId) {
+              if (t.taskType) {
+                updateTopicSubTask(t.topicId, t.taskType, 'Pending');
+              } else {
+                setTopics((prevTopics) =>
+                  prevTopics.map((top) => (top.id === t.topicId ? {
+                    ...top,
+                    lectureStatus: 'Pending',
+                    notesStatus: 'Pending',
+                    revisionStatus: 'Pending',
+                    status: 'Pending',
+                  } : top))
+                );
+              }
+            }
+            if (t.subjectId && t.source === 'subject') {
+              setSubjects((prevSubjs) =>
+                prevSubjs.map((subj) => (subj.id === t.subjectId ? { ...subj, status: 'Pending' } : subj))
               );
             }
-          }
-          if (t.subjectId && t.source === 'subject') {
-            setSubjects((prevSubjs) =>
-              prevSubjs.map((subj) => (subj.id === t.subjectId ? { ...subj, status: 'Completed' } : subj))
-            );
-          }
+            return {
+              ...t,
+              status: 'Pending',
+              completedAt: null,
+              completedDate: null,
+            };
+          } else {
+            const startedAtISO = t.startedAt || t.createdAt || completionISO;
+            const startMs = new Date(startedAtISO).getTime();
+            const endMs = new Date(completionISO).getTime();
+            const elapsedMins = Math.max(1, Math.round((endMs - startMs) / 60000));
+            const actualDuration = t.actualMinutes || (startMs !== endMs ? elapsedMins : (t.estimatedMinutes || 30));
 
-          // Auto-record session on actual completion date so reports capture study time & completion on that date
-          if (t.courseId) {
-            addStudySession({
-              courseId: t.courseId,
-              subjectId: t.subjectId || null,
-              topicId: t.topicId || null,
-              date: completionDateStr,
-              startTime: startedAtISO,
-              endTime: completionISO,
-              sessionDuration: actualDuration,
-              actualStudyDuration: actualDuration,
-              breakDuration: 0,
-              notes: `Completed task "${t.title}" (Duration: ${actualDuration}m)`,
-            });
-          }
+            if (t.topicId) {
+              if (t.taskType) {
+                updateTopicSubTask(t.topicId, t.taskType, 'Completed');
+              } else {
+                setTopics((prevTopics) =>
+                  prevTopics.map((top) => (top.id === t.topicId ? {
+                    ...top,
+                    lectureStatus: 'Completed',
+                    notesStatus: 'Completed',
+                    revisionStatus: 'Completed',
+                    status: 'Completed',
+                  } : top))
+                );
+              }
+            }
+            if (t.subjectId && t.source === 'subject') {
+              setSubjects((prevSubjs) =>
+                prevSubjs.map((subj) => (subj.id === t.subjectId ? { ...subj, status: 'Completed' } : subj))
+              );
+            }
 
-          return {
-            ...t,
-            status: 'Completed',
-            startedAt: startedAtISO,
-            completedAt: completionISO,
-            completedDate: completionDateStr,
-            actualMinutes: actualDuration,
-          };
+            // Auto-record session on actual completion date so reports capture study time & completion on that date
+            if (t.courseId) {
+              addStudySession({
+                courseId: t.courseId,
+                subjectId: t.subjectId || null,
+                topicId: t.topicId || null,
+                date: completionDateStr,
+                startTime: startedAtISO,
+                endTime: completionISO,
+                sessionDuration: actualDuration,
+                actualStudyDuration: actualDuration,
+                breakDuration: 0,
+                notes: `Completed task "${t.title}" (Duration: ${actualDuration}m)`,
+              });
+            }
+
+            return {
+              ...t,
+              status: 'Completed',
+              startedAt: startedAtISO,
+              completedAt: completionISO,
+              completedDate: completionDateStr,
+              actualMinutes: actualDuration,
+            };
+          }
         }
         return t;
       })
     );
-
-    addNotification({
-      title: 'Task Completed! ✅',
-      message: 'Pending item completed! Start, end, and duration logged.',
-      type: 'success',
-    });
-  }, [addNotification, updateTopicSubTask, addStudySession]);
+  }, [addStudySession, updateTopicSubTask]);
 
   const deletePendingTask = useCallback((id) => {
     setPendingTasks((prev) => prev.filter((t) => t.id !== id));
@@ -871,44 +894,53 @@ export function StudyProvider({ children }) {
     setRevisions((prev) =>
       prev.map((r) => {
         if (r.id === id) {
-          const startedAtISO = r.startedAt || r.createdAt || completionISO;
-          const startMs = new Date(startedAtISO).getTime();
-          const endMs = new Date(completionISO).getTime();
-          const elapsedMins = Math.max(1, Math.round((endMs - startMs) / 60000));
-          const duration = actualDurationMinutes || (startMs !== endMs ? elapsedMins : (r.durationMinutes || 30));
+          if (r.status === 'Completed') {
+            return {
+              ...r,
+              status: 'Pending',
+              completedAt: null,
+              completedDate: null,
+            };
+          } else {
+            const startedAtISO = r.startedAt || r.createdAt || completionISO;
+            const startMs = new Date(startedAtISO).getTime();
+            const endMs = new Date(completionISO).getTime();
+            const elapsedMins = Math.max(1, Math.round((endMs - startMs) / 60000));
+            const duration = actualDurationMinutes || (startMs !== endMs ? elapsedMins : (r.durationMinutes || 30));
 
-          if (r.courseId || activeCourseId) {
-            addStudySession({
-              courseId: r.courseId || activeCourseId,
-              subjectId: r.subjectId || null,
-              topicId: r.topicId || null,
-              date: completionDateStr,
-              startTime: startedAtISO,
-              endTime: completionISO,
-              sessionDuration: duration,
-              actualStudyDuration: duration,
-              breakDuration: 0,
-              notes: `Completed Revision #${r.revisionNumber || 1}: "${r.topicName || r.title}" (${duration} mins)`,
-            });
+            if (r.courseId || activeCourseId) {
+              addStudySession({
+                courseId: r.courseId || activeCourseId,
+                subjectId: r.subjectId || null,
+                topicId: r.topicId || null,
+                date: completionDateStr,
+                startTime: startedAtISO,
+                endTime: completionISO,
+                sessionDuration: duration,
+                actualStudyDuration: duration,
+                breakDuration: 0,
+                notes: `Completed Revision #${r.revisionNumber || 1}: "${r.topicName || r.title}" (${duration} mins)`,
+              });
+            }
+
+            return {
+              ...r,
+              status: 'Completed',
+              startedAt: startedAtISO,
+              completedAt: completionISO,
+              completedDate: completionDateStr,
+              actualMinutes: duration,
+            };
           }
-
-          return {
-            ...r,
-            status: 'Completed',
-            startedAt: startedAtISO,
-            completedAt: completionISO,
-            completedDate: completionDateStr,
-            actualMinutes: duration,
-          };
         }
         return r;
       })
     );
 
     addNotification({
-      title: 'Revision Completed! 📚✅',
-      message: 'Great job! Revision start, completion time & duration recorded.',
-      type: 'success',
+      title: 'Revision Updated! 📚',
+      message: 'Status updated successfully.',
+      type: 'info',
     });
   }, [addNotification, addStudySession, activeCourseId]);
 
