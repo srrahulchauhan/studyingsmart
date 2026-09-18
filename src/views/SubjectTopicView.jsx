@@ -547,12 +547,7 @@ export default function SubjectTopicView({ onNavigate }) {
                                 >
                                   <div className="flex items-center gap-2">
                                     <span className="text-base">🎥</span>
-                                    <div>
-                                      <div className="text-xs font-extrabold">Lecture</div>
-                                      <div className="text-[10px] opacity-80 font-medium">
-                                        {isLectureDone ? 'Lecture = Completed ✅' : 'Lecture = Pending 🔴'}
-                                      </div>
-                                    </div>
+                                    <div className="text-xs font-extrabold">Lecture</div>
                                   </div>
                                   <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-black/10 dark:bg-white/10">
                                     {isLectureDone ? '✅ Done' : '🔴 Pending'}
@@ -570,12 +565,7 @@ export default function SubjectTopicView({ onNavigate }) {
                                 >
                                   <div className="flex items-center gap-2">
                                     <span className="text-base">📝</span>
-                                    <div>
-                                      <div className="text-xs font-extrabold">Make Notes</div>
-                                      <div className="text-[10px] opacity-80 font-medium">
-                                        {isNotesDone ? 'Notes = Completed ✅' : 'Notes = Pending 🔴'}
-                                      </div>
-                                    </div>
+                                    <div className="text-xs font-extrabold">Make Notes</div>
                                   </div>
                                   <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-black/10 dark:bg-white/10">
                                     {isNotesDone ? '✅ Done' : '🔴 Pending'}
@@ -629,17 +619,10 @@ export default function SubjectTopicView({ onNavigate }) {
                                         updateTopicSubTask(topic.id, 'revision');
                                       }
                                     }}
-                                    className={`flex items-center justify-between text-[10px] font-medium pt-1 ${
+                                    className={`flex items-center justify-end text-[10px] font-medium pt-1 ${
                                       topic.revisionRequired ? 'cursor-pointer select-none' : 'opacity-60 cursor-not-allowed'
                                     }`}
                                   >
-                                    <span>
-                                      {!topic.revisionRequired
-                                        ? 'Revision = Excluded ⭕'
-                                        : topic.revisionStatus === 'Completed'
-                                        ? 'Revision = Completed ✅'
-                                        : 'Revision = Pending 🔴'}
-                                    </span>
                                     <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-black/10 dark:bg-white/10">
                                       {!topic.revisionRequired
                                         ? '⭕ Skipped'

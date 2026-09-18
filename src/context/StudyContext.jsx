@@ -43,6 +43,7 @@ export function StudyProvider({ children }) {
   const [targets, setTargets] = useState(() => loadFromStorage(STORAGE_KEYS.TARGETS, []));
   const [goals, setGoals] = useState(() => loadFromStorage(STORAGE_KEYS.GOALS, []));
   const [pendingTasks, setPendingTasks] = useState(() => loadFromStorage(STORAGE_KEYS.PENDING_TASKS, []));
+  const [revisions, setRevisions] = useState(() => loadFromStorage(STORAGE_KEYS.REVISIONS, []));
   const [notifications, setNotifications] = useState(() => loadFromStorage(STORAGE_KEYS.NOTIFICATIONS, []));
   const [settings, setSettings] = useState(() => loadFromStorage(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS));
   const [activeCourseId, setActiveCourseId] = useState(() => loadFromStorage(STORAGE_KEYS.ACTIVE_COURSE_ID, null));
@@ -66,6 +67,7 @@ export function StudyProvider({ children }) {
   useEffect(() => saveToStorage(STORAGE_KEYS.TARGETS, targets), [targets]);
   useEffect(() => saveToStorage(STORAGE_KEYS.GOALS, goals), [goals]);
   useEffect(() => saveToStorage(STORAGE_KEYS.PENDING_TASKS, pendingTasks), [pendingTasks]);
+  useEffect(() => saveToStorage(STORAGE_KEYS.REVISIONS, revisions), [revisions]);
   useEffect(() => saveToStorage(STORAGE_KEYS.NOTIFICATIONS, notifications), [notifications]);
   useEffect(() => saveToStorage(STORAGE_KEYS.SETTINGS, settings), [settings]);
   useEffect(() => saveToStorage(STORAGE_KEYS.ACTIVE_COURSE_ID, activeCourseId), [activeCourseId]);
@@ -364,6 +366,8 @@ export function StudyProvider({ children }) {
       notesStatus,
       revisionStatus,
       revisionRequired,
+      sourceUrl: topicData.sourceUrl || topicData.videoUrl || '',
+      videoUrl: topicData.videoUrl || topicData.sourceUrl || '',
       status: isComp ? 'Completed' : 'Pending',
       createdAt: new Date().toISOString(),
     };
@@ -824,6 +828,9 @@ export function StudyProvider({ children }) {
   }, []);
 
   const completePendingTask = useCallback((id) => {
+    const completionISO = new Date().toISOString();
+    const completionDateStr = getTodayDateString();
+
     setPendingTasks((prev) =>
       prev.map((t) => {
         if (t.id === id) {
@@ -847,10 +854,28 @@ export function StudyProvider({ children }) {
               prevSubjs.map((subj) => (subj.id === t.subjectId ? { ...subj, status: 'Completed' } : subj))
             );
           }
+
+          // Auto-record session on actual completion date so reports capture study time & completion on that date
+          if (t.courseId) {
+            addStudySession({
+              courseId: t.courseId,
+              subjectId: t.subjectId || null,
+              topicId: t.topicId || null,
+              date: completionDateStr,
+              startTime: t.createdAt || completionISO,
+              endTime: completionISO,
+              sessionDuration: t.estimatedMinutes || 30,
+              actualStudyDuration: t.estimatedMinutes || 30,
+              breakDuration: 0,
+              notes: `Completed pending task "${t.title}" (Scheduled: ${t.originalDate || 'Earlier'}, Completed: ${completionDateStr})`,
+            });
+          }
+
           return {
             ...t,
             status: 'Completed',
-            completedAt: new Date().toISOString(),
+            completedAt: completionISO,
+            completedDate: completionDateStr,
           };
         }
         return t;
@@ -859,14 +884,101 @@ export function StudyProvider({ children }) {
 
     addNotification({
       title: 'Task Completed! ✅',
-      message: 'Pending item marked completed and updated across curriculum.',
+      message: 'Pending item completed! Completion date & time recorded in report.',
       type: 'success',
     });
-  }, [addNotification, updateTopicSubTask]);
+  }, [addNotification, updateTopicSubTask, addStudySession]);
 
   const deletePendingTask = useCallback((id) => {
     setPendingTasks((prev) => prev.filter((t) => t.id !== id));
   }, []);
+
+  // --- REVISION MANAGEMENT SYSTEM (INDEPENDENT) ---
+  const addRevision = useCallback((revisionData) => {
+    const todayStr = getTodayDateString();
+    const newRevision = {
+      id: `rev_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+      title: revisionData.title || (revisionData.topicName ? `${revisionData.topicName} Revision` : 'Revision Task'),
+      subjectName: revisionData.subjectName || '',
+      subjectId: revisionData.subjectId || null,
+      courseId: revisionData.courseId || activeCourseId || null,
+      topicName: revisionData.topicName || '',
+      topicId: revisionData.topicId || null,
+      subTopic: revisionData.subTopic || '',
+      revisionDate: revisionData.revisionDate || todayStr,
+      startTime: revisionData.startTime || '19:00',
+      durationMinutes: Number(revisionData.durationMinutes) || 30,
+      priority: revisionData.priority || 'Medium',
+      notes: revisionData.notes || '',
+      revisionType: revisionData.revisionType || 'New Topic',
+      repeatPattern: revisionData.repeatPattern || 'One Time',
+      revisionNumber: Number(revisionData.revisionNumber) || 1,
+      status: revisionData.status || (revisionData.revisionDate < todayStr ? 'Pending' : revisionData.revisionDate === todayStr ? 'Today' : 'Upcoming'),
+      sourceUrl: revisionData.sourceUrl || revisionData.videoUrl || '',
+      videoUrl: revisionData.videoUrl || revisionData.sourceUrl || '',
+      completedAt: null,
+      completedDate: null,
+      originalCompletionDate: revisionData.originalCompletionDate || null,
+      createdAt: new Date().toISOString(),
+    };
+    setRevisions((prev) => [newRevision, ...prev]);
+    addNotification({
+      title: 'Revision Scheduled! 📚',
+      message: `Revision for "${newRevision.topicName || newRevision.title}" scheduled for ${newRevision.revisionDate}.`,
+      type: 'info',
+    });
+    return newRevision;
+  }, [activeCourseId, addNotification]);
+
+  const updateRevision = useCallback((id, updates) => {
+    setRevisions((prev) => prev.map((r) => (r.id === id ? { ...r, ...updates } : r)));
+  }, []);
+
+  const deleteRevision = useCallback((id) => {
+    setRevisions((prev) => prev.filter((r) => r.id !== id));
+  }, []);
+
+  const completeRevision = useCallback((id, actualDurationMinutes = null) => {
+    const completionISO = new Date().toISOString();
+    const completionDateStr = getTodayDateString();
+
+    setRevisions((prev) =>
+      prev.map((r) => {
+        if (r.id === id) {
+          const duration = actualDurationMinutes || r.durationMinutes || 30;
+
+          if (r.courseId || activeCourseId) {
+            addStudySession({
+              courseId: r.courseId || activeCourseId,
+              subjectId: r.subjectId || null,
+              topicId: r.topicId || null,
+              date: completionDateStr,
+              startTime: r.createdAt || completionISO,
+              endTime: completionISO,
+              sessionDuration: duration,
+              actualStudyDuration: duration,
+              breakDuration: 0,
+              notes: `Completed Revision #${r.revisionNumber || 1}: "${r.topicName || r.title}" (${duration} mins)`,
+            });
+          }
+
+          return {
+            ...r,
+            status: 'Completed',
+            completedAt: completionISO,
+            completedDate: completionDateStr,
+          };
+        }
+        return r;
+      })
+    );
+
+    addNotification({
+      title: 'Revision Completed! 📚✅',
+      message: 'Great job! Revision logged in history and study stats.',
+      type: 'success',
+    });
+  }, [addNotification, addStudySession, activeCourseId]);
 
   // --- SETTINGS ---
   const updateSettings = useCallback((newSettings) => {
@@ -1147,6 +1259,13 @@ export function StudyProvider({ children }) {
     updatePendingTask,
     completePendingTask,
     deletePendingTask,
+
+    // Revisions System
+    revisions,
+    addRevision,
+    updateRevision,
+    deleteRevision,
+    completeRevision,
 
     // Notifications
     addNotification,

@@ -29,6 +29,7 @@ export default function ReportsExportView() {
     attendance,
     targets,
     goals,
+    pendingTasks,
     settings,
   } = useStudy();
 
@@ -124,6 +125,7 @@ export default function ReportsExportView() {
       studyPlans,
       subjects,
       topics,
+      pendingTasks,
       resources,
       timetable,
       studySessions: filteredSessions,

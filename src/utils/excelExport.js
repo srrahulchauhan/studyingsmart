@@ -15,6 +15,7 @@ export function exportStudyReportToExcel({
   attendance = [],
   targets = [],
   goals = [],
+  pendingTasks = [],
   settings = {},
   dateRange = { from: '', to: '' },
 }) {
@@ -315,6 +316,23 @@ export function exportStudyReportToExcel({
   const wsGoals = XLSX.utils.json_to_sheet(goalsData.length ? goalsData : [{ 'Goal Name': 'No goals created yet' }]);
   wsGoals['!cols'] = [{ wch: 25 }, { wch: 22 }, { wch: 22 }, { wch: 15 }, { wch: 15 }, { wch: 14 }, { wch: 15 }];
   XLSX.utils.book_append_sheet(wb, wsGoals, 'Goals');
+
+  // 14. Pending & Completed Tasks Sheet
+  const pendingTasksData = pendingTasks.map(pt => ({
+    'Task Title': pt.title,
+    'Course': courseMap.get(pt.courseId) || '—',
+    'Subject': subjectMap.get(pt.subjectId) || '—',
+    'Topic': topicMap.get(pt.topicId) || '—',
+    'Scheduled Date': pt.originalDate || pt.scheduledDate || '—',
+    'Status': pt.status || 'Pending',
+    'Completion Date': pt.completedDate || (pt.completedAt ? pt.completedAt.split('T')[0] : '—'),
+    'Completion Time': pt.completedAt ? formatTime(pt.completedAt) : '—',
+    'Priority': pt.priority || 'Medium',
+    'Estimated Mins': pt.estimatedMinutes || 30,
+  }));
+  const wsPending = XLSX.utils.json_to_sheet(pendingTasksData.length ? pendingTasksData : [{ 'Task Title': 'No pending or completed tasks' }]);
+  wsPending['!cols'] = [{ wch: 30 }, { wch: 22 }, { wch: 20 }, { wch: 20 }, { wch: 16 }, { wch: 12 }, { wch: 16 }, { wch: 16 }, { wch: 12 }, { wch: 15 }];
+  XLSX.utils.book_append_sheet(wb, wsPending, 'Pending Tasks');
 
   // Download filename formatting
   const fromStr = dateRange.from || '01-09-2026';

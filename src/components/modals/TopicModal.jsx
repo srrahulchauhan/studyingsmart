@@ -10,6 +10,7 @@ export default function TopicModal({ isOpen, topicToEdit, subjectId, courseId, o
     subjectId: subjectId || '',
     name: '',
     description: '',
+    sourceUrl: '',
     estimatedMinutes: 60,
     targetDate: '',
     priority: 'Medium',
@@ -17,7 +18,6 @@ export default function TopicModal({ isOpen, topicToEdit, subjectId, courseId, o
     notesStatus: 'Pending',
     revisionStatus: 'Pending',
     revisionRequired: true,
-    targetDate: '',
   });
 
   const availableSubjects = subjects.filter(s => !formData.courseId || s.courseId === formData.courseId);
@@ -29,6 +29,7 @@ export default function TopicModal({ isOpen, topicToEdit, subjectId, courseId, o
         subjectId: topicToEdit.subjectId || subjectId || '',
         name: topicToEdit.name || '',
         description: topicToEdit.description || '',
+        sourceUrl: topicToEdit.sourceUrl || topicToEdit.videoUrl || '',
         estimatedMinutes: topicToEdit.estimatedMinutes ?? 60,
         targetDate: topicToEdit.targetDate || '',
         priority: topicToEdit.priority || 'Medium',
@@ -43,6 +44,7 @@ export default function TopicModal({ isOpen, topicToEdit, subjectId, courseId, o
         subjectId: subjectId || (availableSubjects.length > 0 ? availableSubjects[0].id : ''),
         name: '',
         description: '',
+        sourceUrl: '',
         estimatedMinutes: 60,
         targetDate: '',
         priority: 'Medium',

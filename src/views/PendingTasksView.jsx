@@ -455,8 +455,8 @@ export default function PendingTasksView({ onNavigate }) {
                       </span>
                     </div>
 
-                    {/* Metadata line: Course, Subject, Scheduled Date */}
-                    <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-400 mt-1">
+                    {/* Metadata line: Course, Subject, Scheduled Date & Completion Date */}
+                    <div className="flex flex-wrap items-center gap-2.5 text-[11px] text-slate-400 mt-1">
                       {course && (
                         <span className="text-sky-500 dark:text-sky-400 font-bold flex items-center gap-1">
                           <BookOpen className="w-3 h-3" />
@@ -465,9 +465,15 @@ export default function PendingTasksView({ onNavigate }) {
                       )}
                       {subject && <span>• {subject.name}</span>}
                       {task.originalDate && (
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          Original: {task.originalDate}
+                        <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/[0.05] border border-slate-200/60 dark:border-white/10 text-slate-600 dark:text-slate-300 font-medium">
+                          <Calendar className="w-3 h-3 text-amber-500" />
+                          Scheduled: {task.originalDate}
+                        </span>
+                      )}
+                      {task.status === 'Completed' && (task.completedAt || task.completedDate) && (
+                        <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-400/30 text-emerald-600 dark:text-emerald-400 font-bold">
+                          <CheckCircle2 className="w-3 h-3" />
+                          Completed: {task.completedAt ? new Date(task.completedAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : task.completedDate}
                         </span>
                       )}
                       <span>• ⏱️ {task.estimatedMinutes || 45} mins</span>
