@@ -34,8 +34,8 @@ import TargetsGoalsView from './views/TargetsGoalsView';
 import StudyHistoryView from './views/StudyHistoryView';
 import AnalyticsView from './views/AnalyticsView';
 import ReportsExportView from './views/ReportsExportView';
-import SettingsView from './views/SettingsView';
 import PendingTasksView from './views/PendingTasksView';
+import RevisionManagementView from './views/RevisionManagementView';
 import PendingTasksPopupModal from './components/modals/PendingTasksPopupModal';
 
 function MainLayout() {
@@ -239,6 +239,12 @@ function MainLayout() {
 
           {currentView === 'pending-tasks' && (
             <PendingTasksView
+              onNavigate={handleNavigate}
+            />
+          )}
+
+          {currentView === 'revision' && (
+            <RevisionManagementView
               onNavigate={handleNavigate}
             />
           )}

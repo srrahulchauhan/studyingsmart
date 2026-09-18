@@ -158,6 +158,21 @@ export default function TopicModal({ isOpen, topicToEdit, subjectId, courseId, o
             />
           </div>
 
+          {/* Video Link */}
+          <div>
+            <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1 flex items-center justify-between">
+              <span>Video Link (Optional)</span>
+              <span className="text-[10px] text-slate-400 font-normal">(YouTube, Drive, Web link)</span>
+            </label>
+            <input
+              type="url"
+              value={formData.sourceUrl}
+              onChange={(e) => setFormData({ ...formData, sourceUrl: e.target.value })}
+              placeholder="Paste video link here (hidden behind Source button)"
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400"
+            />
+          </div>
+
           {/* Estimated Study Time & Priority */}
           <div className="grid grid-cols-2 gap-3">
             <div>

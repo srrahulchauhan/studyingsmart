@@ -47,6 +47,7 @@ export default function DashboardView({
     subjects,
     topics,
     pendingTasks,
+    revisions,
     activeCourseId,
     activeCourse,
     getCourseStudyTime,
@@ -320,6 +321,18 @@ export default function DashboardView({
           sparklineData={[10, 20, 25, 35, Math.max(30, courseProgress)]}
           footerText="Target hour completion"
           onClick={() => onNavigate('courses')}
+        />
+
+        {/* CARD 8: REVISION CONTROL CARD - Purple */}
+        <StatCard
+          title="📚 Revision"
+          value={revisions ? revisions.filter(r => r.status !== 'Completed').length : 0}
+          displayValue={`${revisions ? revisions.filter(r => r.status !== 'Completed').length : 0} Scheduled`}
+          description={`${revisions ? revisions.filter(r => r.status === 'Completed').length : 0} Completed / ${revisions ? revisions.length : 0} Total`}
+          icon={GraduationCap}
+          variant="sky"
+          footerText="Spaced Repetition Active"
+          onClick={() => onNavigate('revision')}
         />
 
         {/* CARD 8: CURRENT STREAK - Yellow */}

@@ -22,6 +22,7 @@ import {
   Eye,
   EyeOff,
   Filter,
+  ExternalLink,
 } from 'lucide-react';
 import SubjectModal from '../components/modals/SubjectModal';
 import TopicModal from '../components/modals/TopicModal';
@@ -500,6 +501,21 @@ export default function SubjectTopicView({ onNavigate }) {
 
                                 {/* Action buttons */}
                                 <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                                  {(topic.sourceUrl || topic.videoUrl) && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        window.open(topic.sourceUrl || topic.videoUrl, '_blank', 'noopener,noreferrer');
+                                      }}
+                                      className="py-1.5 px-3 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400 hover:bg-purple-500 hover:text-white border border-purple-400/30 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
+                                      title="Open Lecture / Video Source Link"
+                                    >
+                                      <ExternalLink className="w-3.5 h-3.5" />
+                                      <span>Source Link</span>
+                                    </button>
+                                  )}
+
                                   <button
                                     type="button"
                                     onClick={() => handleStartStudyTopic(topic)}

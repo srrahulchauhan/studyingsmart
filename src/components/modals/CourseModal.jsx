@@ -179,7 +179,28 @@ export default function CourseModal({ isOpen, courseToEdit, onSave, onClose }) {
               <input
                 type="date"
                 value={formData.startDate}
-                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                onChange={(e) => {
+                  const newStart = e.target.value;
+                  const daily = Number(formData.dailyTarget) || 0;
+                  let newTotal = formData.totalTargetHours;
+                  let newWeekly = formData.weeklyTarget;
+
+                  if (newStart && formData.targetDate) {
+                    const start = new Date(newStart);
+                    const end = new Date(formData.targetDate);
+                    const diffDays = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
+                    if (daily > 0) {
+                      newWeekly = Math.round(daily * 7);
+                      newTotal = Math.round(daily * diffDays);
+                    }
+                  }
+                  setFormData({
+                    ...formData,
+                    startDate: newStart,
+                    weeklyTarget: newWeekly,
+                    totalTargetHours: newTotal,
+                  });
+                }}
                 className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
               />
             </div>
@@ -190,11 +211,48 @@ export default function CourseModal({ isOpen, courseToEdit, onSave, onClose }) {
               <input
                 type="date"
                 value={formData.targetDate}
-                onChange={(e) => setFormData({ ...formData, targetDate: e.target.value })}
+                onChange={(e) => {
+                  const newTarget = e.target.value;
+                  const daily = Number(formData.dailyTarget) || 0;
+                  let newTotal = formData.totalTargetHours;
+                  let newWeekly = formData.weeklyTarget;
+
+                  if (formData.startDate && newTarget) {
+                    const start = new Date(formData.startDate);
+                    const end = new Date(newTarget);
+                    const diffDays = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
+                    if (daily > 0) {
+                      newWeekly = Math.round(daily * 7);
+                      newTotal = Math.round(daily * diffDays);
+                    }
+                  }
+                  setFormData({
+                    ...formData,
+                    targetDate: newTarget,
+                    weeklyTarget: newWeekly,
+                    totalTargetHours: newTotal,
+                  });
+                }}
                 className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
               />
             </div>
           </div>
+
+          {/* Duration Summary Helper Badge */}
+          {formData.startDate && formData.targetDate && (
+            <div className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-400/30 text-indigo-600 dark:text-indigo-400 font-medium text-[11px] flex items-center justify-between">
+              <span>
+                📅 Course Duration:{' '}
+                <strong>
+                  {Math.max(1, Math.ceil((new Date(formData.targetDate) - new Date(formData.startDate)) / (1000 * 60 * 60 * 24)))} Days
+                </strong>{' '}
+                (~{(Math.max(1, Math.ceil((new Date(formData.targetDate) - new Date(formData.startDate)) / (1000 * 60 * 60 * 24))) / 7).toFixed(1)} Weeks)
+              </span>
+              <span className="font-bold text-xs">
+                Auto-calculated ✨
+              </span>
+            </div>
+          )}
 
           {/* Targets: Daily, Weekly, Total */}
           <div className="grid grid-cols-3 gap-2.5 bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800">
@@ -207,7 +265,28 @@ export default function CourseModal({ isOpen, courseToEdit, onSave, onClose }) {
                 min="0"
                 step="0.5"
                 value={formData.dailyTarget}
-                onChange={(e) => setFormData({ ...formData, dailyTarget: e.target.value })}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const daily = Number(val) || 0;
+                  let newTotal = formData.totalTargetHours;
+                  let newWeekly = formData.weeklyTarget;
+
+                  if (daily > 0) {
+                    newWeekly = Math.round(daily * 7);
+                    if (formData.startDate && formData.targetDate) {
+                      const start = new Date(formData.startDate);
+                      const end = new Date(formData.targetDate);
+                      const diffDays = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
+                      newTotal = Math.round(daily * diffDays);
+                    }
+                  }
+                  setFormData({
+                    ...formData,
+                    dailyTarget: val,
+                    weeklyTarget: newWeekly,
+                    totalTargetHours: newTotal,
+                  });
+                }}
                 className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
               />
             </div>
