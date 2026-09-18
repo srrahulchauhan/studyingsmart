@@ -42,7 +42,19 @@ export function StudyProvider({ children }) {
   const [attendance, setAttendance] = useState(() => loadFromStorage(STORAGE_KEYS.ATTENDANCE, []));
   const [targets, setTargets] = useState(() => loadFromStorage(STORAGE_KEYS.TARGETS, []));
   const [goals, setGoals] = useState(() => loadFromStorage(STORAGE_KEYS.GOALS, []));
-  const [pendingTasks, setPendingTasks] = useState(() => loadFromStorage(STORAGE_KEYS.PENDING_TASKS, []));
+  const [pendingTasks, setPendingTasks] = useState(() => {
+    const loaded = loadFromStorage(STORAGE_KEYS.PENDING_TASKS, []);
+    return loaded.filter((t) => {
+      const isSubtask =
+        t.id?.startsWith('ptask_topic_lecture_') ||
+        t.id?.startsWith('ptask_topic_notes_') ||
+        t.id?.startsWith('ptask_topic_revision_') ||
+        t.title?.includes('Lecture:') ||
+        t.title?.includes('Notes:') ||
+        t.title?.includes('Revision:');
+      return !isSubtask;
+    });
+  });
   const [revisions, setRevisions] = useState(() => loadFromStorage(STORAGE_KEYS.REVISIONS, []));
   const [notifications, setNotifications] = useState(() => loadFromStorage(STORAGE_KEYS.NOTIFICATIONS, []));
   const [settings, setSettings] = useState(() => loadFromStorage(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS));
@@ -665,141 +677,20 @@ export function StudyProvider({ children }) {
     setGoals(prev => prev.filter(g => g.id !== id));
   }, []);
 
-  // --- PENDING TASKS AUTO-ROLLOVER & CRUD ---
-  // Rule 3 & 4: Automatically rolls over any incomplete task/topic scheduled before today,
-  // carries forward across Day 1 -> Day 2 -> Day 3... and NEVER auto-deletes until user completes it!
-  // --- PENDING TASKS AUTO-ROLLOVER & CRUD ---
-  // Automatically rolls over any incomplete topic, subject, or task into Pending Tasks,
-  // carries forward across days, and NEVER auto-deletes until user explicitly completes it!
+  // Ensure any existing auto-generated topic/subject tasks are purged from pendingTasks
   useEffect(() => {
-    const today = getTodayDateString();
-
-    // 1. Auto-rollover Topics into individual sub-task pending cards
-    topics.forEach((topic) => {
-      const topicDate = topic.targetDate || (topic.createdAt ? topic.createdAt.split('T')[0] : null);
-      if (topicDate ? topicDate <= today : true) {
-        // Lecture Pending
-        if (topic.lectureStatus === 'Pending') {
-          setPendingTasks((prev) => {
-            const taskId = `ptask_topic_lecture_${topic.id}`;
-            if (!prev.some((pt) => pt.id === taskId)) {
-              return [
-                ...prev,
-                {
-                  id: taskId,
-                  title: `🎥 Lecture: ${topic.name}`,
-                  courseId: topic.courseId,
-                  subjectId: topic.subjectId,
-                  topicId: topic.id,
-                  taskType: 'lecture',
-                  originalDate: topicDate || today,
-                  estimatedMinutes: Math.round((topic.estimatedMinutes || 60) * 0.4),
-                  priority: topic.priority || 'Medium',
-                  status: 'Pending',
-                  completedAt: null,
-                  source: 'topic',
-                  createdAt: new Date().toISOString(),
-                },
-              ];
-            }
-            return prev;
-          });
-        } else {
-          setPendingTasks((prev) => prev.map((pt) => (pt.id === `ptask_topic_lecture_${topic.id}` ? { ...pt, status: 'Completed' } : pt)));
-        }
-
-        // Notes Pending
-        if (topic.notesStatus === 'Pending') {
-          setPendingTasks((prev) => {
-            const taskId = `ptask_topic_notes_${topic.id}`;
-            if (!prev.some((pt) => pt.id === taskId)) {
-              return [
-                ...prev,
-                {
-                  id: taskId,
-                  title: `📝 Notes: ${topic.name}`,
-                  courseId: topic.courseId,
-                  subjectId: topic.subjectId,
-                  topicId: topic.id,
-                  taskType: 'notes',
-                  originalDate: topicDate || today,
-                  estimatedMinutes: Math.round((topic.estimatedMinutes || 60) * 0.4),
-                  priority: topic.priority || 'High',
-                  status: 'Pending',
-                  completedAt: null,
-                  source: 'topic',
-                  createdAt: new Date().toISOString(),
-                },
-              ];
-            }
-            return prev;
-          });
-        } else {
-          setPendingTasks((prev) => prev.map((pt) => (pt.id === `ptask_topic_notes_${topic.id}` ? { ...pt, status: 'Completed' } : pt)));
-        }
-
-        // Revision Pending (only if revisionRequired is true)
-        if (topic.revisionRequired && topic.revisionStatus === 'Pending') {
-          setPendingTasks((prev) => {
-            const taskId = `ptask_topic_revision_${topic.id}`;
-            if (!prev.some((pt) => pt.id === taskId)) {
-              return [
-                ...prev,
-                {
-                  id: taskId,
-                  title: `🔄 Revision: ${topic.name}`,
-                  courseId: topic.courseId,
-                  subjectId: topic.subjectId,
-                  topicId: topic.id,
-                  taskType: 'revision',
-                  originalDate: topicDate || today,
-                  estimatedMinutes: Math.round((topic.estimatedMinutes || 60) * 0.2),
-                  priority: topic.priority || 'Medium',
-                  status: 'Pending',
-                  completedAt: null,
-                  source: 'topic',
-                  createdAt: new Date().toISOString(),
-                },
-              ];
-            }
-            return prev;
-          });
-        } else {
-          setPendingTasks((prev) => prev.map((pt) => (pt.id === `ptask_topic_revision_${topic.id}` ? { ...pt, status: 'Completed' } : pt)));
-        }
-      }
-    });
-
-    // 2. Auto-rollover Subjects
-    subjects.forEach((subject) => {
-      const subjectDate = subject.targetDate || (subject.createdAt ? subject.createdAt.split('T')[0] : null);
-      if (subject.status !== 'Completed' && (subjectDate ? subjectDate <= today : true)) {
-        setPendingTasks((prev) => {
-          const exists = prev.some((pt) => pt.subjectId === subject.id && pt.source === 'subject' || pt.id === `ptask_subj_${subject.id}`);
-          if (!exists) {
-            return [
-              ...prev,
-              {
-                id: `ptask_subj_${subject.id}`,
-                title: `Subject: ${subject.name}`,
-                courseId: subject.courseId,
-                subjectId: subject.id,
-                topicId: null,
-                originalDate: subjectDate || today,
-                estimatedMinutes: (subject.targetHours || 2) * 60,
-                priority: subject.priority || 'High',
-                status: 'Pending',
-                completedAt: null,
-                source: 'subject',
-                createdAt: new Date().toISOString(),
-              },
-            ];
-          }
-          return prev;
-        });
-      }
-    });
-  }, [topics, subjects]);
+    setPendingTasks((prev) =>
+      prev.filter((pt) =>
+        !pt.id?.startsWith('ptask_topic_') &&
+        !pt.id?.startsWith('ptask_subj_') &&
+        !pt.title?.includes('Lecture:') &&
+        !pt.title?.includes('Notes:') &&
+        !pt.title?.includes('Revision:') &&
+        pt.source !== 'topic' &&
+        pt.source !== 'subject'
+      )
+    );
+  }, []);
 
   const addPendingTask = useCallback((taskData) => {
     const today = getTodayDateString();
