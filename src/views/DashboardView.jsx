@@ -219,7 +219,7 @@ export default function DashboardView({
 
 
       {/* ROW 2: COLORFUL STAT CARDS (Positioned directly under Study Command Center Hero) */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
         {/* CARD 1: TODAY STUDY - Sky Blue (Requirement 7) */}
         <StatCard
           title="Today Study"
