@@ -226,7 +226,7 @@ export default function Header({
           {isStudying && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-400/30 text-sky-400 text-xs font-mono font-bold shadow-sm animate-pulse">
               <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
-              <span>● STUDYING</span>
+              <span>STUDYING</span>
               <span className="text-sky-400 font-mono">
                 {formatSeconds(elapsedActiveSeconds)}
               </span>
@@ -236,21 +236,21 @@ export default function Header({
           {isBreak && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-400/30 text-pink-400 text-xs font-mono font-bold shadow-sm animate-pulse">
               <Coffee className="w-3 h-3 text-pink-400" />
-              <span>● ON BREAK</span>
+              <span>ON BREAK</span>
             </div>
           )}
 
           {isPaused && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-400/30 text-yellow-400 text-xs font-mono font-bold shadow-sm">
               <span className="w-2 h-2 rounded-full bg-yellow-400"></span>
-              <span>● PAUSED</span>
+              <span>PAUSED</span>
             </div>
           )}
 
           {!activeSession && (
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 text-slate-400 border border-white/10 text-xs font-semibold">
               <span className="w-2 h-2 rounded-full bg-slate-400"></span>
-              <span>○ IDLE</span>
+              <span>IDLE</span>
             </div>
           )}
         </div>
