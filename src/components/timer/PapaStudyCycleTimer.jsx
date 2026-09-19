@@ -601,6 +601,19 @@ export default function PapaStudyCycleTimer() {
           </div>
         )}
 
+        {/* CURRENTLY STUDYING BANNER */}
+        {isRunning && phase === 'study' && (
+          <div className="mb-4 flex flex-col items-center justify-center animate-pulse transition-all">
+             <div className="text-[10px] font-black uppercase tracking-widest text-sky-500 dark:text-sky-400 mb-0.5 flex items-center">
+               <span className="inline-block w-1.5 h-1.5 rounded-full bg-sky-500 mr-1.5 animate-ping"></span>
+               Currently Studying
+             </div>
+             <div className="text-base sm:text-lg font-bold text-slate-800 dark:text-white px-4 text-center max-w-md mx-auto line-clamp-2">
+               {currentPendingTask?.title || [currentSubject?.name, currentTopic?.name].filter(Boolean).join(' • ') || currentCourse?.name || 'Focus Session'}
+             </div>
+          </div>
+        )}
+
         {/* PROGRESS RING & DIGITAL DISPLAY */}
         <div className="flex flex-col items-center justify-center relative">
           <ProgressRing
