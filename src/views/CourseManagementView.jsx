@@ -17,7 +17,7 @@ import CourseModal from '../components/modals/CourseModal';
 import DuplicateCourseModal from '../components/modals/DuplicateCourseModal';
 import ConfirmDeleteModal from '../components/modals/ConfirmDeleteModal';
 
-export default function CourseManagementView({ onSelectCourse, onNavigate }) {
+export default function CourseManagementView({ onNavigate }) {
   const {
     courses,
     subjects,
@@ -31,7 +31,6 @@ export default function CourseManagementView({ onSelectCourse, onNavigate }) {
     restoreCourse,
     duplicateCourse,
     getCourseStudyTime,
-    getAttendanceStats,
   } = useStudy();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

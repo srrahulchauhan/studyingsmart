@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useStudy } from '../../context/StudyContext';
-import { useTimer } from '../../context/TimerContext';
 import { formatSeconds } from '../../utils/dateUtils';
 import { sounds } from '../../utils/audio';
 import {
@@ -12,14 +11,11 @@ import {
   VolumeX,
   FastForward,
   CheckCircle2,
-  Heart,
-  Flame,
   Plus,
   Minus,
   Maximize2,
   Minimize2,
   Sparkles,
-  Settings as SettingsIcon,
 } from 'lucide-react';
 import ProgressRing from '../common/ProgressRing';
 
@@ -35,8 +31,6 @@ export default function PapaStudyCycleTimer() {
     completePendingTask,
     toggleTopicComplete,
   } = useStudy();
-
-  const { startStudy, pauseStudy, resumeStudy, cancelStudy, takeBreak, setIsBreakModalOpen } = useTimer();
 
   const sessionStartTimeRef = useRef(new Date().toISOString());
 
@@ -65,7 +59,7 @@ export default function PapaStudyCycleTimer() {
   const currentPendingTask = pendingTasks.find((pt) => pt.id === selectedPendingTaskId);
 
   // Core Timer State
-  const [smartPhase, setSmartPhase] = useState('study'); // 'study' | 'break_prompt' | 'break_active'
+  const [phase, setPhase] = useState('study'); // 'study' or 'break'
   const [elapsedStudySeconds, setElapsedStudySeconds] = useState(0); 
   const [isRunning, setIsRunning] = useState(false);
   const [cycleCount, setCycleCount] = useState(1);
@@ -76,16 +70,6 @@ export default function PapaStudyCycleTimer() {
   const [breakDurationMinutes, setBreakDurationMinutes] = useState(15);
   const [manualTimeAdjustment, setManualTimeAdjustment] = useState(0); 
   const [earnedXP, setEarnedXP] = useState(null); 
-
-  // Smart Custom Break Settings
-  const [showSmartSettings, setShowSmartSettings] = useState(false);
-  const [studyIntervalMinutes, setStudyIntervalMinutes] = useState(30);
-  const [autoBreakEnabled, setAutoBreakEnabled] = useState(true);
-  const [customBreakMessage, setCustomBreakMessage] = useState('Break Time ☕');
-  
-  // Smart Break Runtime
-  const [currentIntervalElapsedSeconds, setCurrentIntervalElapsedSeconds] = useState(0);
-  const [breakHistory, setBreakHistory] = useState([]); // track completed intervals/breaks
 
   const calculateTargetMinutes = () => {
     if (currentPendingTask) {
@@ -138,10 +122,10 @@ export default function PapaStudyCycleTimer() {
 
   // Sync break remaining if duration is changed while not running break
   useEffect(() => {
-    if (smartPhase === 'study') {
+    if (phase === 'study') {
       setBreakRemainingSeconds(BREAK_SECONDS);
     }
-  }, [BREAK_SECONDS, smartPhase]);
+  }, [BREAK_SECONDS, phase]);
 
   const speakText = (text) => {
     if (!soundEnabled || typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -161,7 +145,7 @@ export default function PapaStudyCycleTimer() {
     if (!isRunning) return;
 
     const interval = setInterval(() => {
-      if (smartPhase === 'study') {
+      if (phase === 'study') {
         setElapsedStudySeconds((prevSec) => {
           const nextSec = prevSec + 1;
 
@@ -182,20 +166,7 @@ export default function PapaStudyCycleTimer() {
           }
           return nextSec;
         });
-
-        // Smart Break Auto Prompt Logic
-        if (autoBreakEnabled) {
-          setCurrentIntervalElapsedSeconds((prev) => {
-            const next = prev + 1;
-            if (next >= studyIntervalMinutes * 60) {
-              setSmartPhase('break_prompt');
-              if (soundEnabled) sounds.playBreakAlert();
-            }
-            return next;
-          });
-        }
-
-      } else if (smartPhase === 'break_active') {
+      } else {
         setBreakRemainingSeconds((prev) => {
           if (prev > 1) return prev - 1;
 
@@ -210,26 +181,24 @@ export default function PapaStudyCycleTimer() {
             type: 'success',
           });
 
-          // Add completed break to history
-          setBreakHistory(h => [...h, { type: 'break', duration: breakDurationMinutes, title: 'Break' }]);
-          
-          setSmartPhase('study');
-          setCurrentIntervalElapsedSeconds(0);
-          setCycleCount((c) => c + 1);
+          setShowPapaBreakModal(false);
           setShowBreakEndBanner(true);
-          
-          resumeStudy();
+          setCycleCount((c) => c + 1);
 
-          return BREAK_SECONDS; // reset
+          setPhase('study');
+          setElapsedStudySeconds(0);
+          setTargetTimeAlertPlayed(false);
+          setShowTimeOverBanner(false);
+          sessionStartTimeRef.current = new Date().toISOString();
+          return BREAK_SECONDS;
         });
       }
     }, 1000);
 
     return () => clearInterval(interval);
   }, [
-    isRunning, smartPhase, targetTimeAlertPlayed, soundEnabled, addNotification, 
-    STUDY_TARGET_SECONDS, targetStudyMinutes, BREAK_SECONDS,
-    autoBreakEnabled, studyIntervalMinutes, breakDurationMinutes
+    isRunning, phase, targetTimeAlertPlayed, soundEnabled, addNotification, 
+    STUDY_TARGET_SECONDS, targetStudyMinutes, BREAK_SECONDS
   ]);
 
   const adjustTime = (mins) => {
@@ -304,21 +273,15 @@ export default function PapaStudyCycleTimer() {
 
     setElapsedStudySeconds(0);
     setManualTimeAdjustment(0);
-    setCurrentIntervalElapsedSeconds(0);
-    setBreakHistory([]);
     setTargetTimeAlertPlayed(false);
     setShowTimeOverBanner(false);
     sessionStartTimeRef.current = new Date().toISOString();
-    cancelStudy();
   };
 
   const handleStart = () => {
     sounds.playClick();
     if (elapsedStudySeconds === 0) {
       sessionStartTimeRef.current = new Date().toISOString();
-      startStudy({ courseId: selectedCourseId, subjectId: selectedSubjectId, topicId: selectedTopicId });
-    } else {
-      if (smartPhase === 'study') resumeStudy();
     }
     setIsRunning(true);
     setShowBreakEndBanner(false);
@@ -327,92 +290,58 @@ export default function PapaStudyCycleTimer() {
   const handlePause = () => {
     sounds.playClick();
     setIsRunning(false);
-    pauseStudy();
   };
 
   const handleReset = () => {
     sounds.playClick();
     setIsRunning(false);
-    setSmartPhase('study');
+    setPhase('study');
     setElapsedStudySeconds(0);
-    setCurrentIntervalElapsedSeconds(0);
-    setBreakHistory([]);
     setBreakRemainingSeconds(BREAK_SECONDS);
     setTargetTimeAlertPlayed(false);
     setShowTimeOverBanner(false);
     setShowPapaBreakModal(false);
     setShowBreakEndBanner(false);
     sessionStartTimeRef.current = new Date().toISOString();
-    cancelStudy();
   };
 
   const handleStartBreak = () => {
     sounds.playClick();
-    setBreakHistory(h => [...h, { type: 'study', duration: studyIntervalMinutes, title: 'Study' }]);
-    setSmartPhase('break_active');
+    setPhase('break');
     setBreakRemainingSeconds(BREAK_SECONDS);
     setShowPapaBreakModal(true);
     setShowTimeOverBanner(false);
-    takeBreak('Manual Break');
-    setTimeout(() => setIsBreakModalOpen(false), 0);
   };
 
   const handleSkipPhase = () => {
     sounds.playClick();
-    if (smartPhase === 'study') {
+    if (phase === 'study') {
       handleStartBreak();
-    } else if (smartPhase === 'break_active') {
-      setBreakHistory(h => [...h, { type: 'break', duration: Math.round((BREAK_SECONDS - breakRemainingSeconds)/60), title: 'Partial Break' }]);
-      setSmartPhase('study');
-      setCurrentIntervalElapsedSeconds(0);
+    } else {
+      setPhase('study');
+      setElapsedStudySeconds(0);
       setTargetTimeAlertPlayed(false);
       setShowTimeOverBanner(false);
       setShowPapaBreakModal(false);
       setShowBreakEndBanner(true);
       setCycleCount((c) => c + 1);
-      resumeStudy();
+      sessionStartTimeRef.current = new Date().toISOString();
     }
   };
 
-  // Smart Break Prompts Actions
-  const handleStartSmartBreak = () => {
-    sounds.playClick();
-    setBreakHistory(h => [...h, { type: 'study', duration: studyIntervalMinutes, title: 'Study' }]);
-    setSmartPhase('break_active');
-    setBreakRemainingSeconds(BREAK_SECONDS);
-    takeBreak('Smart Custom Break');
-    setTimeout(() => setIsBreakModalOpen(false), 0);
-  };
-
-  const handleSkipSmartBreak = () => {
-    sounds.playClick();
-    setBreakHistory(h => [...h, { type: 'study', duration: studyIntervalMinutes, title: 'Study' }]);
-    setBreakHistory(h => [...h, { type: 'skip', duration: 0, title: 'Skipped Break' }]);
-    setSmartPhase('study');
-    setCurrentIntervalElapsedSeconds(0);
-    resumeStudy();
-  };
-
-  const handleAdd5MinToInterval = () => {
-    sounds.playClick();
-    // Substract 5 mins from elapsed to delay the prompt by 5 mins
-    setCurrentIntervalElapsedSeconds(prev => Math.max(0, prev - (5 * 60)));
-    setSmartPhase('study');
-  };
-
-  const isOvertime = smartPhase === 'study' && elapsedStudySeconds > STUDY_TARGET_SECONDS;
+  const isOvertime = phase === 'study' && elapsedStudySeconds > STUDY_TARGET_SECONDS;
   const remainingTargetSeconds = Math.max(0, STUDY_TARGET_SECONDS - elapsedStudySeconds);
   const overtimeSeconds = Math.max(0, elapsedStudySeconds - STUDY_TARGET_SECONDS);
   const studiedMinutes = Math.round(elapsedStudySeconds / 60);
 
   const progressPercent =
-    smartPhase === 'study' || smartPhase === 'break_prompt'
+    phase === 'study'
       ? Math.min(100, Math.round((elapsedStudySeconds / STUDY_TARGET_SECONDS) * 100))
       : Math.min(100, Math.round(((BREAK_SECONDS - breakRemainingSeconds) / BREAK_SECONDS) * 100));
 
   const bgGlowColor = isOvertime 
     ? 'bg-amber-500/[0.15]' 
-    : (smartPhase === 'study' || smartPhase === 'break_prompt')
+    : phase === 'study' 
       ? 'bg-sky-500/[0.12]' 
       : 'bg-pink-500/[0.15]';
 
@@ -435,7 +364,7 @@ export default function PapaStudyCycleTimer() {
       )}
 
       {/* TIME OVER BANNER */}
-      {showTimeOverBanner && (smartPhase === 'study' || smartPhase === 'break_prompt') && !ambientMode && (
+      {showTimeOverBanner && phase === 'study' && !ambientMode && (
         <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-rose-500/20 to-amber-500/20 border-2 border-amber-400 shadow-[0_0_30px_rgba(245,158,11,0.2)] flex flex-col sm:flex-row items-center justify-between gap-3 animate-bounce-subtle backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white flex items-center justify-center font-black text-xl shrink-0 shadow-lg shadow-amber-500/30">
@@ -499,7 +428,7 @@ export default function PapaStudyCycleTimer() {
         } ${
           isOvertime
             ? 'bg-amber-500/[0.04] dark:bg-[#120d05]/95 border-amber-500/40 shadow-amber-500/20'
-            : (smartPhase === 'study' || smartPhase === 'break_prompt')
+            : phase === 'study'
             ? 'bg-white/95 dark:bg-[#070c18]/95 border-sky-400/30 dark:border-sky-400/20 shadow-sky-500/10'
             : 'bg-white/95 dark:bg-[#070c18]/95 border-pink-400/40 dark:border-pink-500/30 shadow-pink-500/15'
         }`}
@@ -638,101 +567,35 @@ export default function PapaStudyCycleTimer() {
 
         {/* TIME ADJUSTERS & BREAK SETTINGS */}
         {!ambientMode && (
-          <div className="flex flex-col items-center gap-3 mb-6">
-            <div className="flex flex-wrap justify-center items-center gap-3 w-full">
-              <div className="flex items-center bg-slate-100 dark:bg-white/[0.05] p-1 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
-                <button onClick={() => adjustTime(-5)} className="p-2 hover:bg-white dark:hover:bg-white/10 rounded-xl transition-all text-slate-500 hover:text-sky-500"><Minus className="w-4 h-4"/></button>
-                <div className="px-3 text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
-                  Target: {targetStudyMinutes}m
-                </div>
-                <button onClick={() => adjustTime(5)} className="p-2 hover:bg-white dark:hover:bg-white/10 rounded-xl transition-all text-slate-500 hover:text-sky-500"><Plus className="w-4 h-4"/></button>
+          <div className="flex flex-wrap justify-center items-center gap-3 mb-6">
+            <div className="flex items-center bg-slate-100 dark:bg-white/[0.05] p-1 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
+              <button onClick={() => adjustTime(-5)} className="p-2 hover:bg-white dark:hover:bg-white/10 rounded-xl transition-all text-slate-500 hover:text-sky-500"><Minus className="w-4 h-4"/></button>
+              <div className="px-3 text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+                Target: {targetStudyMinutes}m
               </div>
-              
-              <button 
-                onClick={() => setShowSmartSettings(!showSmartSettings)}
-                className={`flex items-center gap-2 p-1.5 px-4 rounded-2xl border transition-all shadow-sm ${showSmartSettings ? 'bg-sky-500/10 border-sky-400/30 text-sky-500' : 'bg-slate-100 dark:bg-white/[0.05] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300'}`}
-              >
-                <SettingsIcon className="w-4 h-4" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Smart Break Settings</span>
-              </button>
+              <button onClick={() => adjustTime(5)} className="p-2 hover:bg-white dark:hover:bg-white/10 rounded-xl transition-all text-slate-500 hover:text-sky-500"><Plus className="w-4 h-4"/></button>
             </div>
-
-            {/* Expandable Smart Break Settings Panel */}
-            {showSmartSettings && (
-              <div className="w-full max-w-xl bg-slate-50 dark:bg-[#0a0f1d] border border-slate-200 dark:border-white/10 p-4 rounded-2xl animate-fadeIn text-left grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[9px] font-extrabold text-slate-400 uppercase block px-1 mb-1">Study Interval (mins)</label>
-                  <div className="flex gap-1">
-                    {[25, 30, 45, 60].map(mins => (
-                      <button 
-                        key={mins}
-                        onClick={() => setStudyIntervalMinutes(mins)}
-                        className={`flex-1 py-1.5 text-xs font-bold rounded-xl transition-all ${
-                          studyIntervalMinutes === mins 
-                            ? 'bg-sky-500 text-white shadow-md'
-                            : 'bg-white dark:bg-white/[0.03] text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/[0.06]'
-                        }`}
-                      >
-                        {mins}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-[9px] font-extrabold text-slate-400 uppercase block px-1 mb-1">Break Duration (mins)</label>
-                  <div className="flex gap-1">
-                    {[5, 10, 15, 20].map(mins => (
-                      <button 
-                        key={mins}
-                        onClick={() => setBreakDurationMinutes(mins)}
-                        className={`flex-1 py-1.5 text-xs font-bold rounded-xl transition-all ${
-                          breakDurationMinutes === mins 
-                            ? 'bg-pink-500 text-white shadow-md'
-                            : 'bg-white dark:bg-white/[0.03] text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/[0.06]'
-                        }`}
-                      >
-                        {mins}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-[9px] font-extrabold text-slate-400 uppercase block px-1 mb-1">Custom Break Message</label>
-                  <input 
-                    type="text" 
-                    value={customBreakMessage}
-                    onChange={(e) => setCustomBreakMessage(e.target.value)}
-                    className="w-full text-xs font-bold p-2 rounded-xl bg-white dark:bg-[#0c1322] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-400"
-                    placeholder="E.g., Time for Coffee ☕"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between bg-white dark:bg-white/[0.03] p-2 rounded-xl border border-slate-200 dark:border-white/10">
-                  <label className="text-[10px] font-bold text-slate-600 dark:text-slate-300">Auto Break Popup</label>
-                  <button 
-                    onClick={() => setAutoBreakEnabled(!autoBreakEnabled)}
-                    className={`relative w-10 h-6 rounded-full transition-colors ${autoBreakEnabled ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'}`}
-                  >
-                    <span className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform ${autoBreakEnabled ? 'translate-x-4' : 'translate-x-0'}`}></span>
-                  </button>
-                </div>
+            
+            <div className="flex items-center bg-slate-100 dark:bg-white/[0.05] p-1 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
+              <div className="px-3 text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+                Break:
               </div>
-            )}
-          </div>
-        )}
-
-        {/* CURRENTLY STUDYING BANNER */}
-        {isRunning && smartPhase === 'study' && (
-          <div className="mb-4 flex flex-col items-center justify-center animate-pulse transition-all">
-             <div className="text-[10px] font-black uppercase tracking-widest text-sky-500 dark:text-sky-400 mb-0.5 flex items-center">
-               <span className="inline-block w-1.5 h-1.5 rounded-full bg-sky-500 mr-1.5 animate-ping"></span>
-               Currently Studying
-             </div>
-             <div className="text-base sm:text-lg font-bold text-slate-800 dark:text-white px-4 text-center max-w-md mx-auto line-clamp-2">
-               {currentPendingTask?.title || [currentSubject?.name, currentTopic?.name].filter(Boolean).join(' • ') || currentCourse?.name || 'Focus Session'}
-             </div>
+              <div className="flex gap-1">
+                {[5, 10, 15].map(mins => (
+                  <button 
+                    key={mins}
+                    onClick={() => { sounds.playClick(); setBreakDurationMinutes(mins); }}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
+                      breakDurationMinutes === mins 
+                        ? 'bg-white dark:bg-[#1a2333] shadow-sm text-pink-500 dark:text-pink-400 border border-slate-200 dark:border-white/10'
+                        : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                    }`}
+                  >
+                    {mins}m
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
@@ -746,22 +609,22 @@ export default function PapaStudyCycleTimer() {
           >
             <div className="flex flex-col items-center justify-center select-none z-10">
               <div className={`digital-timer font-black tracking-tighter filter drop-shadow-md transition-all ${ambientMode ? 'text-7xl' : 'text-5xl'} ${
-                isOvertime ? 'text-amber-500 dark:text-amber-400' : (smartPhase === 'study' || smartPhase === 'break_prompt') ? 'text-slate-900 dark:text-white' : 'text-pink-500 dark:text-pink-400'
+                isOvertime ? 'text-amber-500 dark:text-amber-400' : phase === 'study' ? 'text-slate-900 dark:text-white' : 'text-pink-500 dark:text-pink-400'
               }`}>
-                {(smartPhase === 'study' || smartPhase === 'break_prompt')
+                {phase === 'study'
                   ? isOvertime
                     ? `+${formatSeconds(overtimeSeconds)}`
                     : formatSeconds(remainingTargetSeconds)
                   : formatSeconds(breakRemainingSeconds)}
               </div>
               <div className={`uppercase font-black tracking-widest mt-1 transition-all ${ambientMode ? 'text-xs' : 'text-[9px]'} ${isOvertime ? 'text-amber-500 animate-pulse' : 'text-slate-400'}`}>
-                {(smartPhase === 'study' || smartPhase === 'break_prompt')
+                {phase === 'study'
                   ? isOvertime
                     ? 'Overtime Active'
                     : 'Time Remaining'
                   : 'Break Time Remaining'}
               </div>
-              {(smartPhase === 'study' || smartPhase === 'break_prompt') && (
+              {phase === 'study' && (
                 <div className={`font-mono font-bold mt-2 px-3 py-0.5 rounded-full bg-black/10 dark:bg-white/10 text-slate-700 dark:text-slate-200 transition-all ${ambientMode ? 'text-xs' : 'text-[10px]'}`}>
                   {studiedMinutes}m Logged
                 </div>
@@ -801,10 +664,10 @@ export default function PapaStudyCycleTimer() {
           <button
             onClick={handleSkipPhase}
             className={`rounded-2xl bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 text-slate-700 dark:text-slate-200 font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 ${ambientMode ? 'py-4 px-6 text-sm' : 'py-3 px-4 text-xs'}`}
-            title={`Skip to ${smartPhase === 'study' ? 'Break' : 'Study'}`}
+            title={`Skip to ${phase === 'study' ? 'Break' : 'Study'}`}
           >
             <FastForward className={ambientMode ? "w-5 h-5" : "w-4 h-4"} />
-            SKIP TO {smartPhase === 'study' ? 'BREAK' : 'STUDY'}
+            SKIP TO {phase === 'study' ? 'BREAK' : 'STUDY'}
           </button>
 
           <button
@@ -816,40 +679,20 @@ export default function PapaStudyCycleTimer() {
           </button>
         </div>
 
-        {/* METRICS & SMART PROGRESS INLINE FOOTER */}
+        {/* METRICS INLINE FOOTER */}
         {!ambientMode && (
-          <div className="mt-8 pt-4 border-t border-slate-200 dark:border-white/[0.08]">
-            {/* Break History Visualizer */}
-            {breakHistory.length > 0 && (
-              <div className="flex items-center gap-1 overflow-x-auto pb-4 mb-2 no-scrollbar">
-                {breakHistory.map((item, index) => (
-                  <div key={index} className="flex items-center shrink-0">
-                    <div className={`px-2 py-1 rounded-md text-[10px] font-bold ${
-                      item.type === 'study' ? 'bg-sky-500/10 text-sky-500' :
-                      item.type === 'break' ? 'bg-pink-500/10 text-pink-500' :
-                      'bg-slate-500/10 text-slate-500'
-                    }`}>
-                      {item.type === 'study' ? `✅ ${item.duration}m` : item.type === 'break' ? `☕ ${item.duration}m` : `⏭ Skipped`}
-                    </div>
-                    {index < breakHistory.length - 1 && <span className="text-slate-300 dark:text-white/20 mx-1">→</span>}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="grid grid-cols-3 gap-3 text-xs">
-              <div className="p-3 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.05] shadow-sm">
-                <span className="text-[9px] text-slate-400 uppercase font-black block mb-1">Current Session</span>
-                <span className="font-extrabold text-sky-500 dark:text-sky-400 font-mono text-base">{studiedMinutes}m</span>
-              </div>
-              <div className="p-3 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.05] shadow-sm">
-                <span className="text-[9px] text-slate-400 uppercase font-black block mb-1">Study Cycle</span>
-                <span className="font-extrabold text-amber-500 dark:text-amber-400 font-mono text-base">#{cycleCount}</span>
-              </div>
-              <div className="p-3 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.05] shadow-sm">
-                <span className="text-[9px] text-slate-400 uppercase font-black block mb-1">Total Completed</span>
-                <span className="font-extrabold text-emerald-500 dark:text-emerald-400 font-mono text-base">{completedStudySessions} Tasks</span>
-              </div>
+          <div className="grid grid-cols-3 gap-3 mt-8 pt-4 border-t border-slate-200 dark:border-white/[0.08] text-xs">
+            <div className="p-3 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.05] shadow-sm">
+              <span className="text-[9px] text-slate-400 uppercase font-black block mb-1">Current Session</span>
+              <span className="font-extrabold text-sky-500 dark:text-sky-400 font-mono text-base">{studiedMinutes}m</span>
+            </div>
+            <div className="p-3 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.05] shadow-sm">
+              <span className="text-[9px] text-slate-400 uppercase font-black block mb-1">Study Cycle</span>
+              <span className="font-extrabold text-amber-500 dark:text-amber-400 font-mono text-base">#{cycleCount}</span>
+            </div>
+            <div className="p-3 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.05] shadow-sm">
+              <span className="text-[9px] text-slate-400 uppercase font-black block mb-1">Total Completed</span>
+              <span className="font-extrabold text-emerald-500 dark:text-emerald-400 font-mono text-base">{completedStudySessions} Tasks</span>
             </div>
           </div>
         )}
@@ -874,47 +717,7 @@ export default function PapaStudyCycleTimer() {
         </div>
       )}
 
-      {/* SMART BREAK PROMPT MODAL */}
-      {smartPhase === 'break_prompt' && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-fadeIn">
-          <div className="w-full max-w-md rounded-[2rem] bg-white dark:bg-[#0a0f1d] border border-pink-500/30 p-8 shadow-[0_0_50px_rgba(236,72,153,0.2)] text-center animate-scaleIn space-y-6">
-            <div className="w-20 h-20 mx-auto rounded-full bg-pink-500/15 text-pink-500 flex items-center justify-center shadow-inner border border-pink-400/30 animate-pulse">
-              <Coffee className="w-10 h-10" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Break Time!</h3>
-              <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-2 bg-slate-100 dark:bg-white/[0.03] p-3 rounded-xl border border-slate-200 dark:border-white/10">
-                {customBreakMessage || "Time to stretch and hydrate."}
-              </p>
-              <div className="mt-4 text-xs font-bold text-slate-400">
-                You have completed {studyIntervalMinutes} minutes of focus.
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <button 
-                onClick={handleStartSmartBreak} 
-                className="col-span-1 sm:col-span-2 py-4 rounded-2xl bg-gradient-to-r from-pink-500 to-pink-400 hover:from-pink-400 hover:to-pink-300 text-white font-black text-sm shadow-lg shadow-pink-500/30 transition-transform active:scale-95"
-              >
-                Start Break ({breakDurationMinutes}m)
-              </button>
-              <button 
-                onClick={handleSkipSmartBreak} 
-                className="py-3 rounded-xl bg-slate-100 dark:bg-white/[0.05] hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 font-bold text-sm transition-colors"
-              >
-                Skip Break
-              </button>
-              <button 
-                onClick={handleAdd5MinToInterval} 
-                className="py-3 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 font-bold text-sm transition-colors border border-sky-500/20"
-              >
-                +5 Min Study
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showPapaBreakModal && smartPhase === 'break_active' && (
+      {showPapaBreakModal && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-fadeIn">
           <div className="w-full max-w-md rounded-[2rem] bg-white dark:bg-[#0a0f1d] border border-pink-500/30 p-8 shadow-[0_0_50px_rgba(236,72,153,0.2)] text-center animate-scaleIn space-y-6">
             <div className="w-16 h-16 mx-auto rounded-3xl bg-pink-500/15 text-pink-500 flex items-center justify-center shadow-inner border border-pink-400/30">

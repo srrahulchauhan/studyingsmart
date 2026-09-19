@@ -177,40 +177,16 @@ export default function TopicModal({ isOpen, topicToEdit, subjectId, courseId, o
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Estimated Time
+                Estimated Time (Minutes)
               </label>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <input
-                    type="number"
-                    min="0"
-                    value={Math.floor((parseInt(formData.estimatedMinutes) || 0) / 60)}
-                    onChange={(e) => {
-                      const hrs = parseInt(e.target.value) || 0;
-                      const mins = (parseInt(formData.estimatedMinutes) || 0) % 60;
-                      setFormData({ ...formData, estimatedMinutes: (hrs * 60) + mins });
-                    }}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 pr-7"
-                  />
-                  <span className="absolute right-3 top-2.5 text-xs text-slate-400 pointer-events-none font-medium">hr</span>
-                </div>
-                <div className="relative flex-1">
-                  <input
-                    type="number"
-                    min="0"
-                    max="59"
-                    step="5"
-                    value={(parseInt(formData.estimatedMinutes) || 0) % 60}
-                    onChange={(e) => {
-                      const hrs = Math.floor((parseInt(formData.estimatedMinutes) || 0) / 60);
-                      const mins = parseInt(e.target.value) || 0;
-                      setFormData({ ...formData, estimatedMinutes: (hrs * 60) + mins });
-                    }}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 pr-8"
-                  />
-                  <span className="absolute right-3 top-2.5 text-xs text-slate-400 pointer-events-none font-medium">min</span>
-                </div>
-              </div>
+              <input
+                type="number"
+                min="5"
+                step="5"
+                value={formData.estimatedMinutes}
+                onChange={(e) => setFormData({ ...formData, estimatedMinutes: e.target.value })}
+                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+              />
             </div>
             <div>
               <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">

@@ -20,8 +20,6 @@ import {
   Command,
   User,
   Coffee,
-  Pause,
-  Square,
 } from 'lucide-react';
 
 export default function Header({
@@ -224,69 +222,36 @@ export default function Header({
       {/* Right: Live Status Indicator, Time, Streak, Notifs, Theme */}
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Special Live Status Indicator (Requirement 47) */}
-        <div className="hidden lg:flex items-center gap-1.5">
+        <div className="hidden lg:flex items-center">
           {isStudying && (
-            <>
-              <button onClick={pauseStudy} title="Pause Session" className="group flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-400/30 text-sky-400 text-xs font-mono font-bold shadow-sm hover:bg-sky-500/20 transition-colors">
-                <Pause className="w-3.5 h-3.5 fill-current opacity-70 group-hover:opacity-100 transition-opacity" />
-                <span>STUDYING</span>
-                <span className="text-sky-400 font-mono min-w-[45px] text-center">
-                  {formatSeconds(elapsedActiveSeconds)}
-                </span>
-              </button>
-              <button onClick={() => stopStudy(false)} title="Stop & Save Session" className="p-1.5 rounded-full bg-slate-100 dark:bg-white/[0.05] hover:bg-rose-500/10 hover:text-rose-500 text-slate-400 border border-transparent hover:border-rose-500/20 transition-all">
-                <Square className="w-3.5 h-3.5 fill-current" />
-              </button>
-            </>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-400/30 text-sky-400 text-xs font-mono font-bold shadow-sm animate-pulse">
+              <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+              <span>● STUDYING</span>
+              <span className="text-sky-400 font-mono">
+                {formatSeconds(elapsedActiveSeconds)}
+              </span>
+            </div>
           )}
 
           {isBreak && (
-            <>
-              <button onClick={endBreak} title="End Break & Resume Study" className="group flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-400/30 text-pink-400 text-xs font-mono font-bold shadow-sm hover:bg-pink-500/20 transition-colors">
-                <Play className="w-3.5 h-3.5 fill-current opacity-70 group-hover:opacity-100 transition-opacity" />
-                <span>ON BREAK</span>
-                <span className="text-pink-400 font-mono min-w-[45px] text-center">
-                  {formatSeconds(elapsedBreakSeconds)}
-                </span>
-              </button>
-              <button onClick={() => stopStudy(false)} title="Stop & Save Session" className="p-1.5 rounded-full bg-slate-100 dark:bg-white/[0.05] hover:bg-rose-500/10 hover:text-rose-500 text-slate-400 border border-transparent hover:border-rose-500/20 transition-all">
-                <Square className="w-3.5 h-3.5 fill-current" />
-              </button>
-            </>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-400/30 text-pink-400 text-xs font-mono font-bold shadow-sm animate-pulse">
+              <Coffee className="w-3 h-3 text-pink-400" />
+              <span>● ON BREAK</span>
+            </div>
           )}
 
           {isPaused && (
-            <>
-              <button onClick={resumeStudy} title="Resume Study" className="group flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-400/30 text-yellow-500 dark:text-yellow-400 text-xs font-mono font-bold shadow-sm hover:bg-yellow-500/20 transition-colors">
-                <Play className="w-3.5 h-3.5 fill-current opacity-70 group-hover:opacity-100 transition-opacity" />
-                <span>PAUSED</span>
-                <span className="text-yellow-500 dark:text-yellow-400 font-mono min-w-[45px] text-center">
-                  {formatSeconds(elapsedActiveSeconds)}
-                </span>
-              </button>
-              <button onClick={() => stopStudy(false)} title="Stop & Save Session" className="p-1.5 rounded-full bg-slate-100 dark:bg-white/[0.05] hover:bg-rose-500/10 hover:text-rose-500 text-slate-400 border border-transparent hover:border-rose-500/20 transition-all">
-                <Square className="w-3.5 h-3.5 fill-current" />
-              </button>
-            </>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-400/30 text-yellow-400 text-xs font-mono font-bold shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-yellow-400"></span>
+              <span>● PAUSED</span>
+            </div>
           )}
 
           {!activeSession && (
-            <button
-              onClick={() => {
-                if (activeCourse) {
-                  // If we need to trigger startStudy, we can't do it easily without useTimer's startStudy being fully set up to use activeCourseId if nothing is passed, but it expects {courseId}.
-                  // We'll leave it as IDLE indicator for now or redirect to focus center
-                  onNavigate('focus-center');
-                } else {
-                  onNavigate('focus-center');
-                }
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/[0.05] hover:bg-sky-500/10 text-slate-400 hover:text-sky-500 border border-transparent hover:border-sky-500/30 transition-all text-xs font-semibold cursor-pointer group"
-              title="Start a new session"
-            >
-              <Play className="w-3.5 h-3.5 fill-current opacity-50 group-hover:opacity-100 transition-opacity" />
-              <span>START TIMER</span>
-            </button>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 text-slate-400 border border-white/10 text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-slate-400"></span>
+              <span>○ IDLE</span>
+            </div>
           )}
         </div>
 
