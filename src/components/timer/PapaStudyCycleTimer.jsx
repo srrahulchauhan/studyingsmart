@@ -19,6 +19,7 @@ import {
   Maximize2,
   Minimize2,
   Sparkles,
+  Settings as SettingsIcon,
 } from 'lucide-react';
 import ProgressRing from '../common/ProgressRing';
 
